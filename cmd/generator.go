@@ -10,22 +10,22 @@ import (
 var Gen = cli.Command{
 	Name:      "gen",
 	ShortName: "g",
-	Usage:     "Code generator.",
-	UsageText: "Generate target language file using thrift file",
+	Usage:     "代码生成命令",
+	UsageText: "通过thrift文件生成目标语言代码",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:        "lang, l",
-			Usage:       "Target language name",
+			Usage:       "目标语言名称",
 			Destination: &global.GenCmdInfo.Lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
-			Usage:       "Input thrift file path",
+			Usage:       "被生成thrift文件路径",
 			Destination: &global.GenCmdInfo.Input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
-			Usage:       "Target language file output path",
+			Usage:       "生成文件的输出路径",
 			Destination: &global.GenCmdInfo.Output,
 		},
 	},
