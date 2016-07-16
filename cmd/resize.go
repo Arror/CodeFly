@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"CodeFly/global"
-	"fmt"
+	"CodeFly/resizer"
 
 	"github.com/urfave/cli"
 )
@@ -28,8 +28,10 @@ var Resize = cli.Command{
 			return err
 		}
 
-		fmt.Println(info)
-
+		iconResizer := resizer.IconResizer
+		if err := iconResizer.ResizeIcon(info); err != nil {
+			return err
+		}
 		return nil
 	},
 }

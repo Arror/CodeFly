@@ -57,7 +57,11 @@ func (gci *GenerateCommandInfo) CheckGenerateCommandInfoValidity() error {
 
 // ImageResizeInfo 命令信息结构
 type ImageResizeInfo struct {
-	Input string
+	Input         string
+	Dir           string
+	File          string
+	FileName      string
+	FileExtension string
 }
 
 // ImageResize 命令信息对象
@@ -93,6 +97,9 @@ func (iri *ImageResizeInfo) CheckImageResizeInfoInfoValidity() error {
 	}
 
 	iri.Input = p
+	iri.File = file
+	iri.FileName = components[0]
+	iri.FileExtension = components[1]
 
 	return nil
 }
