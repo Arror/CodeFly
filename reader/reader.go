@@ -3,6 +3,8 @@ package reader
 import (
 	"errors"
 
+	"CodeFly/global"
+
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -16,18 +18,18 @@ type ThriftReader struct {
 var Reader = &ThriftReader{}
 
 // ReadThrift 读取thrift文件
-func (r *ThriftReader) ReadThrift(path string) error {
+func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 
 	p := parser.Parser{}
 
-	thrifts, _, err := p.ParseFile(path)
+	thrifts, _, err := p.ParseFile(info.Input)
 
 	if err != nil {
 		return errors.New("无法解析thrift文件")
 	}
 
 	r.Thrifts = thrifts
-	r.Path = path
+	r.Path = info.Output
 
 	return nil
 }

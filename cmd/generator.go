@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"CodeFly/global"
+	"CodeFly/reader"
 
 	"github.com/urfave/cli"
 )
@@ -30,9 +31,17 @@ var Gen = cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		if err := global.GenCmdInfo.CheckValidity(); err != nil {
+
+		info := global.GenCmdInfo
+
+		if err := info.CheckValidity(); err != nil {
 			return err
 		}
+
+		if err := reader.Reader.ReadThrift(info); err != nil {
+			return err
+		}
+
 		return nil
 	},
 }
