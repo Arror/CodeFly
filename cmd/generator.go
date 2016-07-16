@@ -34,7 +34,7 @@ var Gen = cli.Command{
 
 		info := global.GenCmdInfo
 
-		if err := info.CheckValidity(); err != nil {
+		if err := info.CheckGenerateCommandInfoValidity(); err != nil {
 			return err
 		}
 

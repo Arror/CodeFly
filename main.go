@@ -18,6 +18,7 @@ func main() {
 	app.Email = info.Email
 	app.Commands = []cli.Command{
 		cmd.Gen,
+		cmd.Resize,
 	}
 	app.Run(os.Args)
 }
