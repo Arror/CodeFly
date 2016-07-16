@@ -10,8 +10,8 @@ import (
 
 // ThriftReader Reader结构
 type ThriftReader struct {
-	Thrifts map[string]*parser.Thrift
-	Path    string
+	Thrifts    map[string]*parser.Thrift
+	OutputPath string
 }
 
 // Reader ThriftReader对象
@@ -29,7 +29,7 @@ func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 	}
 
 	r.Thrifts = thrifts
-	r.Path = info.Output
+	r.OutputPath = info.Output
 
 	return nil
 }
