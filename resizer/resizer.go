@@ -18,7 +18,7 @@ type Resizer struct{}
 var IconResizer = &Resizer{}
 
 // ResizeIcon 转换输入的Icon
-func (rs *Resizer) ResizeIcon(info *global.ImageResizeInfo) error {
+func (rs *Resizer) ResizeIcon(info *global.ImageResizeInfo, width, height uint) error {
 
 	file, err := os.Open(info.Input)
 
@@ -28,9 +28,9 @@ func (rs *Resizer) ResizeIcon(info *global.ImageResizeInfo) error {
 
 	img, err := png.Decode(file)
 
-	m := resize.Resize(1000, 0, img, resize.Lanczos3)
+	m := resize.Resize(1000, 1000, img, resize.Lanczos3)
 
-	newIconName := fmt.Sprintf("%s_1000x1000.png", info.FileName)
+	newIconName := fmt.Sprintf("%s_%dx%d.png", info.FileName, width, height)
 
 	out, err := os.Create(newIconName)
 	if err != nil {
