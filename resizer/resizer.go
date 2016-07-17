@@ -13,6 +13,7 @@ import (
 
 // IconSize iOS 设备所需Icon尺寸
 type IconSize struct {
+	DeviceName  string
 	BaseWidth   float32
 	BasegHeight float32
 	Multiply    uint
@@ -57,7 +58,12 @@ func (is *IconSize) factualImageSize() (width, height uint) {
 
 func (is *IconSize) imageName(base string) string {
 	width, height := is.factualImageSize()
-	return fmt.Sprintf("%s_%dx%d_@%dx.png", base, width, height, is.Multiply)
+
+	imageName := base
+	if is.DeviceName != "" {
+		imageName = is.DeviceName
+	}
+	return fmt.Sprintf("%s_%dx%d_@%dx.png", imageName, width, height, is.Multiply)
 }
 
 // Resizer Resizer结构体
