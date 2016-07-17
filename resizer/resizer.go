@@ -13,51 +13,51 @@ import (
 
 // IconSize iOS 设备所需Icon尺寸
 type IconSize struct {
-	BaseWidth   uint
-	BasegHeight uint
+	BaseWidth   float32
+	BasegHeight float32
 	Multiply    uint
 }
 
 var iconSizes = []*IconSize{
 	&IconSize{
-		BaseWidth:   29,
-		BasegHeight: 29,
+		BaseWidth:   29.0,
+		BasegHeight: 29.0,
 		Multiply:    2,
 	},
 	&IconSize{
-		BaseWidth:   29,
-		BasegHeight: 29,
+		BaseWidth:   29.0,
+		BasegHeight: 29.0,
 		Multiply:    3,
 	},
 	&IconSize{
-		BaseWidth:   40,
-		BasegHeight: 40,
+		BaseWidth:   40.0,
+		BasegHeight: 40.0,
 		Multiply:    2,
 	},
 	&IconSize{
-		BaseWidth:   40,
-		BasegHeight: 40,
+		BaseWidth:   40.0,
+		BasegHeight: 40.0,
 		Multiply:    3,
 	},
 	&IconSize{
-		BaseWidth:   60,
-		BasegHeight: 60,
+		BaseWidth:   60.0,
+		BasegHeight: 60.0,
 		Multiply:    2,
 	},
 	&IconSize{
-		BaseWidth:   60,
-		BasegHeight: 60,
+		BaseWidth:   60.0,
+		BasegHeight: 60.0,
 		Multiply:    3,
 	},
 }
 
 func (is *IconSize) factualImageSize() (width, height uint) {
-	return is.BaseWidth * is.Multiply, is.BasegHeight * is.Multiply
+	return uint(is.BaseWidth * float32(is.Multiply)), uint(is.BasegHeight * float32(is.Multiply))
 }
 
 func (is *IconSize) imageName(base string) string {
 	width, height := is.factualImageSize()
-	return fmt.Sprintf("%s_%dx%d_@%d.png", base, width, height, is.Multiply)
+	return fmt.Sprintf("%s_%dx%d_@%dx.png", base, width, height, is.Multiply)
 }
 
 // Resizer Resizer结构体
