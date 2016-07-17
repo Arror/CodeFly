@@ -10,6 +10,9 @@ codefly-resize-test:
 
 build:
 	go build Codefly
+
+help:
+	./Codefly -h
     
 clean:
 	go clean
