@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	cli.AppHelpTemplate = info.AppHelpTemplate
 	app := cli.NewApp()
 	app.Name = "CodeFly"
 	app.Usage = "iOS开发者工具集"
