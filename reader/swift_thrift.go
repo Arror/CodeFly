@@ -73,5 +73,5 @@ type SwiftService struct {
 type SwiftThrift struct {
 	Structs map[string]*SwiftStruct
 	Enums   map[string]*SwiftEnum
-	Service map[string]SwiftService
+	Service map[string]*SwiftService
 }
