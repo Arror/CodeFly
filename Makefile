@@ -14,3 +14,4 @@ build:
 clean:
 	go clean
 	rm -rf Codefly
+	rm -rf *.png

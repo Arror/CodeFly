@@ -28,7 +28,7 @@ func (rs *Resizer) ResizeIcon(info *global.ImageResizeInfo, width, height uint) 
 
 	img, err := png.Decode(file)
 
-	m := resize.Resize(1000, 1000, img, resize.Lanczos3)
+	m := resize.Resize(width, height, img, resize.Lanczos3)
 
 	newIconName := fmt.Sprintf("%s_%dx%d.png", info.FileName, width, height)
 
