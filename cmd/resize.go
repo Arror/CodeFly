@@ -29,7 +29,7 @@ var Resize = cli.Command{
 		}
 
 		iconResizer := resizer.IconResizer
-		if err := iconResizer.ResizeIcon(info, 500, 500); err != nil {
+		if err := iconResizer.ResizeIcon(info); err != nil {
 			return err
 		}
 		return nil
