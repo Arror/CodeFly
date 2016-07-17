@@ -45,26 +45,33 @@ type SwiftType struct {
 
 // SwiftField Swift Field类型定义
 type SwiftField struct {
-	Type  SwiftType
+	Type  *SwiftType
 	Name  string
 	Value string
 }
 
 // SwiftStruct Swift Struct类型定义
 type SwiftStruct struct {
+	Name   string
+	Fields map[string]*SwiftField
 }
 
 // SwiftEnum Swift Enum类型定义
 type SwiftEnum struct {
+	Name   string
+	Fields map[string]*SwiftField
 }
 
 // SwiftService Swift Service类型定义
 type SwiftService struct {
+	Name      string
+	Fields    map[string]*SwiftField
+	ValueType *SwiftType
 }
 
 // SwiftThrift Swift Thrift类型定义
 type SwiftThrift struct {
-	Structs []SwiftStruct
-	Enums   []SwiftEnum
-	Service []SwiftService
+	Structs map[string]*SwiftStruct
+	Enums   map[string]*SwiftEnum
+	Service map[string]SwiftService
 }
