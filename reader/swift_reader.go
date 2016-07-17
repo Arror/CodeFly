@@ -95,22 +95,12 @@ var SwiftReader = &SwiftThriftReader{}
 func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 
 	str.ThriftReader = reader
+	str.SwiftThriftMap = &SwiftThrift{}
 
 	t := reader.Thrifts[reader.InputPath]
 
-	// for n, s := range t.Structs {
-
-	// 	fmt.Println(n)
-
-	// 	for _, v := range s.Fields {
-
-	// 		fmt.Println(v.Name)
-	// 		fmt.Println(v.Type)
-	// 	}
-	// }
-
+	enums := make(map[string]*SwiftEnum)
 	for n, e := range t.Enums {
-
 		enum := &SwiftEnum{}
 		enum.Name = str.AssembleEnumName(n)
 		enum.Fields = make(map[string]*SwiftField)
@@ -126,9 +116,10 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 			}
 			enum.Fields[f.Name] = f
 		}
-
-		fmt.Println(enum)
+		enums[enum.Name] = enum
 	}
+
+	str.SwiftThriftMap.Enums = enums
 }
 
 // AssembleEnumName 配置枚举的名称
