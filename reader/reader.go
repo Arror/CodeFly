@@ -11,6 +11,8 @@ import (
 // ThriftReader Reader结构
 type ThriftReader struct {
 	Thrifts    map[string]*parser.Thrift
+	Thrift     *parser.Thrift
+	InputPath  string
 	OutputPath string
 }
 
@@ -29,6 +31,8 @@ func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 	}
 
 	r.Thrifts = thrifts
+	r.Thrift = thrifts[info.Input]
+	r.InputPath = info.Input
 	r.OutputPath = info.Output
 
 	return nil

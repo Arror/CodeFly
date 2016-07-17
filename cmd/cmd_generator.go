@@ -42,6 +42,9 @@ var Gen = cli.Command{
 			return err
 		}
 
+		// TODO: 测试入口，需要删除
+		reader.SwiftReader.InitSwiftThrift(reader.Reader)
+
 		return nil
 	},
 }

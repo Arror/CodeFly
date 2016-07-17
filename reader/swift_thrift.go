@@ -1,5 +1,11 @@
 package reader
 
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
 const (
 	// STInt16 Swift Type Int16
 	STInt16 = "Int16"
@@ -74,4 +80,73 @@ type SwiftThrift struct {
 	Structs map[string]*SwiftStruct
 	Enums   map[string]*SwiftEnum
 	Service map[string]*SwiftService
+}
+
+// SwiftThriftReader Swift Thrift Reader
+type SwiftThriftReader struct {
+	ThriftReader   *ThriftReader
+	SwiftThriftMap *SwiftThrift
+}
+
+// SwiftReader Swift Thrift Reader对象
+var SwiftReader = &SwiftThriftReader{}
+
+// InitSwiftThrift Swift Thrift Reader初始化
+func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
+
+	str.ThriftReader = reader
+
+	t := reader.Thrifts[reader.InputPath]
+
+	// for n, s := range t.Structs {
+
+	// 	fmt.Println(n)
+
+	// 	for _, v := range s.Fields {
+
+	// 		fmt.Println(v.Name)
+	// 		fmt.Println(v.Type)
+	// 	}
+	// }
+
+	for n, e := range t.Enums {
+
+		enum := &SwiftEnum{}
+		enum.Name = str.AssembleEnumName(n)
+		enum.Fields = make(map[string]*SwiftField)
+
+		for _, v := range e.Values {
+			f := &SwiftField{}
+			f.Name = v.Name
+			f.Value = strconv.Itoa(v.Value)
+			f.Type = &SwiftType{
+				Type:      EnumType,
+				Name:      enum.Name,
+				InnerType: "",
+			}
+			enum.Fields[f.Name] = f
+		}
+
+		fmt.Println(enum)
+	}
+}
+
+// AssembleEnumName 配置枚举的名称
+func (str *SwiftThriftReader) AssembleEnumName(name string) string {
+
+	components := strings.Split(name, ".")
+
+	t := str.ThriftReader.Thrift
+
+	if len(components) == 1 {
+		ns := t.Namespaces["swift"]
+		return AssembleName(ns, components[0])
+	}
+
+	return ""
+}
+
+// AssembleName 名称组装
+func AssembleName(namespace string, name string) string {
+	return fmt.Sprintf("%s%s", namespace, name[1:])
 }
