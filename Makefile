@@ -3,7 +3,7 @@ all:
 init:
 
 codefly-gen-test:
-	./Codefly g -l swift -i Example/Person.thrift -o outputPath/outputPath
+	./Codefly g -l swift -i Example/Example.thrift -o outputPath/outputPath
 
 codefly-resize-test:
 	./Codefly r -i /Users/Arror/Desktop/abcd.png
