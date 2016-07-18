@@ -6,6 +6,7 @@ struct TPerson {
 1:required string name
 2:required TLanguage lang
 3:required Sex.TSex sex
+4:required list<string> strs
 }
 
 enum TLanguage {
