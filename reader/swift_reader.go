@@ -152,7 +152,6 @@ func (str *SwiftThriftReader) GetSwiftType(f *parser.Field) *SwiftType {
 		st.Name = tn
 		st.Type = PlainType
 		st.InnerType = ""
-		fmt.Println(st)
 		return st
 	}
 
@@ -160,7 +159,6 @@ func (str *SwiftThriftReader) GetSwiftType(f *parser.Field) *SwiftType {
 		st.Name = tn
 		st.Type = EnumType
 		st.InnerType = ""
-		fmt.Println(st)
 		return st
 	}
 
@@ -168,7 +166,6 @@ func (str *SwiftThriftReader) GetSwiftType(f *parser.Field) *SwiftType {
 		st.Name = tn
 		st.Type = EnumType
 		st.InnerType = ""
-		fmt.Println(st)
 		return st
 	}
 
@@ -176,7 +173,6 @@ func (str *SwiftThriftReader) GetSwiftType(f *parser.Field) *SwiftType {
 		st.Name = tn
 		st.Type = ListType
 		st.InnerType = innerType
-		fmt.Println(st)
 		return st
 	}
 
