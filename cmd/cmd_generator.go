@@ -47,7 +47,7 @@ var Gen = cli.Command{
 			return err
 		}
 
-		if err := printer.Print(info); err != nil {
+		if err := printer.Print(reader.Reader); err != nil {
 			return err
 		}
 
