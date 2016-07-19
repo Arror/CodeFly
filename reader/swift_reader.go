@@ -36,6 +36,8 @@ const (
 	PlainType = "PlainType"
 	// CustomerType 自定义数据类型
 	CustomerType = "CustomerType"
+	// Void 空类型
+	Void = "Void"
 )
 
 // TypeMapping 类型映射
@@ -76,6 +78,12 @@ type SwiftEnum struct {
 
 // SwiftService Swift Service类型定义
 type SwiftService struct {
+	Name    string
+	Methods map[string]*SwiftMethod
+}
+
+// SwiftMethod Swift Method类型定义
+type SwiftMethod struct {
 	Name      string
 	Fields    map[string]*SwiftField
 	ValueType *SwiftType
@@ -114,7 +122,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 		for _, f := range s.Fields {
 			_f := &SwiftField{}
 			_f.Name = f.Name
-			_f.Type = str.GetSwiftType(f)
+			_f.Type = str.GetSwiftType(f.Type)
 			_struct.Fields[_f.Name] = _f
 		}
 		structs[_struct.Name] = _struct
@@ -141,35 +149,67 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 		enums[_enum.Name] = _enum
 	}
 	str.SwiftThriftMap.Enums = enums
+
+	services := make(map[string]*SwiftService)
+	for n, s := range t.Services {
+		_service := &SwiftService{}
+		_service.Name = AssembleServiceName(t.Namespaces[Swift], n)
+		_service.Methods = make(map[string]*SwiftMethod)
+
+		for mn, m := range s.Methods {
+			_Method := &SwiftMethod{}
+			_Method.Name = mn
+			if m.ReturnType == nil {
+				_Method.ValueType = &SwiftType{
+					Type:      Void,
+					Name:      Void,
+					InnerType: "",
+				}
+			} else {
+				_Method.ValueType = str.GetSwiftType(m.ReturnType)
+			}
+			_Method.Fields = make(map[string]*SwiftField)
+
+			for _, f := range m.Arguments {
+				_f := &SwiftField{}
+				_f.Name = f.Name
+				_f.Type = str.GetSwiftType(f.Type)
+				_Method.Fields[_f.Name] = _f
+			}
+			_service.Methods[m.Name] = _Method
+		}
+		services[_service.Name] = _service
+	}
+	str.SwiftThriftMap.Services = services
 }
 
 // GetSwiftType 通过 Field 获取 Type
-func (str *SwiftThriftReader) GetSwiftType(f *parser.Field) *SwiftType {
+func (str *SwiftThriftReader) GetSwiftType(t *parser.Type) *SwiftType {
 
 	st := &SwiftType{}
 
-	if b, tn := str.IsPlainType(f.Type); b {
+	if b, tn := str.IsPlainType(t); b {
 		st.Name = tn
 		st.Type = PlainType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn := str.IsEnumType(f.Type); b {
+	if b, tn := str.IsEnumType(t); b {
 		st.Name = tn
 		st.Type = EnumType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn := str.IsCustomerType(f.Type); b {
+	if b, tn := str.IsCustomerType(t); b {
 		st.Name = tn
 		st.Type = EnumType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn, innerType := str.IsListType(f.Type); b {
+	if b, tn, innerType := str.IsListType(t); b {
 		st.Name = tn
 		st.Type = ListType
 		st.InnerType = innerType
@@ -285,4 +325,9 @@ func (str *SwiftThriftReader) IsListType(t *parser.Type) (bool, string, string) 
 // AssembleName 名称组装
 func AssembleName(namespace string, name string) string {
 	return fmt.Sprintf("%s%s", namespace, name[1:])
+}
+
+// AssembleServiceName Service名称组装
+func AssembleServiceName(namespace string, name string) string {
+	return fmt.Sprintf("%sService", name)
 }
