@@ -6,11 +6,10 @@ import (
 	"strconv"
 	"strings"
 
+	"CodeFly/global"
+
 	"github.com/samuel/go-thrift/parser"
 )
-
-// Swift Swift语言
-const Swift = "swift"
 
 const (
 	// STInt16 Swift Type Int16
@@ -42,12 +41,12 @@ const (
 
 // TypeMapping 类型映射
 var TypeMapping = map[string]string{
-	TTI16:    STInt16,
-	TTI32:    STInt,
-	TTI64:    STInt64,
-	TTDouble: STDouble,
-	TTBool:   STBool,
-	TTString: STString,
+	global.TTI16:    STInt16,
+	global.TTI32:    STInt,
+	global.TTI64:    STInt64,
+	global.TTDouble: STDouble,
+	global.TTBool:   STBool,
+	global.TTString: STString,
 }
 
 // SwiftType Swift类型定义
@@ -116,7 +115,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	structs := make(map[string]*SwiftStruct)
 	for n, s := range t.Structs {
 		_struct := &SwiftStruct{}
-		_struct.Name = AssembleName(t.Namespaces[Swift], n)
+		_struct.Name = AssembleName(t.Namespaces[global.Swift], n)
 		_struct.Fields = make(map[string]*SwiftField)
 
 		for _, f := range s.Fields {
@@ -132,7 +131,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	enums := make(map[string]*SwiftEnum)
 	for n, e := range t.Enums {
 		_enum := &SwiftEnum{}
-		_enum.Name = AssembleName(t.Namespaces[Swift], n)
+		_enum.Name = AssembleName(t.Namespaces[global.Swift], n)
 		_enum.Fields = make(map[string]*SwiftField)
 
 		for _, v := range e.Values {
@@ -153,7 +152,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	services := make(map[string]*SwiftService)
 	for n, s := range t.Services {
 		_service := &SwiftService{}
-		_service.Name = AssembleServiceName(t.Namespaces[Swift], n)
+		_service.Name = AssembleServiceName(t.Namespaces[global.Swift], n)
 		_service.Methods = make(map[string]*SwiftMethod)
 
 		for mn, m := range s.Methods {
@@ -223,18 +222,18 @@ func (str *SwiftThriftReader) GetSwiftType(t *parser.Type) *SwiftType {
 func (str *SwiftThriftReader) IsPlainType(t *parser.Type) (bool, string) {
 	n := t.Name
 	switch n {
-	case TTI16:
-		return true, TypeMapping[TTI16]
-	case TTI32:
-		return true, TypeMapping[TTI32]
-	case TTI64:
-		return true, TypeMapping[TTI64]
-	case TTDouble:
-		return true, TypeMapping[TTDouble]
-	case TTBool:
-		return true, TypeMapping[TTBool]
-	case TTString:
-		return true, TypeMapping[TTString]
+	case global.TTI16:
+		return true, TypeMapping[global.TTI16]
+	case global.TTI32:
+		return true, TypeMapping[global.TTI32]
+	case global.TTI64:
+		return true, TypeMapping[global.TTI64]
+	case global.TTDouble:
+		return true, TypeMapping[global.TTDouble]
+	case global.TTBool:
+		return true, TypeMapping[global.TTBool]
+	case global.TTString:
+		return true, TypeMapping[global.TTString]
 	default:
 		return false, ""
 	}
@@ -252,7 +251,7 @@ func (str *SwiftThriftReader) IsEnumType(t *parser.Type) (bool, string) {
 	if len(components) == 1 {
 		for _, s := range thrift.Enums {
 			if s.Name == components[0] {
-				return true, AssembleName(thrift.Namespaces[Swift], s.Name)
+				return true, AssembleName(thrift.Namespaces[global.Swift], s.Name)
 			}
 		}
 	}
@@ -263,7 +262,7 @@ func (str *SwiftThriftReader) IsEnumType(t *parser.Type) (bool, string) {
 			if components[0] == f {
 				for _, s := range t.Enums {
 					if s.Name == components[1] {
-						return true, AssembleName(t.Namespaces[Swift], components[1])
+						return true, AssembleName(t.Namespaces[global.Swift], components[1])
 					}
 				}
 			}
@@ -284,7 +283,7 @@ func (str *SwiftThriftReader) IsCustomerType(t *parser.Type) (bool, string) {
 	if len(components) == 1 {
 		for _, s := range thrift.Structs {
 			if s.Name == components[0] {
-				return true, AssembleName(thrift.Namespaces[Swift], s.Name)
+				return true, AssembleName(thrift.Namespaces[global.Swift], s.Name)
 			}
 		}
 	}
@@ -295,7 +294,7 @@ func (str *SwiftThriftReader) IsCustomerType(t *parser.Type) (bool, string) {
 			if components[0] == f {
 				for _, s := range t.Structs {
 					if s.Name == components[1] {
-						return true, AssembleName(t.Namespaces[Swift], components[1])
+						return true, AssembleName(t.Namespaces[global.Swift], components[1])
 					}
 				}
 			}

@@ -1,7 +1,7 @@
 package reader
 
 import (
-	"errors"
+	"fmt"
 
 	"CodeFly/global"
 
@@ -27,7 +27,7 @@ func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 	thrifts, _, err := p.ParseFile(info.Input)
 
 	if err != nil {
-		return errors.New("无法解析thrift文件")
+		return fmt.Errorf("解析thrift文件失败")
 	}
 
 	r.Thrifts = thrifts
@@ -35,5 +35,19 @@ func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 	r.InputPath = info.Input
 	r.OutputPath = info.Output
 
+	return nil
+}
+
+// CheckNameSpace 检查Namespace
+func (r *ThriftReader) CheckNameSpace(info *global.GenerateCommandInfo) error {
+
+	ts := r.Thrifts
+	lang := info.Lang
+
+	for n, t := range ts {
+		if t.Namespaces[lang] == "" {
+			return fmt.Errorf("发现%s.thrift文件没有关于%s语言的Namespace信息", n, lang)
+		}
+	}
 	return nil
 }
