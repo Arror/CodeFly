@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"CodeFly/global"
+	"CodeFly/printer"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
@@ -46,8 +47,9 @@ var Gen = cli.Command{
 			return err
 		}
 
-		// TODO: 测试入口，需要删除
-		reader.SwiftReader.InitSwiftThrift(reader.Reader)
+		if err := printer.Print(info); err != nil {
+			return err
+		}
 
 		return nil
 	},
