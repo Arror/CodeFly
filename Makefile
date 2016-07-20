@@ -18,3 +18,4 @@ clean:
 	go clean
 	rm -rf Codefly
 	rm -rf *.png
+	rm -rf outputPath
