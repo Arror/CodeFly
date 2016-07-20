@@ -203,7 +203,7 @@ func (str *SwiftThriftReader) GetSwiftType(t *parser.Type) *SwiftType {
 
 	if b, tn := str.IsCustomerType(t); b {
 		st.Name = tn
-		st.Type = EnumType
+		st.Type = CustomerType
 		st.InnerType = ""
 		return st
 	}
@@ -329,4 +329,85 @@ func AssembleName(namespace string, name string) string {
 // AssembleServiceName Service名称组装
 func AssembleServiceName(namespace string, name string) string {
 	return fmt.Sprintf("%sService", name)
+}
+
+// DefaultValue Swift 字段默认值
+func (str *SwiftStruct) DefaultValue(f *SwiftField) string {
+
+	switch f.Type.Type {
+	case ListType:
+		return fmt.Sprintf(": [%s] = []", f.Type.InnerType)
+	case EnumType:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	case PlainType:
+		switch f.Type.Name {
+		case STInt16, STInt, STInt64:
+			return fmt.Sprintf(": %s = 0", f.Type.Name)
+		case STDouble:
+			return fmt.Sprintf(": %s = 0.0", f.Type.Name)
+		case STBool:
+			return fmt.Sprintf(": %s = false", f.Type.Name)
+		case STString:
+			return fmt.Sprintf(": %s?", f.Type.Name)
+		default:
+			return fmt.Sprintf(": %s?", f.Type.Name)
+		}
+	case CustomerType:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	default:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	}
+}
+
+// FromDict 从JSON中初始化
+func (str *SwiftStruct) FromDict(f *SwiftField) string {
+	switch f.Type.Type {
+	case ListType:
+		return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+	case EnumType:
+		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
+	case PlainType:
+		switch f.Type.Name {
+		case STInt16, STInt, STInt64:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
+		case STDouble:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
+		case STBool:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? false", f.Name, f.Type.Name)
+		case STString:
+			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
+		default:
+			return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+		}
+	case CustomerType:
+		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+	default:
+		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+	}
+}
+
+// ToDict 创建JSON
+func (str *SwiftStruct) ToDict(f *SwiftField) string {
+
+	switch f.Type.Type {
+	case ListType, CustomerType:
+		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+	case EnumType:
+		return fmt.Sprintf("self.%s.rawValue ?? 0", f.Name)
+	case PlainType:
+		switch f.Type.Name {
+		case STInt16, STInt, STInt64:
+			return fmt.Sprintf("self.%s ?? 0", f.Name)
+		case STDouble:
+			return fmt.Sprintf("self.%s ?? 0.0", f.Name)
+		case STBool:
+			return fmt.Sprintf("self.%s ?? false", f.Name)
+		case STString:
+			return fmt.Sprintf("self.%s ?? \"\"", f.Name)
+		default:
+			return fmt.Sprintf("self.%s.toJSON()", f.Name)
+		}
+	default:
+		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+	}
 }
