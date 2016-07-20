@@ -22,13 +22,9 @@ func printSwiftCodeWith(str *reader.SwiftThriftReader) {
 	structTplName := templates.SwiftStructTemplate
 	servicelName := templates.SwiftServiceTemplate
 
-	enumTplString := swift.SwiftEnumTemplate
-	structTplString := swift.SwiftStructTemplate
-	servicelString := swift.SwiftServiceTemplate
-
-	enumTpl := initTemplate(enumTplName, enumTplString)
-	structTpl := initTemplate(structTplName, structTplString)
-	serviceTpl := initTemplate(servicelName, servicelString)
+	enumTpl := initTemplate(enumTplName, swift.SwiftEnumTemplate)
+	structTpl := initTemplate(structTplName, swift.SwiftStructTemplate)
+	serviceTpl := initTemplate(servicelName, swift.SwiftServiceTemplate)
 
 	wg := sync.WaitGroup{}
 
