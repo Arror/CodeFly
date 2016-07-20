@@ -66,25 +66,25 @@ type SwiftField struct {
 // SwiftStruct Swift Struct类型定义
 type SwiftStruct struct {
 	Name   string
-	Fields map[string]*SwiftField
+	Fields []*SwiftField
 }
 
 // SwiftEnum Swift Enum类型定义
 type SwiftEnum struct {
 	Name   string
-	Fields map[string]*SwiftField
+	Fields []*SwiftField
 }
 
 // SwiftService Swift Service类型定义
 type SwiftService struct {
 	Name    string
-	Methods map[string]*SwiftMethod
+	Methods []*SwiftMethod
 }
 
 // SwiftMethod Swift Method类型定义
 type SwiftMethod struct {
 	Name      string
-	Fields    map[string]*SwiftField
+	Fields    []*SwiftField
 	ValueType *SwiftType
 }
 
@@ -116,13 +116,13 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	for n, s := range t.Structs {
 		_struct := &SwiftStruct{}
 		_struct.Name = AssembleName(t.Namespaces[global.Swift], n)
-		_struct.Fields = make(map[string]*SwiftField)
+		_struct.Fields = make([]*SwiftField, 0)
 
 		for _, f := range s.Fields {
 			_f := &SwiftField{}
 			_f.Name = f.Name
 			_f.Type = str.GetSwiftType(f.Type)
-			_struct.Fields[_f.Name] = _f
+			_struct.Fields = append(_struct.Fields, _f)
 		}
 		structs[_struct.Name] = _struct
 	}
@@ -132,7 +132,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	for n, e := range t.Enums {
 		_enum := &SwiftEnum{}
 		_enum.Name = AssembleName(t.Namespaces[global.Swift], n)
-		_enum.Fields = make(map[string]*SwiftField)
+		_enum.Fields = make([]*SwiftField, 0)
 
 		for _, v := range e.Values {
 			_f := &SwiftField{}
@@ -143,7 +143,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 				Name:      _enum.Name,
 				InnerType: "",
 			}
-			_enum.Fields[_f.Name] = _f
+			_enum.Fields = append(_enum.Fields, _f)
 		}
 		enums[_enum.Name] = _enum
 	}
@@ -153,7 +153,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	for n, s := range t.Services {
 		_service := &SwiftService{}
 		_service.Name = AssembleServiceName(t.Namespaces[global.Swift], n)
-		_service.Methods = make(map[string]*SwiftMethod)
+		_service.Methods = make([]*SwiftMethod, 0)
 
 		for mn, m := range s.Methods {
 			_Method := &SwiftMethod{}
@@ -167,15 +167,15 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 			} else {
 				_Method.ValueType = str.GetSwiftType(m.ReturnType)
 			}
-			_Method.Fields = make(map[string]*SwiftField)
+			_Method.Fields = make([]*SwiftField, 0)
 
 			for _, f := range m.Arguments {
 				_f := &SwiftField{}
 				_f.Name = f.Name
 				_f.Type = str.GetSwiftType(f.Type)
-				_Method.Fields[_f.Name] = _f
+				_Method.Fields = append(_Method.Fields, _f)
 			}
-			_service.Methods[m.Name] = _Method
+			_service.Methods = append(_service.Methods, _Method)
 		}
 		services[_service.Name] = _service
 	}

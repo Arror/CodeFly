@@ -10,8 +10,8 @@ const SwiftEnumTemplate = `//
 import Foundation
 
 public enum {{ .Name }}: Int {
-    {{ range $name, $value := .Fields }}
-    case {{ .Name }} = {{ .Value }} {{ end }}
+    {{ range $i, $f := .Fields }}
+    case {{ $f.Name }} = {{ $f.Value }} {{ end }}
     
     public init?(code: Int?) {
         
