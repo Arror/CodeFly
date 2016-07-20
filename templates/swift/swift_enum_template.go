@@ -1,4 +1,22 @@
 package swift
 
 // SwiftEnumTemplate Swift Enum 模板
-const SwiftEnumTemplate = `Hahaha`
+const SwiftEnumTemplate = `//
+// {{ .Name }}.swift
+//
+// 此文件由 codefly 生成，请不要手动修改
+//
+
+import Foundation
+
+public enum {{ .Name }}: Int {
+    {{ range $name, $value := .Fields }}
+    case {{ .Name }} = {{ .Value }} {{ end }}
+    
+    public init?(code: Int?) {
+        
+        guard let code = code else { return nil }
+        
+        self.init(rawValue: code)
+    }
+}`
