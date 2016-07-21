@@ -116,7 +116,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	for n, s := range t.Structs {
 		_struct := &SwiftStruct{}
 		_struct.Name = AssembleName(t.Namespaces[global.Swift], n)
-		_struct.Fields = make([]*SwiftField, 0)
+		_struct.Fields = make([]*SwiftField, 0, 10)
 
 		for _, f := range s.Fields {
 			_f := &SwiftField{}
@@ -132,7 +132,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 	for n, e := range t.Enums {
 		_enum := &SwiftEnum{}
 		_enum.Name = AssembleName(t.Namespaces[global.Swift], n)
-		_enum.Fields = make([]*SwiftField, 0)
+		_enum.Fields = make([]*SwiftField, 0, 10)
 
 		for _, v := range e.Values {
 			_f := &SwiftField{}
@@ -167,7 +167,7 @@ func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
 			} else {
 				_Method.ValueType = str.GetSwiftType(m.ReturnType)
 			}
-			_Method.Fields = make([]*SwiftField, 0)
+			_Method.Fields = make([]*SwiftField, 0, 10)
 
 			for _, f := range m.Arguments {
 				_f := &SwiftField{}
@@ -410,4 +410,27 @@ func (str *SwiftStruct) ToDict(f *SwiftField) string {
 	default:
 		return fmt.Sprintf("self.%s.toJSON()", f.Name)
 	}
+}
+
+// ReturnType 获取方法的返回值
+func (m *SwiftMethod) ReturnType() string {
+
+	switch m.ValueType.Type {
+	case ListType:
+		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
+	case Void:
+		return ""
+	default:
+		return m.ValueType.Name
+	}
+}
+
+// GetParam 拼接参数
+func (f *SwiftField) GetParam() string {
+
+	if f.Type.Type == ListType {
+		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
+	}
+
+	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
 }

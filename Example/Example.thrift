@@ -22,6 +22,7 @@ struct TExample {
 service Example extends Shared.Basic {
   void ping(1: string ip),
   i32 getPendingWithdrawAmount()
+  list<TServiceType> getAvailableServieType(1: string id, 2: TFoo fooe, 3: list<string> names)
 }
 
 enum TServiceType {
