@@ -1,7 +1,6 @@
 package readerSwift
 
 import (
-	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -12,34 +11,6 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
-const (
-	// STInt16 Swift Type Int16
-	STInt16 = "Int16"
-	// STInt Swift Type Int
-	STInt = "Int"
-	// STInt64 Swift Type Int64
-	STInt64 = "Int64"
-	// STDouble Swift Type Double
-	STDouble = "Double"
-	// STBool Swift Type Bool
-	STBool = "Bool"
-	// STString Swift Type String
-	STString = "String"
-)
-
-const (
-	// ListType 数组类型
-	ListType = "ListType"
-	// EnumType 枚举类型
-	EnumType = "EnumType"
-	// PlainType 基本数据类型
-	PlainType = "PlainType"
-	// CustomerType 自定义数据类型
-	CustomerType = "CustomerType"
-	// Void 空类型
-	Void = "Void"
-)
-
 // TypeMapping 类型映射
 var TypeMapping = map[string]string{
 	global.TTI16:    STInt16,
@@ -48,58 +19,6 @@ var TypeMapping = map[string]string{
 	global.TTDouble: STDouble,
 	global.TTBool:   STBool,
 	global.TTString: STString,
-}
-
-// SwiftType Swift类型定义
-type SwiftType struct {
-	Type      string
-	Name      string
-	InnerType string
-}
-
-// SwiftField Swift Field类型定义
-type SwiftField struct {
-	Type  *SwiftType
-	Name  string
-	Value string
-}
-
-// SwiftStruct Swift Struct类型定义
-type SwiftStruct struct {
-	Name   string
-	Fields []*SwiftField
-}
-
-// SwiftEnum Swift Enum类型定义
-type SwiftEnum struct {
-	Name   string
-	Fields []*SwiftField
-}
-
-// SwiftService Swift Service类型定义
-type SwiftService struct {
-	Name    string
-	Methods []*SwiftMethod
-}
-
-// SwiftMethod Swift Method类型定义
-type SwiftMethod struct {
-	Name      string
-	Fields    []*SwiftField
-	ValueType *SwiftType
-}
-
-// SwiftThrift Swift Thrift类型定义
-type SwiftThrift struct {
-	Structs  map[string]*SwiftStruct
-	Enums    map[string]*SwiftEnum
-	Services map[string]*SwiftService
-}
-
-// SwiftThriftReader Swift Thrift Reader
-type SwiftThriftReader struct {
-	ThriftReader   *reader.ThriftReader
-	SwiftThriftMap *SwiftThrift
 }
 
 // InitSwiftThrift Swift Thrift Reader初始化
@@ -317,118 +236,4 @@ func (str *SwiftThriftReader) IsListType(t *parser.Type) (bool, string, string) 
 		}
 	}
 	return false, "", ""
-}
-
-// AssembleName 名称组装
-func AssembleName(namespace string, name string) string {
-	return fmt.Sprintf("%s%s", namespace, name[1:])
-}
-
-// AssembleServiceName Service名称组装
-func AssembleServiceName(namespace string, name string) string {
-	return fmt.Sprintf("%sService", name)
-}
-
-// DefaultValue Swift 字段默认值
-func (str *SwiftStruct) DefaultValue(f *SwiftField) string {
-
-	switch f.Type.Type {
-	case ListType:
-		return fmt.Sprintf(": [%s] = []", f.Type.InnerType)
-	case EnumType:
-		return fmt.Sprintf(": %s?", f.Type.Name)
-	case PlainType:
-		switch f.Type.Name {
-		case STInt16, STInt, STInt64:
-			return fmt.Sprintf(": %s = 0", f.Type.Name)
-		case STDouble:
-			return fmt.Sprintf(": %s = 0.0", f.Type.Name)
-		case STBool:
-			return fmt.Sprintf(": %s = false", f.Type.Name)
-		case STString:
-			return fmt.Sprintf(": %s?", f.Type.Name)
-		default:
-			return fmt.Sprintf(": %s?", f.Type.Name)
-		}
-	case CustomerType:
-		return fmt.Sprintf(": %s?", f.Type.Name)
-	default:
-		return fmt.Sprintf(": %s?", f.Type.Name)
-	}
-}
-
-// FromDict 从JSON中初始化
-func (str *SwiftStruct) FromDict(f *SwiftField) string {
-	switch f.Type.Type {
-	case ListType:
-		return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-	case EnumType:
-		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
-	case PlainType:
-		switch f.Type.Name {
-		case STInt16, STInt, STInt64:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
-		case STDouble:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
-		case STBool:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? false", f.Name, f.Type.Name)
-		case STString:
-			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
-		default:
-			return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-		}
-	case CustomerType:
-		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
-	default:
-		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
-	}
-}
-
-// ToDict 创建JSON
-func (str *SwiftStruct) ToDict(f *SwiftField) string {
-
-	switch f.Type.Type {
-	case ListType, CustomerType:
-		return fmt.Sprintf("self.%s.toJSON()", f.Name)
-	case EnumType:
-		return fmt.Sprintf("self.%s.rawValue ?? 0", f.Name)
-	case PlainType:
-		switch f.Type.Name {
-		case STInt16, STInt, STInt64:
-			return fmt.Sprintf("self.%s ?? 0", f.Name)
-		case STDouble:
-			return fmt.Sprintf("self.%s ?? 0.0", f.Name)
-		case STBool:
-			return fmt.Sprintf("self.%s ?? false", f.Name)
-		case STString:
-			return fmt.Sprintf("self.%s ?? \"\"", f.Name)
-		default:
-			return fmt.Sprintf("self.%s.toJSON()", f.Name)
-		}
-	default:
-		return fmt.Sprintf("self.%s.toJSON()", f.Name)
-	}
-}
-
-// ReturnType 获取方法的返回值
-func (m *SwiftMethod) ReturnType() string {
-
-	switch m.ValueType.Type {
-	case ListType:
-		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
-	case Void:
-		return ""
-	default:
-		return m.ValueType.Name
-	}
-}
-
-// GetParam 拼接参数
-func (f *SwiftField) GetParam() string {
-
-	if f.Type.Type == ListType {
-		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
-	}
-
-	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
 }
