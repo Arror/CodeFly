@@ -1,4 +1,4 @@
-package swift
+package templateSwift
 
 // SwiftServiceTemplate Swift Service 模板
 const SwiftServiceTemplate = `//

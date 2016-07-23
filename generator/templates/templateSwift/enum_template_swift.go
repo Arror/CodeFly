@@ -1,4 +1,4 @@
-package swift
+package templateSwift
 
 // SwiftEnumTemplate Swift Enum 模板
 const SwiftEnumTemplate = `//

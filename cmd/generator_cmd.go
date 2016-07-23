@@ -1,12 +1,18 @@
 package cmd
 
 import (
-	"CodeFly/global"
-	"CodeFly/printer"
-	"CodeFly/reader"
+	"CodeFly/generator/operator"
+	"CodeFly/generator/reader"
+	"CodeFly/validity"
 
 	"github.com/urfave/cli"
 )
+
+// GenCmdInfo 命令信息对象
+var genCmdInfo = &validity.GenerateCommandInfo{}
+
+// Reader ThriftReader对象
+var commonReader = &reader.ThriftReader{}
 
 // Gen 代码生成命令
 var Gen = cli.Command{
@@ -18,36 +24,34 @@ var Gen = cli.Command{
 		cli.StringFlag{
 			Name:        "lang, l",
 			Usage:       "目标语言名称",
-			Destination: &global.GenCmdInfo.Lang,
+			Destination: &genCmdInfo.Lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
 			Usage:       "被生成thrift文件路径",
-			Destination: &global.GenCmdInfo.Input,
+			Destination: &genCmdInfo.Input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
 			Usage:       "生成文件的输出路径",
-			Destination: &global.GenCmdInfo.Output,
+			Destination: &genCmdInfo.Output,
 		},
 	},
 	Action: func(c *cli.Context) error {
 
-		info := global.GenCmdInfo
-
-		if err := info.CheckGenerateCommandInfoValidity(); err != nil {
+		if err := genCmdInfo.CheckGenerateCommandInfoValidity(); err != nil {
 			return err
 		}
 
-		if err := reader.Reader.ReadThrift(info); err != nil {
+		if err := commonReader.ReadThrift(genCmdInfo); err != nil {
 			return err
 		}
 
-		if err := reader.Reader.CheckNameSpace(info); err != nil {
+		if err := commonReader.CheckNameSpace(genCmdInfo); err != nil {
 			return err
 		}
 
-		if err := printer.Print(reader.Reader, info); err != nil {
+		if err := operator.Print(commonReader, genCmdInfo); err != nil {
 			return err
 		}
 

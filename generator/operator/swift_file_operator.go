@@ -1,4 +1,4 @@
-package printer
+package operator
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"path/filepath"
 	"sync"
 
-	"CodeFly/reader"
-	"CodeFly/templates"
-	"CodeFly/templates/swift"
+	"CodeFly/generator/reader/readerSwift"
+	"CodeFly/generator/templates"
+	"CodeFly/generator/templates/templateSwift"
 )
 
-func printSwiftCodeWith(str *reader.SwiftThriftReader) {
+// RenderSwift 渲染Swift
+func RenderSwift(str *readerSwift.SwiftThriftReader) {
 
 	op := str.ThriftReader.OutputPath
 	if err := os.MkdirAll(op, 0755); err != nil {
@@ -22,9 +23,9 @@ func printSwiftCodeWith(str *reader.SwiftThriftReader) {
 	structTplName := templates.SwiftStructTemplate
 	servicelName := templates.SwiftServiceTemplate
 
-	enumTpl := initTemplate(enumTplName, swift.SwiftEnumTemplate)
-	structTpl := initTemplate(structTplName, swift.SwiftStructTemplate)
-	serviceTpl := initTemplate(servicelName, swift.SwiftServiceTemplate)
+	enumTpl := InitTemplate(enumTplName, templateSwift.SwiftEnumTemplate)
+	structTpl := InitTemplate(structTplName, templateSwift.SwiftStructTemplate)
+	serviceTpl := InitTemplate(servicelName, templateSwift.SwiftServiceTemplate)
 
 	wg := sync.WaitGroup{}
 
@@ -35,7 +36,7 @@ func printSwiftCodeWith(str *reader.SwiftThriftReader) {
 		for _, e := range enums {
 			name := fmt.Sprintf("%s.swift", e.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, enumTpl, enumTplName, e); err != nil {
+			if err := OutputFile(path, enumTpl, enumTplName, e); err != nil {
 				panic(err.Error())
 			}
 		}
@@ -48,7 +49,7 @@ func printSwiftCodeWith(str *reader.SwiftThriftReader) {
 		for _, s := range structs {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, structTpl, structTplName, s); err != nil {
+			if err := OutputFile(path, structTpl, structTplName, s); err != nil {
 				panic(err.Error())
 			}
 		}
@@ -61,7 +62,7 @@ func printSwiftCodeWith(str *reader.SwiftThriftReader) {
 		for _, s := range services {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, serviceTpl, servicelName, s); err != nil {
+			if err := OutputFile(path, serviceTpl, servicelName, s); err != nil {
 				panic(err.Error())
 			}
 		}

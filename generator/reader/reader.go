@@ -3,7 +3,7 @@ package reader
 import (
 	"fmt"
 
-	"CodeFly/global"
+	"CodeFly/validity"
 
 	"github.com/samuel/go-thrift/parser"
 )
@@ -16,11 +16,8 @@ type ThriftReader struct {
 	OutputPath string
 }
 
-// Reader ThriftReader对象
-var Reader = &ThriftReader{}
-
 // ReadThrift 读取thrift文件
-func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
+func (r *ThriftReader) ReadThrift(info *validity.GenerateCommandInfo) error {
 
 	p := parser.Parser{}
 
@@ -39,7 +36,7 @@ func (r *ThriftReader) ReadThrift(info *global.GenerateCommandInfo) error {
 }
 
 // CheckNameSpace 检查Namespace
-func (r *ThriftReader) CheckNameSpace(info *global.GenerateCommandInfo) error {
+func (r *ThriftReader) CheckNameSpace(info *validity.GenerateCommandInfo) error {
 
 	ts := r.Thrifts
 	lang := info.Lang

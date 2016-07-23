@@ -1,4 +1,4 @@
-package reader
+package readerSwift
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"CodeFly/generator/reader"
 	"CodeFly/global"
 
 	"github.com/samuel/go-thrift/parser"
@@ -97,15 +98,12 @@ type SwiftThrift struct {
 
 // SwiftThriftReader Swift Thrift Reader
 type SwiftThriftReader struct {
-	ThriftReader   *ThriftReader
+	ThriftReader   *reader.ThriftReader
 	SwiftThriftMap *SwiftThrift
 }
 
-// SwiftReader Swift Thrift Reader对象
-var SwiftReader = &SwiftThriftReader{}
-
 // InitSwiftThrift Swift Thrift Reader初始化
-func (str *SwiftThriftReader) InitSwiftThrift(reader *ThriftReader) {
+func (str *SwiftThriftReader) InitSwiftThrift(reader *reader.ThriftReader) {
 
 	str.ThriftReader = reader
 	str.SwiftThriftMap = &SwiftThrift{}

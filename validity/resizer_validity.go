@@ -1,4 +1,4 @@
-package global
+package validity
 
 import (
 	"errors"
@@ -14,9 +14,6 @@ type ImageResizeInfo struct {
 	FileName      string
 	FileExtension string
 }
-
-// ImageResize 命令信息对象
-var ImageResize = &ImageResizeInfo{}
 
 // CheckImageResizeInfoInfoValidity 检查输入命令合法性
 func (iri *ImageResizeInfo) CheckImageResizeInfoInfoValidity() error {

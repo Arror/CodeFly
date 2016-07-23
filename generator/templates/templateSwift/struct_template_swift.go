@@ -1,4 +1,4 @@
-package swift
+package templateSwift
 
 // SwiftStructTemplate Swift Struct 模板
 const SwiftStructTemplate = `//

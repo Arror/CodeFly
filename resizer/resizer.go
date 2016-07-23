@@ -1,12 +1,11 @@
 package resizer
 
 import (
+	"CodeFly/validity"
 	"errors"
 	"fmt"
 	"image/png"
 	"os"
-
-	"CodeFly/global"
 
 	"github.com/nfnt/resize"
 )
@@ -69,11 +68,8 @@ func (is *IconSize) imageName(base string) string {
 // Resizer Resizer结构体
 type Resizer struct{}
 
-// IconResizer Resizer对象
-var IconResizer = &Resizer{}
-
 // ResizeIcon 转换输入的Icon
-func (rs *Resizer) ResizeIcon(info *global.ImageResizeInfo) error {
+func (rs *Resizer) ResizeIcon(info *validity.ImageResizeInfo) error {
 
 	file, err := os.Open(info.Input)
 

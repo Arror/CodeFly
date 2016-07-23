@@ -1,29 +1,32 @@
-package printer
+package operator
 
 import (
 	"fmt"
 	"os"
 	"text/template"
 
+	"CodeFly/generator/reader"
+	"CodeFly/generator/reader/readerSwift"
 	"CodeFly/global"
-	"CodeFly/reader"
+	"CodeFly/validity"
 )
 
 // Print 输出文件
-func Print(r *reader.ThriftReader, gci *global.GenerateCommandInfo) error {
+func Print(r *reader.ThriftReader, gci *validity.GenerateCommandInfo) error {
 
 	switch gci.Lang {
 	case global.Swift:
-		str := reader.SwiftReader
+		str := &readerSwift.SwiftThriftReader{}
 		str.InitSwiftThrift(r)
-		printSwiftCodeWith(str)
+		RenderSwift(str)
 		return nil
 	default:
 		return fmt.Errorf("不支持的语言")
 	}
 }
 
-func initTemplate(name string, tmpl string) *template.Template {
+// InitTemplate 模板初始化
+func InitTemplate(name string, tmpl string) *template.Template {
 
 	template, err := template.New(name).Parse(tmpl)
 	if err != nil {
@@ -32,7 +35,8 @@ func initTemplate(name string, tmpl string) *template.Template {
 	return template
 }
 
-func outputFile(fp string, t *template.Template, tplname string, data interface{}) error {
+// OutputFile 文件输出
+func OutputFile(fp string, t *template.Template, tplname string, data interface{}) error {
 
 	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {

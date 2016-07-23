@@ -1,13 +1,10 @@
-package global
+package validity
 
 import (
 	"errors"
 	"path/filepath"
-)
 
-const (
-	// Swfit Swift语言
-	Swfit = "swift"
+	"CodeFly/global"
 )
 
 // GenerateCommandInfo 命令信息结构
@@ -17,9 +14,6 @@ type GenerateCommandInfo struct {
 	Output string
 }
 
-// GenCmdInfo 命令信息对象
-var GenCmdInfo = &GenerateCommandInfo{}
-
 // CheckGenerateCommandInfoValidity 检查输入命令合法性
 func (gci *GenerateCommandInfo) CheckGenerateCommandInfoValidity() error {
 
@@ -27,7 +21,7 @@ func (gci *GenerateCommandInfo) CheckGenerateCommandInfoValidity() error {
 		return errors.New("语言名称为空")
 	}
 	switch gci.Lang {
-	case Swfit:
+	case global.Swift:
 		break
 	default:
 		return errors.New("未被支持的语言")
