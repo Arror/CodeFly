@@ -1,5 +1,11 @@
 package info
 
+// Name 命令名字
+const Name = "CodeFly"
+
+// Usage 说明
+const Usage = "iOS开发者工具集"
+
 // Version 软件版本
 const Version = "0.0.1"
 
