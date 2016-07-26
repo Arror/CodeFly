@@ -52,6 +52,7 @@ type SwiftThrift struct {
 type SwiftThriftComponents struct {
 	Thrifts     map[string]*p.Thrift
 	Thrift      *p.Thrift
+	InputPath   string
 	OutputPath  string
 	SwiftThrift *SwiftThrift
 }

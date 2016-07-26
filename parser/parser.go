@@ -19,11 +19,12 @@ var typeMapping = map[string]string{
 }
 
 // Parser 解析生成SwiftThriftComponents
-func Parser(ts map[string]*p.Thrift, op string) *SwiftThriftComponents {
+func Parser(ts map[string]*p.Thrift, ip string, op string) *SwiftThriftComponents {
 
 	stc := &SwiftThriftComponents{
 		Thrifts:     ts,
-		Thrift:      ts[op],
+		Thrift:      ts[ip],
+		InputPath:   ip,
 		OutputPath:  op,
 		SwiftThrift: &SwiftThrift{},
 	}
