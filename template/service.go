@@ -1,7 +1,7 @@
-package templateSwift
+package template
 
-// SwiftServiceTemplate Swift Service 模板
-const SwiftServiceTemplate = `//
+// ServiceTemplate Swift Service 模板
+const ServiceTemplate = `//
 // {{ .Name }}.swift
 //
 // 此文件由 codefly 生成，请不要手动修改

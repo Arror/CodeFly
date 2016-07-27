@@ -1,7 +1,7 @@
-package templateSwift
+package template
 
-// SwiftStructTemplate Swift Struct 模板
-const SwiftStructTemplate = `//
+// StructTemplate Swift Struct 模板
+const StructTemplate = `//
 // {{ .Name }}.swift
 //
 // 此文件由 codefly 生成，请不要手动修改
