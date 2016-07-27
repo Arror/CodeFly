@@ -1,97 +1,111 @@
 package generator
 
-// import "fmt"
+import (
+	"fmt"
 
-// // AssembleName 名称组装
-// func AssembleName(namespace string, name string) string {
-// 	return fmt.Sprintf("%s%s", namespace, name[1:])
-// }
+	"CodeFly/parser"
+)
 
-// // AssembleServiceName Service名称组装
-// func AssembleServiceName(namespace string, name string) string {
-// 	return fmt.Sprintf("%sService", name)
-// }
+// EmbenStruct SwiftStruct内嵌结构
+type EmbenStruct struct {
+	*parser.SwiftStruct
+}
 
-// // DefaultValue Swift 字段默认值
-// func (str *SwiftStruct) DefaultValue(f *SwiftField) string {
+// EmbenService SwiftService内嵌结构
+type EmbenService struct {
+	*parser.SwiftService
+}
 
-// 	switch f.Type.Type {
-// 	case ListType:
-// 		return fmt.Sprintf(": [%s] = []", f.Type.InnerType)
-// 	case EnumType:
-// 		return fmt.Sprintf(": %s?", f.Type.Name)
-// 	case PlainType:
-// 		switch f.Type.Name {
-// 		case STInt16, STInt, STInt64:
-// 			return fmt.Sprintf(": %s = 0", f.Type.Name)
-// 		case STDouble:
-// 			return fmt.Sprintf(": %s = 0.0", f.Type.Name)
-// 		case STBool:
-// 			return fmt.Sprintf(": %s = false", f.Type.Name)
-// 		case STString:
-// 			return fmt.Sprintf(": %s?", f.Type.Name)
-// 		default:
-// 			return fmt.Sprintf(": %s?", f.Type.Name)
-// 		}
-// 	case CustomerType:
-// 		return fmt.Sprintf(": %s?", f.Type.Name)
-// 	default:
-// 		return fmt.Sprintf(": %s?", f.Type.Name)
-// 	}
-// }
+// AssembleName 名称组装
+func AssembleName(namespace string, name string) string {
+	return fmt.Sprintf("%s%s", namespace, name[1:])
+}
 
-// // FromDict 从JSON中初始化
-// func (str *SwiftStruct) FromDict(f *SwiftField) string {
-// 	switch f.Type.Type {
-// 	case ListType:
-// 		return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-// 	case EnumType:
-// 		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
-// 	case PlainType:
-// 		switch f.Type.Name {
-// 		case STInt16, STInt, STInt64:
-// 			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
-// 		case STDouble:
-// 			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
-// 		case STBool:
-// 			return fmt.Sprintf("dict[\"%s\"] as? %s ?? false", f.Name, f.Type.Name)
-// 		case STString:
-// 			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
-// 		default:
-// 			return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-// 		}
-// 	case CustomerType:
-// 		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
-// 	default:
-// 		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
-// 	}
-// }
+// AssembleServiceName Service名称组装
+func AssembleServiceName(namespace string, name string) string {
+	return fmt.Sprintf("%sService", name)
+}
 
-// // ToDict 创建JSON
-// func (str *SwiftStruct) ToDict(f *SwiftField) string {
+// DefaultValue Swift 字段默认值
+func (es *EmbenStruct) DefaultValue(f *parser.SwiftField) string {
 
-// 	switch f.Type.Type {
-// 	case ListType, CustomerType:
-// 		return fmt.Sprintf("self.%s.toJSON()", f.Name)
-// 	case EnumType:
-// 		return fmt.Sprintf("self.%s.rawValue ?? 0", f.Name)
-// 	case PlainType:
-// 		switch f.Type.Name {
-// 		case STInt16, STInt, STInt64:
-// 			return fmt.Sprintf("self.%s ?? 0", f.Name)
-// 		case STDouble:
-// 			return fmt.Sprintf("self.%s ?? 0.0", f.Name)
-// 		case STBool:
-// 			return fmt.Sprintf("self.%s ?? false", f.Name)
-// 		case STString:
-// 			return fmt.Sprintf("self.%s ?? \"\"", f.Name)
-// 		default:
-// 			return fmt.Sprintf("self.%s.toJSON()", f.Name)
-// 		}
-// 	default:
-// 		return fmt.Sprintf("self.%s.toJSON()", f.Name)
-// 	}
-// }
+	switch f.Type.Type {
+	case parser.ListType:
+		return fmt.Sprintf(": [%s] = []", f.Type.InnerType)
+	case parser.EnumType:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	case parser.PlainType:
+		switch f.Type.Name {
+		case parser.STInt16, parser.STInt, parser.STInt64:
+			return fmt.Sprintf(": %s = 0", f.Type.Name)
+		case parser.STDouble:
+			return fmt.Sprintf(": %s = 0.0", f.Type.Name)
+		case parser.STBool:
+			return fmt.Sprintf(": %s = false", f.Type.Name)
+		case parser.STString:
+			return fmt.Sprintf(": %s?", f.Type.Name)
+		default:
+			return fmt.Sprintf(": %s?", f.Type.Name)
+		}
+	case parser.CustomerType:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	default:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	}
+}
+
+// FromDict 从JSON中初始化
+func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
+	switch f.Type.Type {
+	case parser.ListType:
+		return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+	case parser.EnumType:
+		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
+	case parser.PlainType:
+		switch f.Type.Name {
+		case parser.STInt16, parser.STInt, parser.STInt64:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
+		case parser.STDouble:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
+		case parser.STBool:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? false", f.Name, f.Type.Name)
+		case parser.STString:
+			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
+		default:
+			return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+		}
+	case parser.CustomerType:
+		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+	default:
+		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+	}
+}
+
+// ToDict 创建JSON
+func (es *EmbenStruct) ToDict(f *parser.SwiftField) string {
+
+	switch f.Type.Type {
+	case parser.ListType, parser.CustomerType:
+		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+	case parser.EnumType:
+		return fmt.Sprintf("self.%s.rawValue ?? 0", f.Name)
+	case parser.PlainType:
+		switch f.Type.Name {
+		case parser.STInt16, parser.STInt, parser.STInt64:
+			return fmt.Sprintf("self.%s ?? 0", f.Name)
+		case parser.STDouble:
+			return fmt.Sprintf("self.%s ?? 0.0", f.Name)
+		case parser.STBool:
+			return fmt.Sprintf("self.%s ?? false", f.Name)
+		case parser.STString:
+			return fmt.Sprintf("self.%s ?? \"\"", f.Name)
+		default:
+			return fmt.Sprintf("self.%s.toJSON()", f.Name)
+		}
+	default:
+		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+	}
+}
 
 // // ReturnType 获取方法的返回值
 // func (m *SwiftMethod) ReturnType() string {

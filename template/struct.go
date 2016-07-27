@@ -15,7 +15,7 @@ public final class {{ .Name }}: Object {
     
     public override var allKeys: Set<String> {
         return [{{ range $i, $f := .Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $f.Name }}"{{ end }}]
-    }
+    } 
 
     public override func fromJSON(json: AnyObject?) -> Bool {
 
@@ -23,7 +23,7 @@ public final class {{ .Name }}: Object {
         guard let dict = json as? [String: AnyObject] else { return false }
         {{ range $i, $f := .Fields }}
         self.{{ $f.Name }} = {{ $ss.FromDict $f }}{{ end }}
-        
+
         return true
     }
 
@@ -32,7 +32,7 @@ public final class {{ .Name }}: Object {
         var dict = [String: AnyObject]()
         {{ range $i, $f := .Fields }}
         dict["{{ $f.Name }}"] = {{ $ss.ToDict $f }}{{ end }}
-        
+
         return dict
     }
 }`
