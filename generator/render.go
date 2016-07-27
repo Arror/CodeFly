@@ -32,11 +32,9 @@ func (es *EmbenStruct) DefaultValue(f *parser.SwiftField) string {
 	switch f.Type.Type {
 	case parser.ListType:
 		return fmt.Sprintf(": [%s] = []", f.Type.InnerType)
-	case parser.EnumType:
-		return fmt.Sprintf(": %s?", f.Type.Name)
 	case parser.PlainType:
 		switch f.Type.Name {
-		case parser.STInt16, parser.STInt, parser.STInt64:
+		case parser.STInt, parser.STInt64:
 			return fmt.Sprintf(": %s = 0", f.Type.Name)
 		case parser.STDouble:
 			return fmt.Sprintf(": %s = 0.0", f.Type.Name)
@@ -47,7 +45,7 @@ func (es *EmbenStruct) DefaultValue(f *parser.SwiftField) string {
 		default:
 			return fmt.Sprintf(": %s?", f.Type.Name)
 		}
-	case parser.CustomerType:
+	case parser.CustomerType, parser.EnumType:
 		return fmt.Sprintf(": %s?", f.Type.Name)
 	default:
 		return fmt.Sprintf(": %s?", f.Type.Name)
@@ -58,12 +56,19 @@ func (es *EmbenStruct) DefaultValue(f *parser.SwiftField) string {
 func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
 	switch f.Type.Type {
 	case parser.ListType:
-		return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+		switch f.Type.InnerType {
+		case parser.EnumType:
+			return fmt.Sprintf("[Int](json: dict[\"%s\"])?.flatMap { %s(code: $0) } ?? []", f.Name, f.Type.InnerType)
+		default:
+			return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+		}
 	case parser.EnumType:
 		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
 	case parser.PlainType:
 		switch f.Type.Name {
-		case parser.STInt16, parser.STInt, parser.STInt64:
+		case parser.STInt:
+			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
+		case parser.STInt64:
 			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
 		case parser.STDouble:
 			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
@@ -72,7 +77,7 @@ func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
 		case parser.STString:
 			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
 		default:
-			return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
 		}
 	case parser.CustomerType:
 		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
@@ -88,22 +93,16 @@ func (es *EmbenStruct) ToDict(f *parser.SwiftField) string {
 	case parser.ListType, parser.CustomerType:
 		return fmt.Sprintf("self.%s.toJSON()", f.Name)
 	case parser.EnumType:
-		return fmt.Sprintf("self.%s.rawValue ?? 0", f.Name)
+		return fmt.Sprintf("self.%s.rawValue", f.Name)
 	case parser.PlainType:
 		switch f.Type.Name {
-		case parser.STInt16, parser.STInt, parser.STInt64:
-			return fmt.Sprintf("self.%s ?? 0", f.Name)
-		case parser.STDouble:
-			return fmt.Sprintf("self.%s ?? 0.0", f.Name)
-		case parser.STBool:
-			return fmt.Sprintf("self.%s ?? false", f.Name)
-		case parser.STString:
-			return fmt.Sprintf("self.%s ?? \"\"", f.Name)
+		case parser.STInt64:
+			return fmt.Sprintf("NSNumber(longLong: self.%s)", f.Name)
 		default:
-			return fmt.Sprintf("self.%s.toJSON()", f.Name)
+			return fmt.Sprintf("self.%s", f.Name)
 		}
 	default:
-		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+		return fmt.Sprintf("self.%s", f.Name)
 	}
 }
 

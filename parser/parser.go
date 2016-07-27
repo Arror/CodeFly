@@ -10,6 +10,7 @@ import (
 )
 
 var typeMapping = map[string]string{
+	TTI16:    STInt,
 	TTI32:    STInt,
 	TTI64:    STInt64,
 	TTDouble: STDouble,
@@ -154,7 +155,7 @@ func getSwiftType(stc *SwiftThriftComponents, t *p.Type) *SwiftType {
 func isPlainType(str *SwiftThriftComponents, t *p.Type) (bool, string) {
 	n := t.Name
 	switch n {
-	case TTI32:
+	case TTI16, TTI32:
 		return true, typeMapping[TTI32]
 	case TTI64:
 		return true, typeMapping[TTI64]
