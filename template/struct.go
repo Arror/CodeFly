@@ -4,12 +4,12 @@ package template
 const StructTemplate = `//
 // {{ .Name }}.swift
 //
-// 此文件由 codefly 生成，请不要手动修改
+// 此文件由 CodeFly 生成，请不要手动修改
 //
 
 import Foundation
 {{ $ss := . }}
-public final class {{ .Name }}: Object {
+public final class {{ .Name }}: JSONItem {
     {{ range $i, $f := .Fields }}
     pubilc var {{ $f.Name }}{{ $ss.DefaultValue $f }}{{ end }}
     

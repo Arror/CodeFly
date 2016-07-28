@@ -56,33 +56,9 @@ func (es *EmbenStruct) DefaultValue(f *parser.SwiftField) string {
 func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
 	switch f.Type.Type {
 	case parser.ListType:
-		switch f.Type.InnerType {
-		case parser.EnumType:
-			return fmt.Sprintf("[Int](json: dict[\"%s\"])?.flatMap { %s(code: $0) } ?? []", f.Name, f.Type.InnerType)
-		default:
-			return fmt.Sprintf("[%s].fromJSON(json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-		}
-	case parser.EnumType:
-		return fmt.Sprintf("%s(code: dict[\"%s\"] as? Int)", f.Type.Name, f.Name)
-	case parser.PlainType:
-		switch f.Type.Name {
-		case parser.STInt:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
-		case parser.STInt64:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0", f.Name, f.Type.Name)
-		case parser.STDouble:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? 0.0", f.Name, f.Type.Name)
-		case parser.STBool:
-			return fmt.Sprintf("dict[\"%s\"] as? %s ?? false", f.Name, f.Type.Name)
-		case parser.STString:
-			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
-		default:
-			return fmt.Sprintf("dict[\"%s\"] as? %s", f.Name, f.Type.Name)
-		}
-	case parser.CustomerType:
-		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+		return fmt.Sprintf("[%s](json: dict[\"%s\"]) ?? []", f.Type.InnerType, f.Name)
 	default:
-		return fmt.Sprintf("%s.fromJSON(json: dict[\"%s\"])", f.Type.Name, f.Name)
+		return fmt.Sprintf("%s(json: dict[\"%s\"])", f.Type.Name, f.Name)
 	}
 }
 
@@ -90,19 +66,17 @@ func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
 func (es *EmbenStruct) ToDict(f *parser.SwiftField) string {
 
 	switch f.Type.Type {
-	case parser.ListType, parser.CustomerType:
-		return fmt.Sprintf("self.%s.toJSON()", f.Name)
-	case parser.EnumType:
-		return fmt.Sprintf("self.%s.rawValue", f.Name)
+	case parser.CustomerType, parser.EnumType:
+		return fmt.Sprintf("self.%s?.toJSON()", f.Name)
 	case parser.PlainType:
 		switch f.Type.Name {
-		case parser.STInt64:
-			return fmt.Sprintf("NSNumber(longLong: self.%s)", f.Name)
+		case parser.STString:
+			return fmt.Sprintf("self.%s?.toJSON()", f.Name)
 		default:
-			return fmt.Sprintf("self.%s", f.Name)
+			return fmt.Sprintf("self.%s.toJSON()", f.Name)
 		}
 	default:
-		return fmt.Sprintf("self.%s", f.Name)
+		return fmt.Sprintf("self.%s.toJSON()", f.Name)
 	}
 }
 
