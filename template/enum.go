@@ -9,14 +9,7 @@ const EnumTemplate = `//
 
 import Foundation
 
-public enum {{ .Name }}: Int {
+public enum {{ .Name }}: Int, EnumJSONType {
     {{ range $i, $f := .Cases }}
     case {{ $f.Name }} = {{ $f.Value }} {{ end }}
-    
-    public init?(code: Int?) {
-        
-        guard let code = code else { return nil }
-        
-        self.init(rawValue: code)
-    }
 }`
