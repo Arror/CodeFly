@@ -85,6 +85,7 @@ func parser(stc *SwiftThriftComponents) {
 		for mn, m := range s.Methods {
 			sm := &SwiftMethod{}
 			sm.Name = mn
+			sm.URL = fmt.Sprintf("%s/%s", sn, mn)
 			if m.ReturnType == nil {
 				sm.ValueType = &SwiftType{
 					Type:      Void,
