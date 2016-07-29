@@ -9,11 +9,11 @@ const StructTemplate = `//
 
 import Foundation
 {{ $ss := . }}
-public final class {{ .Name }}: JSONItem {
+public class {{ .Name }}: JSONItem {
     {{ range $i, $f := .Fields }}
-    pubilc var {{ $f.Name }}{{ $ss.DefaultValue $f }}{{ end }}
+    var {{ $f.Name }}{{ $ss.DefaultValue $f }}{{ end }}
     
-    public override var allKeys: Set<String> {
+    public var allKeys: Set<String> {
         return [{{ range $i, $f := .Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $f.Name }}"{{ end }}]
     } 
 
