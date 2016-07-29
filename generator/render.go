@@ -62,43 +62,59 @@ func (es *EmbenStruct) FromDict(f *parser.SwiftField) string {
 	}
 }
 
-// ToDict 创建JSON
-func (es *EmbenStruct) ToDict(f *parser.SwiftField) string {
+func toDict(f *parser.SwiftField, isNeedSelf bool) string {
+
+	prefix := "self."
+	optional := "?"
+	if isNeedSelf == false {
+		prefix = ""
+		optional = ""
+	}
 
 	switch f.Type.Type {
 	case parser.CustomerType, parser.EnumType:
-		return fmt.Sprintf("self.%s?.toJSON()", f.Name)
+		return fmt.Sprintf("%s%s%s.toJSON()", prefix, f.Name, optional)
 	case parser.PlainType:
 		switch f.Type.Name {
 		case parser.STString:
-			return fmt.Sprintf("self.%s?.toJSON()", f.Name)
+			return fmt.Sprintf("%s%s%s.toJSON()", prefix, f.Name, optional)
 		default:
-			return fmt.Sprintf("self.%s.toJSON()", f.Name)
+			return fmt.Sprintf("%s%s.toJSON()", prefix, f.Name)
 		}
 	default:
-		return fmt.Sprintf("self.%s.toJSON()", f.Name)
+		return fmt.Sprintf("%s%s.toJSON()", prefix, f.Name)
 	}
 }
 
-// // ReturnType 获取方法的返回值
-// func (m *SwiftMethod) ReturnType() string {
+// ToDict 创建JSON
+func (es *EmbenStruct) ToDict(f *parser.SwiftField) string {
+	return toDict(f, true)
+}
 
-// 	switch m.ValueType.Type {
-// 	case ListType:
-// 		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
-// 	case Void:
-// 		return ""
-// 	default:
-// 		return m.ValueType.Name
-// 	}
-// }
+// ToDict 获取方法的返回值
+func (es *EmbenService) ToDict(f *parser.SwiftField) string {
+	return toDict(f, false)
+}
 
-// // GetParam 拼接参数
-// func (f *SwiftField) GetParam() string {
+// ReturnType 获取方法的返回值
+func (es *EmbenService) ReturnType(m *parser.SwiftMethod) string {
 
-// 	if f.Type.Type == ListType {
-// 		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
-// 	}
+	switch m.ValueType.Type {
+	case parser.ListType:
+		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
+	case parser.Void:
+		return ""
+	default:
+		return m.ValueType.Name
+	}
+}
 
-// 	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
-// }
+// GetParam 拼接参数
+func (es *EmbenService) GetParam(f *parser.SwiftField) string {
+
+	if f.Type.Type == parser.ListType {
+		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
+	}
+
+	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
+}
