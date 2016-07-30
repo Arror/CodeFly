@@ -16,6 +16,13 @@ type SwiftField struct {
 	Value string
 }
 
+// SwiftEnumCase Swift Enum Case类型定义
+type SwiftEnumCase struct {
+	Type  *SwiftType
+	Name  string
+	Value int
+}
+
 // SwiftStruct Swift Struct类型定义
 type SwiftStruct struct {
 	Name   string
@@ -25,7 +32,7 @@ type SwiftStruct struct {
 // SwiftEnum Swift Enum类型定义
 type SwiftEnum struct {
 	Name  string
-	Cases []*SwiftField
+	Cases []*SwiftEnumCase
 }
 
 // SwiftService Swift Service类型定义

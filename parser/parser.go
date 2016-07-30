@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	p "github.com/samuel/go-thrift/parser"
@@ -59,18 +58,18 @@ func parser(stc *SwiftThriftComponents) {
 	for en, e := range t.Enums {
 		se := &SwiftEnum{}
 		se.Name = assembleNamespace(t.Namespaces[Swift], en)
-		se.Cases = make([]*SwiftField, 0, 10)
+		se.Cases = make([]*SwiftEnumCase, 0, 10)
 
 		for _, v := range e.Values {
-			sf := &SwiftField{}
-			sf.Name = v.Name
-			sf.Value = strconv.Itoa(v.Value)
-			sf.Type = &SwiftType{
+			sec := &SwiftEnumCase{}
+			sec.Name = v.Name
+			sec.Value = v.Value
+			sec.Type = &SwiftType{
 				Type:      EnumType,
 				Name:      se.Name,
 				InnerType: "",
 			}
-			se.Cases = append(se.Cases, sf)
+			se.Cases = append(se.Cases, sec)
 		}
 		enums[se.Name] = se
 	}
