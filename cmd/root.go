@@ -28,5 +28,4 @@ func init() {
 	Root.Commands = []cli.Command{
 		Gen,
 	}
-	Root.Run(os.Args)
 }
