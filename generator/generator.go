@@ -46,10 +46,7 @@ func generatSwiftCode(stc *parser.SwiftThriftComponents) {
 		for _, s := range structs {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			es := &EmbenStruct{
-				s,
-			}
-			if err := outputFile(path, structTmpl, structTmplName, es); err != nil {
+			if err := outputFile(path, structTmpl, structTmplName, s); err != nil {
 				panic(err.Error())
 			}
 		}
@@ -62,10 +59,7 @@ func generatSwiftCode(stc *parser.SwiftThriftComponents) {
 		for _, s := range services {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			es := &EmbenService{
-				s,
-			}
-			if err := outputFile(path, serviceTmpl, serviceTmplName, es); err != nil {
+			if err := outputFile(path, serviceTmpl, serviceTmplName, s); err != nil {
 				panic(err.Error())
 			}
 		}

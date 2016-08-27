@@ -248,3 +248,71 @@ func isListType(stc *SwiftThriftComponents, t *p.Type) (bool, string, string) {
 	}
 	return false, "", ""
 }
+
+// AssembleName 名称组装
+func AssembleName(namespace string, name string) string {
+	return fmt.Sprintf("%s%s", namespace, name[1:])
+}
+
+// AssembleServiceName Service名称组装
+func AssembleServiceName(namespace string, name string) string {
+	return fmt.Sprintf("%sService", name)
+}
+
+// DefaultValue Swift 字段默认值
+func (s *SwiftStruct) DefaultValue(f *SwiftField) string {
+
+	switch f.Type.Type {
+	case ListType:
+		return fmt.Sprintf(": [%s]?", f.Type.InnerType)
+	default:
+		return fmt.Sprintf(": %s?", f.Type.Name)
+	}
+}
+
+// FromDict 从JSON中初始化
+func (s *SwiftStruct) FromDict(f *SwiftField) string {
+	switch f.Type.Type {
+	case ListType:
+		return fmt.Sprintf("[%s](json: dict[\"%s\"])", f.Type.InnerType, f.Name)
+	default:
+		return fmt.Sprintf("%s(json: dict[\"%s\"])", f.Type.Name, f.Name)
+	}
+}
+
+func toDict(f *SwiftField) string {
+	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
+}
+
+// ToDict 创建JSON
+func (s *SwiftStruct) ToDict(f *SwiftField) string {
+	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
+}
+
+// ToDict 获取方法的返回值
+func (s *SwiftService) ToDict(f *SwiftField) string {
+	return fmt.Sprintf("%s?.toJSON()", f.Name)
+}
+
+// ReturnType 获取方法的返回值
+func (s *SwiftService) ReturnType(m *SwiftMethod) string {
+
+	switch m.ValueType.Type {
+	case ListType:
+		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
+	case Void:
+		return ""
+	default:
+		return m.ValueType.Name
+	}
+}
+
+// GetParam 拼接参数
+func (s *SwiftService) GetParam(f *SwiftField) string {
+
+	if f.Type.Type == ListType {
+		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
+	}
+
+	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
+}
