@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"CmdFly/info"
+	"CodeFly/info"
 
 	"github.com/urfave/cli"
 )
