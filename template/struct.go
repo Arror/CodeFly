@@ -17,22 +17,19 @@ public class {{ .Name }}: JSONItem {
         return [{{ range $i, $f := .Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $f.Name }}"{{ end }}]
     } 
 
-    public override func fromJSON(json: AnyObject?) -> Bool {
+    public required init?(json: AnyObject?) {
 
-        guard super.fromJSON(json) else { return false }
-        guard let dict = json as? [String: AnyObject] else { return false }
+        guard let json = json as? [String: AnyObject] else { return nil }
         {{ range $i, $f := .Fields }}
         self.{{ $f.Name }} = {{ $ss.FromDict $f }}{{ end }}
-
-        return true
     }
 
-    public override func toJSON() -> AnyObject {
+    public func toJSON() -> AnyObject? {
 
-        var dict = [String: AnyObject]()
+        var json = [String: AnyObject]()
         {{ range $i, $f := .Fields }}
-        dict["{{ $f.Name }}"] = {{ $ss.ToDict $f }}{{ end }}
+        json["{{ $f.Name }}"] = {{ $ss.ToDict $f }}{{ end }}
 
-        return dict
+        return json
     }
 }`
