@@ -299,11 +299,11 @@ func (s *SwiftService) ReturnType(m *SwiftMethod) string {
 
 	switch m.ValueType.Type {
 	case ListType:
-		return fmt.Sprintf("[%s]", m.ValueType.InnerType)
+		return fmt.Sprintf("[%s]?", m.ValueType.InnerType)
 	case Void:
 		return ""
 	default:
-		return m.ValueType.Name
+		return m.ValueType.Name + "?"
 	}
 }
 
@@ -311,8 +311,8 @@ func (s *SwiftService) ReturnType(m *SwiftMethod) string {
 func (s *SwiftService) GetParam(f *SwiftField) string {
 
 	if f.Type.Type == ListType {
-		return fmt.Sprintf("%s: [%s]", f.Name, f.Type.InnerType)
+		return fmt.Sprintf("%s: [%s]?", f.Name, f.Type.InnerType)
 	}
 
-	return fmt.Sprintf("%s: %s", f.Name, f.Type.Name)
+	return fmt.Sprintf("%s: %s?", f.Name, f.Type.Name)
 }
