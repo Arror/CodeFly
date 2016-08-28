@@ -58,9 +58,9 @@ type SwiftThrift struct {
 
 // SwiftThriftComponents 完整的Thrift信息
 type SwiftThriftComponents struct {
-	Thrifts     map[string]*p.Thrift
-	Thrift      *p.Thrift
 	InputPath   string
 	OutputPath  string
+	Thrift      *p.Thrift
+	Thrifts     map[string]*p.Thrift
 	SwiftThrift *SwiftThrift
 }
