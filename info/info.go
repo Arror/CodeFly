@@ -7,7 +7,7 @@ const Name = "CodeFly"
 const Usage = "iOS开发者工具集"
 
 // Version 软件版本
-const Version = "0.0.1"
+const Version = "0.0.2"
 
 // Author 作者
 const Author = "Arror"
