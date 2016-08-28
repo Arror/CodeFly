@@ -78,7 +78,7 @@ func parser(stc *SwiftThriftComponents) {
 	services := make(map[string]*SwiftService)
 	for sn, s := range t.Services {
 		ss := &SwiftService{}
-		ss.Name = assembleServiceName(t.Namespaces[Swift], sn)
+		ss.Name = assembleServiceName(sn)
 		ss.Methods = make([]*SwiftMethod, 0)
 
 		for mn, m := range s.Methods {
@@ -113,7 +113,7 @@ func assembleNamespace(namespace string, name string) string {
 	return fmt.Sprintf("%s%s", namespace, name[1:])
 }
 
-func assembleServiceName(namespace string, name string) string {
+func assembleServiceName(name string) string {
 	return fmt.Sprintf("%sService", name)
 }
 
@@ -247,16 +247,6 @@ func isListType(stc *SwiftThriftComponents, t *p.Type) (bool, string, string) {
 		}
 	}
 	return false, "", ""
-}
-
-// AssembleName 名称组装
-func AssembleName(namespace string, name string) string {
-	return fmt.Sprintf("%s%s", namespace, name[1:])
-}
-
-// AssembleServiceName Service名称组装
-func AssembleServiceName(namespace string, name string) string {
-	return fmt.Sprintf("%sService", name)
 }
 
 // DefaultValue Swift 字段默认值
