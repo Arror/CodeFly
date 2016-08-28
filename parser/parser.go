@@ -47,7 +47,7 @@ func parser(stc *SwiftThriftComponents) {
 		for _, f := range s.Fields {
 			sf := &SwiftField{}
 			sf.Name = f.Name
-			sf.Type = getSwiftType(stc, f.Type)
+			sf.Type = stc.getSwiftType(f.Type)
 			ss.Fields = append(ss.Fields, sf)
 		}
 		structs[ss.Name] = ss
@@ -92,14 +92,14 @@ func parser(stc *SwiftThriftComponents) {
 					InnerType: "",
 				}
 			} else {
-				sm.ValueType = getSwiftType(stc, m.ReturnType)
+				sm.ValueType = stc.getSwiftType(m.ReturnType)
 			}
 			sm.Fields = make([]*SwiftField, 0, 10)
 
 			for _, f := range m.Arguments {
 				sf := &SwiftField{}
 				sf.Name = f.Name
-				sf.Type = getSwiftType(stc, f.Type)
+				sf.Type = stc.getSwiftType(f.Type)
 				sm.Fields = append(sm.Fields, sf)
 			}
 			ss.Methods = append(ss.Methods, sm)
@@ -117,32 +117,32 @@ func assembleServiceName(name string) string {
 	return fmt.Sprintf("%sService", name)
 }
 
-func getSwiftType(stc *SwiftThriftComponents, t *p.Type) *SwiftType {
+func (stc *SwiftThriftComponents) getSwiftType(t *p.Type) *SwiftType {
 
 	st := &SwiftType{}
 
-	if b, tn := isPlainType(stc, t); b {
+	if tn, b := stc.isPlainType(t); b {
 		st.Name = tn
 		st.Type = PlainType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn := isEnumType(stc, t); b {
+	if tn, b := stc.isEnumType(t); b {
 		st.Name = tn
 		st.Type = EnumType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn := isCustomerType(stc, t); b {
+	if tn, b := stc.isCustomerType(t); b {
 		st.Name = tn
 		st.Type = CustomerType
 		st.InnerType = ""
 		return st
 	}
 
-	if b, tn, innerType := isListType(stc, t); b {
+	if tn, innerType, b := stc.isListType(t); b {
 		st.Name = tn
 		st.Type = ListType
 		st.InnerType = innerType
@@ -152,25 +152,25 @@ func getSwiftType(stc *SwiftThriftComponents, t *p.Type) *SwiftType {
 	return st
 }
 
-func isPlainType(str *SwiftThriftComponents, t *p.Type) (bool, string) {
+func (stc *SwiftThriftComponents) isPlainType(t *p.Type) (string, bool) {
 	n := t.Name
 	switch n {
 	case TTI16, TTI32:
-		return true, typeMapping[TTI32]
+		return typeMapping[TTI32], true
 	case TTI64:
-		return true, typeMapping[TTI64]
+		return typeMapping[TTI64], true
 	case TTDouble:
-		return true, typeMapping[TTDouble]
+		return typeMapping[TTDouble], true
 	case TTBool:
-		return true, typeMapping[TTBool]
+		return typeMapping[TTBool], true
 	case TTString:
-		return true, typeMapping[TTString]
+		return typeMapping[TTString], true
 	default:
-		return false, ""
+		return "", false
 	}
 }
 
-func isEnumType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
+func (stc *SwiftThriftComponents) isEnumType(t *p.Type) (string, bool) {
 
 	thrift := stc.Thrift
 	thrifts := stc.Thrifts
@@ -181,7 +181,7 @@ func isEnumType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
 	if len(components) == 1 {
 		for _, s := range thrift.Enums {
 			if s.Name == components[0] {
-				return true, assembleNamespace(thrift.Namespaces[Swift], s.Name)
+				return assembleNamespace(thrift.Namespaces[Swift], s.Name), true
 			}
 		}
 	}
@@ -192,16 +192,16 @@ func isEnumType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
 			if components[0] == f {
 				for _, s := range t.Enums {
 					if s.Name == components[1] {
-						return true, assembleNamespace(t.Namespaces[Swift], components[1])
+						return assembleNamespace(t.Namespaces[Swift], components[1]), true
 					}
 				}
 			}
 		}
 	}
-	return false, ""
+	return "", false
 }
 
-func isCustomerType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
+func (stc *SwiftThriftComponents) isCustomerType(t *p.Type) (string, bool) {
 
 	thrift := stc.Thrift
 	thrifts := stc.Thrifts
@@ -212,7 +212,7 @@ func isCustomerType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
 	if len(components) == 1 {
 		for _, s := range thrift.Structs {
 			if s.Name == components[0] {
-				return true, assembleNamespace(thrift.Namespaces[Swift], s.Name)
+				return assembleNamespace(thrift.Namespaces[Swift], s.Name), true
 			}
 		}
 	}
@@ -223,30 +223,30 @@ func isCustomerType(stc *SwiftThriftComponents, t *p.Type) (bool, string) {
 			if components[0] == f {
 				for _, s := range t.Structs {
 					if s.Name == components[1] {
-						return true, assembleNamespace(t.Namespaces[Swift], components[1])
+						return assembleNamespace(t.Namespaces[Swift], components[1]), true
 					}
 				}
 			}
 		}
 	}
-	return false, ""
+	return "", false
 }
 
-func isListType(stc *SwiftThriftComponents, t *p.Type) (bool, string, string) {
+func (stc *SwiftThriftComponents) isListType(t *p.Type) (string, string, bool) {
 
 	if t.Name == "list" {
 		innerType := t.ValueType
-		if b, tn := isPlainType(stc, innerType); b {
-			return b, t.Name, tn
+		if tn, b := stc.isPlainType(innerType); b {
+			return t.Name, tn, b
 		}
-		if b, tn := isEnumType(stc, innerType); b {
-			return b, t.Name, tn
+		if tn, b := stc.isEnumType(innerType); b {
+			return t.Name, tn, b
 		}
-		if b, tn := isCustomerType(stc, innerType); b {
-			return b, t.Name, tn
+		if tn, b := stc.isCustomerType(innerType); b {
+			return t.Name, tn, b
 		}
 	}
-	return false, "", ""
+	return "", "", false
 }
 
 // DefaultValue Swift 字段默认值
