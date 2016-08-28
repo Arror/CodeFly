@@ -270,10 +270,6 @@ func (s *SwiftStruct) FromDict(f *SwiftField) string {
 	}
 }
 
-func toDict(f *SwiftField) string {
-	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
-}
-
 // ToDict 创建JSON
 func (s *SwiftStruct) ToDict(f *SwiftField) string {
 	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
