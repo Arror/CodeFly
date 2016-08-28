@@ -293,7 +293,7 @@ func (s *SwiftService) ReturnType(m *SwiftMethod) string {
 	case Void:
 		return ""
 	default:
-		return m.ValueType.Name + "?"
+		return fmt.Sprintf("%s?", m.ValueType.Name)
 	}
 }
 
