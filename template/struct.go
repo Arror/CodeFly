@@ -9,7 +9,7 @@ const StructTemplate = `//
 
 import Foundation
 {{ $ss := . }}
-public class {{ .Name }}:NSObject, JSONItem {
+public class {{ .Name }}: NSObject, JSONItem {
     {{ range $i, $f := .Fields }}
     var {{ $f.Name }}{{ $ss.DefaultValue $f }}{{ end }}
     
