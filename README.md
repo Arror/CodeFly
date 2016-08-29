@@ -19,15 +19,20 @@
 	CodeFly will generate swift files
 	
 	// TRSex.swift
+	import Foundation
+
+	@objc
 	public enum TRSex: Int, EnumItem {
-    
+	    
 	    case male = 1 
 	    case female = 2 
 	}
 	
 	// TRUser.swift
-	public class TRUser: JSONItem {
-    
+	import Foundation
+
+	public class TRUser: NSObject, JSONItem {
+	    
 	    var name: String?
 	    var id: Int64?
 	    var sex: TRSex?
@@ -37,6 +42,8 @@
 	    } 
 	
 	    public required init?(json: AnyObject?) {
+	
+	        super.init()
 	
 	        guard let json = json as? [String: AnyObject] else { return nil }
 	        
