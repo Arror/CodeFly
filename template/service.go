@@ -9,7 +9,7 @@ const ServiceTemplate = `//
 
 import Foundation
 {{ $ss := . }}
-public final class {{ .Name }} {
+public final class {{ .Name }}: NSObject {
     {{ range $i, $m := .Methods }}
     public class func {{ .Name }}({{ range $i, $f := .Fields }}{{ $ss.GetParam $f }}, {{ end }}completion: ({{ $ss.ReturnType $m }}?) -> Void, failure: (NSError?) -> Void) -> Bool {
 

@@ -9,7 +9,7 @@ const StructTemplate = `//
 
 import Foundation
 {{ $ss := . }}
-public class {{ .Name }}: JSONItem {
+public class {{ .Name }}:NSObject, JSONItem {
     {{ range $i, $f := .Fields }}
     var {{ $f.Name }}{{ $ss.DefaultValue $f }}{{ end }}
     
@@ -18,6 +18,8 @@ public class {{ .Name }}: JSONItem {
     } 
 
     public required init?(json: AnyObject?) {
+
+        super.init()
 
         guard let json = json as? [String: AnyObject] else { return nil }
         {{ range $i, $f := .Fields }}
