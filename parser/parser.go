@@ -275,12 +275,12 @@ func (s *SwiftStruct) ToDict(f *SwiftField) string {
 	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
 }
 
-// ToDict 获取方法的返回值
+// ToDict 渲染方法的返回值
 func (s *SwiftService) ToDict(f *SwiftField) string {
 	return fmt.Sprintf("%s?.toJSON()", f.Name)
 }
 
-// ReturnType 获取方法的返回值
+// ReturnType 获取方法的返回类型
 func (s *SwiftService) ReturnType(m *SwiftMethod) string {
 
 	switch m.ValueType.Type {
