@@ -249,8 +249,8 @@ func (stc *SwiftThriftComponents) isListType(t *p.Type) (string, string, bool) {
 	return "", "", false
 }
 
-// DefaultValue Swift 字段默认值
-func (s *SwiftStruct) DefaultValue(f *SwiftField) string {
+// ValueTypeFormat Swift 字段类型
+func (s *SwiftStruct) ValueTypeFormat(f *SwiftField) string {
 
 	switch f.Type.Type {
 	case ListType:
