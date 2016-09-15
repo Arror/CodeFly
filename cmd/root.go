@@ -25,6 +25,7 @@ func init() {
 	Root.Version = info.Version
 	Root.Author = info.Author
 	Root.Email = info.Email
+	Root.HideHelp = true
 	Root.Commands = []cli.Command{
 		Gen,
 	}
