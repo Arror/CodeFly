@@ -4,10 +4,10 @@ package info
 const Name = "CodeFly"
 
 // Usage 说明
-const Usage = "iOS开发者工具集"
+const Usage = "Generate aim language data model"
 
 // Version 软件版本
-const Version = "0.0.2"
+const Version = "0.0.3"
 
 // Author 作者
 const Author = "Arror"
@@ -17,16 +17,16 @@ const Email = "763911422@qq.com"
 
 // AppHelpTemplate 帮助模板
 const AppHelpTemplate = `
-名称:
+Name:
     {{.Name}} - {{.Usage}}
-作者:
+Authors:
     {{range .Authors}}{{ . }}{{end}}{{if .Commands}}
-命令:
+Commands:
 {{range .Commands}}{{if not .HideHelp}}    {{join .Names ", "}}{{ "\t" }}{{.Usage}}{{ "\n" }}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
-全局选项:
+Global:
     {{range .VisibleFlags}}{{.}}{{end}}{{end}}{{if .Copyright }}
-版权:
+Copyright:
     {{.Copyright}}{{end}}{{if .Version}}
-版本:
+Version:
     {{.Version}}{{end}}
 `

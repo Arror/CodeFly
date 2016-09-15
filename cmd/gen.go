@@ -16,8 +16,7 @@ var genInfo = &model.GenerateCommandInfo{}
 var Gen = cli.Command{
 	Name:      "gen",
 	ShortName: "g",
-	Usage:     "代码生成命令",
-	UsageText: "通过thrift文件生成目标语言代码",
+	Usage:     "Generate aim language code command",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:        "lang, l",
