@@ -11,7 +11,7 @@ import Foundation
 {{ $ss := . }}
 public class {{ .Name }}: JSONItem {
     {{ range $i, $f := .Fields }}
-    var {{ $f.Name }}{{ $ss.ValueTypeFormat $f }}{{ end }}
+    var {{ $f.Name }}: {{ $ss.ValueTypeFormat $f true }}{{ end }}
     
     public var allKeys: Set<String> {
         return [{{ range $i, $f := .Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $f.Name }}"{{ end }}]
@@ -23,7 +23,7 @@ public class {{ .Name }}: JSONItem {
 
         guard let json = json as? [String: Any] else { return nil }
         {{ range $i, $f := .Fields }}
-        self.{{ $f.Name }} = {{ $ss.FromDict $f }}{{ end }}
+        self.{{ $f.Name }} = {{ $ss.ValueTypeFormat $f false }}(json: ["{{ $f.Name }}"]){{ end }}
     }
 
     public func toJSON() -> Any? {

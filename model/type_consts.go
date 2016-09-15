@@ -1,4 +1,4 @@
-package parser
+package model
 
 // Swift 目标语言
 const Swift = "swift"

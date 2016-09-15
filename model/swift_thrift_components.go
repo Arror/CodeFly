@@ -1,39 +1,30 @@
-package parser
+package model
 
 import (
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	p "github.com/samuel/go-thrift/parser"
+	"github.com/samuel/go-thrift/parser"
 )
 
-var typeMapping = map[string]string{
-	TTI16:    STInt,
-	TTI32:    STInt,
-	TTI64:    STInt64,
-	TTDouble: STDouble,
-	TTBool:   STBool,
-	TTString: STString,
+// SwiftThriftComponents 完整的Thrift信息
+type SwiftThriftComponents struct {
+	InputPath   string
+	OutputPath  string
+	Thrift      *parser.Thrift
+	Thrifts     map[string]*parser.Thrift
+	SwiftThrift *SwiftThrift
 }
 
-// Parser 解析生成SwiftThriftComponents
-func Parser(ts map[string]*p.Thrift, ip string, op string) *SwiftThriftComponents {
+// InitWith SwiftThriftComponents 初始化
+func (stc *SwiftThriftComponents) InitWith(ts map[string]*parser.Thrift, genInfo *GenerateCommandInfo) {
 
-	stc := &SwiftThriftComponents{
-		InputPath:   ip,
-		OutputPath:  op,
-		Thrift:      ts[ip],
-		Thrifts:     ts,
-		SwiftThrift: &SwiftThrift{},
-	}
-
-	stc.generateSwiftThrift()
-
-	return stc
-}
-
-func (stc *SwiftThriftComponents) generateSwiftThrift() {
+	stc.InputPath = genInfo.Input
+	stc.OutputPath = genInfo.Output
+	stc.Thrifts = ts
+	stc.Thrift = ts[genInfo.Input]
+	stc.SwiftThrift = &SwiftThrift{}
 
 	t := stc.Thrift
 	st := stc.SwiftThrift
@@ -109,15 +100,7 @@ func (stc *SwiftThriftComponents) generateSwiftThrift() {
 	st.Services = services
 }
 
-func assembleNamespace(namespace string, name string) string {
-	return fmt.Sprintf("%s%s", namespace, name[1:])
-}
-
-func assembleServiceName(name string) string {
-	return fmt.Sprintf("%sService", name)
-}
-
-func (stc *SwiftThriftComponents) getSwiftType(t *p.Type) *SwiftType {
+func (stc *SwiftThriftComponents) getSwiftType(t *parser.Type) *SwiftType {
 
 	st := &SwiftType{}
 
@@ -152,7 +135,7 @@ func (stc *SwiftThriftComponents) getSwiftType(t *p.Type) *SwiftType {
 	return st
 }
 
-func (stc *SwiftThriftComponents) isPlainType(t *p.Type) (string, bool) {
+func (stc *SwiftThriftComponents) isPlainType(t *parser.Type) (string, bool) {
 	n := t.Name
 	switch n {
 	case TTI16, TTI32:
@@ -170,7 +153,7 @@ func (stc *SwiftThriftComponents) isPlainType(t *p.Type) (string, bool) {
 	}
 }
 
-func (stc *SwiftThriftComponents) isEnumType(t *p.Type) (string, bool) {
+func (stc *SwiftThriftComponents) isEnumType(t *parser.Type) (string, bool) {
 
 	thrift := stc.Thrift
 	thrifts := stc.Thrifts
@@ -201,7 +184,7 @@ func (stc *SwiftThriftComponents) isEnumType(t *p.Type) (string, bool) {
 	return "", false
 }
 
-func (stc *SwiftThriftComponents) isCustomerType(t *p.Type) (string, bool) {
+func (stc *SwiftThriftComponents) isCustomerType(t *parser.Type) (string, bool) {
 
 	thrift := stc.Thrift
 	thrifts := stc.Thrifts
@@ -232,7 +215,7 @@ func (stc *SwiftThriftComponents) isCustomerType(t *p.Type) (string, bool) {
 	return "", false
 }
 
-func (stc *SwiftThriftComponents) isListType(t *p.Type) (string, string, bool) {
+func (stc *SwiftThriftComponents) isListType(t *parser.Type) (string, string, bool) {
 
 	if t.Name == "list" {
 		innerType := t.ValueType
@@ -247,58 +230,4 @@ func (stc *SwiftThriftComponents) isListType(t *p.Type) (string, string, bool) {
 		}
 	}
 	return "", "", false
-}
-
-// ValueTypeFormat Swift 字段类型
-func (s *SwiftStruct) ValueTypeFormat(f *SwiftField) string {
-
-	switch f.Type.Type {
-	case ListType:
-		return fmt.Sprintf(": [%s]?", f.Type.InnerType)
-	default:
-		return fmt.Sprintf(": %s?", f.Type.Name)
-	}
-}
-
-// FromDict 从JSON中初始化
-func (s *SwiftStruct) FromDict(f *SwiftField) string {
-	switch f.Type.Type {
-	case ListType:
-		return fmt.Sprintf("[%s](json: dict[\"%s\"])", f.Type.InnerType, f.Name)
-	default:
-		return fmt.Sprintf("%s(json: dict[\"%s\"])", f.Type.Name, f.Name)
-	}
-}
-
-// ToDict 创建JSON
-func (s *SwiftStruct) ToDict(f *SwiftField) string {
-	return fmt.Sprintf("self.%s?.toJSON()", f.Name)
-}
-
-// ToDict 渲染方法的返回值
-func (s *SwiftService) ToDict(f *SwiftField) string {
-	return fmt.Sprintf("%s?.toJSON()", f.Name)
-}
-
-// ReturnType 获取方法的返回类型
-func (s *SwiftService) ReturnType(m *SwiftMethod) string {
-
-	switch m.ValueType.Type {
-	case ListType:
-		return fmt.Sprintf("[%s]?", m.ValueType.InnerType)
-	case Void:
-		return ""
-	default:
-		return fmt.Sprintf("%s?", m.ValueType.Name)
-	}
-}
-
-// GetParam 拼接参数
-func (s *SwiftService) GetParam(f *SwiftField) string {
-
-	if f.Type.Type == ListType {
-		return fmt.Sprintf("%s: [%s]?", f.Name, f.Type.InnerType)
-	}
-
-	return fmt.Sprintf("%s: %s?", f.Name, f.Type.Name)
 }

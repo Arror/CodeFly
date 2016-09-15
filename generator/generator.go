@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"sync"
 
-	"CodeFly/parser"
+	"CodeFly/model"
 	"CodeFly/template"
 )
 
-func generatSwiftCode(stc *parser.SwiftThriftComponents) {
+// GeneratSwiftCode Swift代码生成函数
+func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 	op := stc.OutputPath
 	if err := os.MkdirAll(op, 0755); err != nil {
 		panic(fmt.Sprintf("无法创建文件夹:%s", op))

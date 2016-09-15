@@ -1,4 +1,4 @@
-package generator
+package reader
 
 import (
 	"fmt"
@@ -19,8 +19,8 @@ func ReadThrift(ip string) (map[string]*parser.Thrift, error) {
 	return thrifts, nil
 }
 
-// CheckNameSpace 检查Namespace信息
-func CheckNameSpace(lang string, ts map[string]*parser.Thrift) error {
+// CheckLanguageNameSpace 检查Namespace信息
+func CheckLanguageNameSpace(lang string, ts map[string]*parser.Thrift) error {
 
 	for n, t := range ts {
 		if t.Namespaces[lang] == "" {

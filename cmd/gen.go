@@ -2,22 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"path/filepath"
 
-	"CodeFly/generator"
-	"CodeFly/parser"
+	"CodeFly/distributor"
+	"CodeFly/model"
+	"CodeFly/reader"
 
 	"github.com/urfave/cli"
 )
 
-// GenerateCommandInfo 命令信息结构
-type GenerateCommandInfo struct {
-	Lang   string
-	Input  string
-	Output string
-}
-
-var genInfo = &GenerateCommandInfo{}
+var genInfo = &model.GenerateCommandInfo{}
 
 // Gen 代码生成命令
 var Gen = cli.Command{
@@ -44,56 +37,30 @@ var Gen = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		if err := genInfo.checkGenerateCommandInfo(); err != nil {
+		if err := genInfo.CheckGenerateCommandInfo(); err != nil {
 			return err
 		}
 
-		ts, err := generator.ReadThrift(genInfo.Input)
+		switch genInfo.Lang {
+		case model.Swift:
+			break
+		default:
+			return fmt.Errorf("未被支持的语言")
+		}
+
+		ts, err := reader.ReadThrift(genInfo.Input)
 		if err != nil {
 			return err
 		}
 
-		if err := generator.CheckNameSpace(genInfo.Lang, ts); err != nil {
+		if err := reader.CheckLanguageNameSpace(genInfo.Lang, ts); err != nil {
 			return err
 		}
 
-		if err := generator.Distributor(ts, genInfo.Lang, genInfo.Input, genInfo.Output); err != nil {
+		if err := distributor.Distribute(ts, genInfo); err != nil {
 			return err
 		}
 
 		return nil
 	},
-}
-
-func (gci *GenerateCommandInfo) checkGenerateCommandInfo() error {
-
-	if gci.Lang == "" {
-		return fmt.Errorf("语言名称为空")
-	}
-	switch gci.Lang {
-	case parser.Swift:
-		break
-	default:
-		return fmt.Errorf("未被支持的语言")
-	}
-
-	if gci.Input == "" {
-		return fmt.Errorf("thrift文件路径为空")
-	}
-	p, err := filepath.Abs(gci.Input)
-	if err != nil {
-		return fmt.Errorf("thrift文件路径错误")
-	}
-	gci.Input = p
-
-	if gci.Output == "" {
-		return fmt.Errorf("输出文件夹路径为空")
-	}
-	p, err = filepath.Abs(gci.Output)
-	if err != nil {
-		return fmt.Errorf("输出文件路径错误")
-	}
-	gci.Output = p
-
-	return nil
 }
