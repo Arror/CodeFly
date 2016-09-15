@@ -9,7 +9,6 @@ const EnumTemplate = `//
 
 import Foundation
 
-@objc
 public enum {{ .Name }}: Int, EnumItem {
     {{ range $i, $f := .Cases }}
     case {{ $f.Name }} = {{ $f.Value }} {{ end }}
