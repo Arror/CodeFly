@@ -3,8 +3,6 @@ package cmd
 import (
 	"os"
 
-	"CodeFly/info"
-
 	"github.com/urfave/cli"
 )
 
@@ -19,13 +17,6 @@ func Execute() {
 }
 
 func init() {
-	cli.AppHelpTemplate = info.AppHelpTemplate
-	Root.Name = info.Name
-	Root.Usage = info.Usage
-	Root.Version = info.Version
-	Root.Author = info.Author
-	Root.Email = info.Email
-	Root.HideHelp = true
 	Root.Commands = []cli.Command{
 		Gen,
 	}
