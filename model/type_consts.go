@@ -1,8 +1,5 @@
 package model
 
-// Swift 目标语言
-const Swift = "swift"
-
 const (
 	// TTI16 Thrift Type I16
 	TTI16 = "i16"

@@ -40,13 +40,6 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		switch genInfo.Lang {
-		case model.Swift:
-			break
-		default:
-			log.Fatalln("Unsupported language.")
-		}
-
 		ts, err := reader.ReadThrift(genInfo.Input)
 		if err != nil {
 			log.Fatalln(err.Error())
