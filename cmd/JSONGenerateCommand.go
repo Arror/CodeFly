@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"CodeFly/distributor"
 	"CodeFly/model"
@@ -12,52 +12,52 @@ import (
 
 var genInfo = &model.GenerateCommandInfo{}
 
-// Gen 代码生成命令
-var Gen = cli.Command{
-	Name:      "gen",
-	ShortName: "g",
-	Usage:     "Generate aim language code command",
+// JSONGenerate json代码生成命令
+var JSONGenerate = cli.Command{
+	Name:      "json",
+	ShortName: "json",
+	Usage:     "Command of generate the target language code.",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:        "lang, l",
-			Usage:       "目标语言名称",
+			Usage:       "Target language.",
 			Destination: &genInfo.Lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
-			Usage:       "被生成thrift文件路径",
+			Usage:       "Input thrift file path.",
 			Destination: &genInfo.Input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
-			Usage:       "生成文件的输出路径",
+			Usage:       "File output path.",
 			Destination: &genInfo.Output,
 		},
 	},
 	Action: func(c *cli.Context) error {
 
 		if err := genInfo.CheckGenerateCommandInfo(); err != nil {
-			return err
+			log.Fatalln(err.Error())
 		}
 
 		switch genInfo.Lang {
 		case model.Swift:
 			break
 		default:
-			return fmt.Errorf("未被支持的语言")
+			log.Fatalln("Unsupported language.")
 		}
 
 		ts, err := reader.ReadThrift(genInfo.Input)
 		if err != nil {
-			return err
+			log.Fatalln(err.Error())
 		}
 
 		if err := reader.CheckLanguageNameSpace(genInfo.Lang, ts); err != nil {
-			return err
+			log.Fatalln(err.Error())
 		}
 
 		if err := distributor.Distribute(ts, genInfo); err != nil {
-			return err
+			log.Fatalln(err.Error())
 		}
 
 		return nil

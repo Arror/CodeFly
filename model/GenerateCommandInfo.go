@@ -16,24 +16,24 @@ type GenerateCommandInfo struct {
 func (gci *GenerateCommandInfo) CheckGenerateCommandInfo() error {
 
 	if gci.Lang == "" {
-		return fmt.Errorf("语言名称为空")
+		return fmt.Errorf("The target language name is empty")
 	}
 
 	if gci.Input == "" {
-		return fmt.Errorf("thrift文件路径为空")
+		return fmt.Errorf("The thrift file input path is empty")
 	}
 	p, err := filepath.Abs(gci.Input)
 	if err != nil {
-		return fmt.Errorf("thrift文件路径错误")
+		return fmt.Errorf("The input thrift file path error")
 	}
 	gci.Input = p
 
 	if gci.Output == "" {
-		return fmt.Errorf("输出文件夹路径为空")
+		return fmt.Errorf("File output path is empty")
 	}
 	p, err = filepath.Abs(gci.Output)
 	if err != nil {
-		return fmt.Errorf("输出文件路径错误")
+		return fmt.Errorf("File output path error")
 	}
 	gci.Output = p
 
