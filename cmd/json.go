@@ -49,9 +49,7 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		if err := distributor.Distribute(ts, genInfo); err != nil {
-			log.Fatalln(err.Error())
-		}
+		distributor.Distribute(ts, genInfo)
 
 		return nil
 	},

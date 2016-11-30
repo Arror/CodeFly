@@ -24,7 +24,7 @@ func CheckLanguageNameSpace(lang string, ts map[string]*parser.Thrift) error {
 
 	for n, t := range ts {
 		if t.Namespaces[lang] == "" {
-			return fmt.Errorf("发现%s文件没有关于%s语言的Namespace信息", n, lang)
+			return fmt.Errorf("%s language namespace info not found in %s.thrift", lang, n)
 		}
 	}
 	return nil

@@ -1,8 +1,6 @@
 package distributor
 
 import (
-	"fmt"
-
 	"CodeFly/generator"
 	"CodeFly/model"
 
@@ -10,15 +8,12 @@ import (
 )
 
 // Distribute 任务分配者
-func Distribute(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) error {
+func Distribute(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) {
 
 	switch genInfo.Lang {
 	case model.Swift:
 		stc := &model.SwiftThriftComponents{}
 		stc.InitWith(ts, genInfo)
 		generator.GeneratSwiftCode(stc)
-	default:
-		return fmt.Errorf("未被支持的语言")
 	}
-	return nil
 }
