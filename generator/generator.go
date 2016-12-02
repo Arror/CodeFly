@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"CodeFly/model"
+	"CodeFly/printer"
 	"CodeFly/template"
 )
 
@@ -21,9 +22,9 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 	structTmplName := template.SwiftStructTemplateName
 	serviceTmplName := template.SwiftServiceTemplateName
 
-	enumTmpl := initTemplate(enumTmplName, template.EnumTemplate)
-	structTmpl := initTemplate(structTmplName, template.StructTemplate)
-	serviceTmpl := initTemplate(serviceTmplName, template.ServiceTemplate)
+	enumTmpl := printer.InitTemplate(enumTmplName, template.EnumTemplate)
+	structTmpl := printer.InitTemplate(structTmplName, template.StructTemplate)
+	serviceTmpl := printer.InitTemplate(serviceTmplName, template.ServiceTemplate)
 
 	wg := sync.WaitGroup{}
 
@@ -34,7 +35,7 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		for _, e := range enums {
 			name := fmt.Sprintf("%s.swift", e.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, enumTmpl, enumTmplName, e); err != nil {
+			if err := printer.PrintFile(path, enumTmpl, enumTmplName, e); err != nil {
 				panic(err.Error())
 			}
 		}
@@ -47,7 +48,7 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		for _, s := range structs {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, structTmpl, structTmplName, s); err != nil {
+			if err := printer.PrintFile(path, structTmpl, structTmplName, s); err != nil {
 				panic(err.Error())
 			}
 		}
@@ -60,7 +61,7 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		for _, s := range services {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := outputFile(path, serviceTmpl, serviceTmplName, s); err != nil {
+			if err := printer.PrintFile(path, serviceTmpl, serviceTmplName, s); err != nil {
 				panic(err.Error())
 			}
 		}

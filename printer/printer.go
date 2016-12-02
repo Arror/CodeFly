@@ -1,11 +1,12 @@
-package generator
+package printer
 
 import (
 	"html/template"
 	"os"
 )
 
-func initTemplate(name string, tmpl string) *template.Template {
+// InitTemplate 初始化模板文件
+func InitTemplate(name string, tmpl string) *template.Template {
 
 	template, err := template.New(name).Parse(tmpl)
 	if err != nil {
@@ -14,7 +15,8 @@ func initTemplate(name string, tmpl string) *template.Template {
 	return template
 }
 
-func outputFile(fp string, t *template.Template, tplname string, data interface{}) error {
+// PrintFile 输出文件
+func PrintFile(fp string, t *template.Template, tplname string, data interface{}) error {
 
 	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
