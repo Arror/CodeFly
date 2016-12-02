@@ -1,8 +1,8 @@
 package template
 
 const (
-	// SwiftEnumTemplateName Swift Enum Template名字
-	SwiftEnumTemplateName = "EnumTemplate"
+	// SwiftEnumTplName Swift 枚举模板名称
+	SwiftEnumTplName = "EnumTemplate"
 	// SwiftStructTemplateName Swift Strcut Template名字
 	SwiftStructTemplateName = "StructTemplate"
 	// SwiftServiceTemplateName Swift Service Template名字

@@ -1,7 +1,7 @@
 package template
 
-// EnumTemplate Swift Enum 模板
-const EnumTemplate = `//
+// EnumTpl Swift Enum 模板
+const EnumTpl = `//
 // {{ .Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
@@ -9,7 +9,7 @@ const EnumTemplate = `//
 
 import Foundation
 
-public enum {{ .Name }}: Int, EnumItem {
-    {{ range $i, $f := .Cases }}
+public enum {{ .Name }}: Int, Enum {
+    {{ range $i, $f := .Enum.Values }}
     case {{ $f.Name }} = {{ $f.Value }} {{ end }}
 }`

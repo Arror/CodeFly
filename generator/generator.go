@@ -9,6 +9,9 @@ import (
 	"CodeFly/model"
 	"CodeFly/printer"
 	"CodeFly/template"
+	tp "CodeFly/types"
+
+	"github.com/arrors/go-thrift/parser"
 )
 
 // GeneratSwiftCode Swift代码生成函数
@@ -18,28 +21,13 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		panic(fmt.Sprintf("无法创建文件夹:%s", op))
 	}
 
-	enumTmplName := template.SwiftEnumTemplateName
 	structTmplName := template.SwiftStructTemplateName
 	serviceTmplName := template.SwiftServiceTemplateName
 
-	enumTmpl := printer.InitTemplate(enumTmplName, template.EnumTemplate)
 	structTmpl := printer.InitTemplate(structTmplName, template.StructTemplate)
 	serviceTmpl := printer.InitTemplate(serviceTmplName, template.ServiceTemplate)
 
 	wg := sync.WaitGroup{}
-
-	wg.Add(1)
-	go func(op string) {
-		defer wg.Done()
-		enums := stc.SwiftThrift.Enums
-		for _, e := range enums {
-			name := fmt.Sprintf("%s.swift", e.Name)
-			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := printer.PrintFile(path, enumTmpl, enumTmplName, e); err != nil {
-				panic(err.Error())
-			}
-		}
-	}(op)
 
 	wg.Add(1)
 	go func(op string) {
@@ -66,6 +54,44 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 			}
 		}
 	}(op)
+
+	wg.Wait()
+}
+
+// Generate 代码生成
+func Generate(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) {
+
+	op := genInfo.Output
+	if err := os.MkdirAll(op, 0755); err != nil {
+		panic(err.Error())
+	}
+
+	t := ts[genInfo.Input]
+
+	enumTplName := template.SwiftEnumTplName
+	enumTmpl := printer.InitTemplate(enumTplName, template.EnumTpl)
+
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for _, enum := range t.Enums {
+
+			e := &tp.SwiftEnum{}
+			e.Enum = enum
+			e.Namespace = t.Namespaces[genInfo.Lang]
+
+			name := e.Name()
+
+			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+
+			if err := printer.PrintFile(path, enumTmpl, enumTplName, e); err != nil {
+				panic(err.Error())
+			}
+		}
+	}()
 
 	wg.Wait()
 }
