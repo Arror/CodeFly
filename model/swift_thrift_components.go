@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/samuel/go-thrift/parser"
+	"github.com/arrors/go-thrift/parser"
 )
 
 // SwiftThriftComponents 完整的Thrift信息

@@ -4,7 +4,7 @@ import (
 	"CodeFly/generator"
 	"CodeFly/model"
 
-	"github.com/samuel/go-thrift/parser"
+	"github.com/arrors/go-thrift/parser"
 )
 
 // Distribute 任务分配者
