@@ -36,9 +36,7 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		for _, s := range structs {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := printer.PrintFile(path, structTmpl, structTmplName, s); err != nil {
-				panic(err.Error())
-			}
+			printer.PrintFile(path, structTmpl, structTmplName, s)
 		}
 	}(op)
 
@@ -49,9 +47,7 @@ func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
 		for _, s := range services {
 			name := fmt.Sprintf("%s.swift", s.Name)
 			path, _ := filepath.Abs(filepath.Join(op, name))
-			if err := printer.PrintFile(path, serviceTmpl, serviceTmplName, s); err != nil {
-				panic(err.Error())
-			}
+			printer.PrintFile(path, serviceTmpl, serviceTmplName, s)
 		}
 	}(op)
 
@@ -86,10 +82,7 @@ func Generate(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) 
 			name := e.Name()
 
 			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
-
-			if err := printer.PrintFile(path, enumTmpl, enumTplName, e); err != nil {
-				panic(err.Error())
-			}
+			printer.PrintFile(path, enumTmpl, enumTplName, e)
 		}
 	}()
 
