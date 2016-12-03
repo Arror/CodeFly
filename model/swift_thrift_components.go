@@ -45,27 +45,6 @@ func (stc *SwiftThriftComponents) InitWith(ts map[string]*parser.Thrift, genInfo
 	}
 	st.Structs = structs
 
-	enums := make(map[string]*SwiftEnum)
-	for en, e := range t.Enums {
-		se := &SwiftEnum{}
-		se.Name = assembleNamespace(t.Namespaces[Swift], en)
-		se.Cases = make([]*SwiftEnumCase, 0, 10)
-
-		for _, v := range e.Values {
-			sec := &SwiftEnumCase{}
-			sec.Name = v.Name
-			sec.Value = v.Value
-			sec.Type = &SwiftType{
-				Type:      EnumType,
-				Name:      se.Name,
-				InnerType: "",
-			}
-			se.Cases = append(se.Cases, sec)
-		}
-		enums[se.Name] = se
-	}
-	st.Enums = enums
-
 	services := make(map[string]*SwiftService)
 	for sn, s := range t.Services {
 		ss := &SwiftService{}
