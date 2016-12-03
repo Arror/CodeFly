@@ -3,8 +3,8 @@ package cmd
 import (
 	"log"
 
-	"CodeFly/distributor"
 	"CodeFly/model"
+	"CodeFly/printer"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
@@ -49,7 +49,7 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		distributor.Distribute(ts, genInfo)
+		printer.Generate(ts, genInfo)
 
 		return nil
 	},

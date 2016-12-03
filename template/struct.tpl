@@ -1,7 +1,4 @@
-package template
-
-// StructTemplate Swift Struct 模板
-const StructTemplate = `//
+//
 // {{ .Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
@@ -34,4 +31,4 @@ public class {{ .Name }}: JSONItem {
 
         return json
     }
-}`
+}
