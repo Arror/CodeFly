@@ -1,11 +1,11 @@
 package printer
 
 import (
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+	"text/template"
 
 	"CodeFly/model"
 	tpl "CodeFly/template"
@@ -24,25 +24,48 @@ func Generate(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) 
 
 	t := ts[genInfo.Input]
 
+	wg := sync.WaitGroup{}
+
 	enumTplName := tpl.SwiftEnumTplName
 	enumTmpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
-
-	wg := sync.WaitGroup{}
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
-		for _, enum := range t.Enums {
+		for _, e := range t.Enums {
 
-			e := &tps.SwiftEnum{}
-			e.Enum = enum
-			e.Namespace = t.Namespaces[genInfo.Lang]
+			se := &tps.SwiftEnum{}
+			se.Enum = e
+			se.Namespace = t.Namespaces[genInfo.Lang]
 
-			name := e.Name()
+			name := se.Name()
 
 			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
-			printFile(path, enumTmpl, enumTplName, e)
+			printFile(path, enumTmpl, enumTplName, se)
+		}
+	}()
+
+	structTplName := tpl.SwiftStructTemplateName
+	structTmpl := initTemplate(structTplName, tpl.SwiftStructTpl())
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for _, s := range t.Structs {
+
+			ss := &tps.SwiftStruct{}
+			ss.Struct = s
+			ss.Thrifts = ts
+			ss.Thrift = t
+			ss.Lang = genInfo.Lang
+			ss.Namespace = t.Namespaces[genInfo.Lang]
+
+			name := ss.Name()
+
+			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+			printFile(path, structTmpl, structTplName, ss)
 		}
 	}()
 
@@ -69,42 +92,3 @@ func printFile(fp string, t *template.Template, tplname string, data interface{}
 		log.Fatal(err.Error())
 	}
 }
-
-// func GeneratSwiftCode(stc *model.SwiftThriftComponents) {
-// 	op := stc.OutputPath
-// 	if err := os.MkdirAll(op, 0755); err != nil {
-// 		panic(fmt.Sprintf("无法创建文件夹:%s", op))
-// 	}
-
-// 	structTmplName := template.SwiftStructTemplateName
-// 	serviceTmplName := template.SwiftServiceTemplateName
-
-// 	structTmpl := printer.InitTemplate(structTmplName, template.StructTemplate)
-// 	serviceTmpl := printer.InitTemplate(serviceTmplName, template.ServiceTemplate)
-
-// 	wg := sync.WaitGroup{}
-
-// 	wg.Add(1)
-// 	go func(op string) {
-// 		defer wg.Done()
-// 		structs := stc.SwiftThrift.Structs
-// 		for _, s := range structs {
-// 			name := fmt.Sprintf("%s.swift", s.Name)
-// 			path, _ := filepath.Abs(filepath.Join(op, name))
-// 			printer.PrintFile(path, structTmpl, structTmplName, s)
-// 		}
-// 	}(op)
-
-// 	wg.Add(1)
-// 	go func(op string) {
-// 		defer wg.Done()
-// 		services := stc.SwiftThrift.Services
-// 		for _, s := range services {
-// 			name := fmt.Sprintf("%s.swift", s.Name)
-// 			path, _ := filepath.Abs(filepath.Join(op, name))
-// 			printer.PrintFile(path, serviceTmpl, serviceTmplName, s)
-// 		}
-// 	}(op)
-
-// 	wg.Wait()
-// }
