@@ -3,15 +3,17 @@ package reader
 import (
 	"fmt"
 
+	"CodeFly/model"
+
 	"github.com/arrors/go-thrift/parser"
 )
 
 // ReadThrift 读取Thrift文件信息
-func ReadThrift(ip string) (map[string]*parser.Thrift, error) {
+func ReadThrift(genInfo *model.GenerateCommandInfo) (map[string]*parser.Thrift, error) {
 
 	p := parser.Parser{}
 
-	thrifts, _, err := p.ParseFile(ip)
+	thrifts, _, err := p.ParseFile(genInfo.Input)
 
 	if err != nil {
 		return nil, err
@@ -20,11 +22,11 @@ func ReadThrift(ip string) (map[string]*parser.Thrift, error) {
 }
 
 // CheckLanguageNameSpace 检查Namespace信息
-func CheckLanguageNameSpace(lang string, ts map[string]*parser.Thrift) error {
+func CheckLanguageNameSpace(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) error {
 
 	for n, t := range ts {
-		if t.Namespaces[lang] == "" {
-			return fmt.Errorf("%s language namespace info not found in %s.thrift", lang, n)
+		if t.Namespaces[genInfo.Lang] == "" {
+			return fmt.Errorf("%s language namespace info not found in %s.thrift", genInfo.Lang, n)
 		}
 	}
 	return nil

@@ -40,12 +40,12 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		ts, err := reader.ReadThrift(genInfo.Input)
+		ts, err := reader.ReadThrift(genInfo)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		if err := reader.CheckLanguageNameSpace(genInfo.Lang, ts); err != nil {
+		if err := reader.CheckLanguageNameSpace(ts, genInfo); err != nil {
 			log.Fatalln(err.Error())
 		}
 
