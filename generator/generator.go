@@ -65,7 +65,7 @@ func Generate(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) 
 	t := ts[genInfo.Input]
 
 	enumTplName := template.SwiftEnumTplName
-	enumTmpl := printer.InitTemplate(enumTplName, template.EnumTpl)
+	enumTmpl := printer.InitTemplate(enumTplName, template.SwiftEnumTpl())
 
 	wg := sync.WaitGroup{}
 
