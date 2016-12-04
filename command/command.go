@@ -1,4 +1,4 @@
-package model
+package command
 
 import (
 	"fmt"
@@ -31,15 +31,15 @@ func validLang(lang string) bool {
 	return false
 }
 
-// GenerateCommandInfo 命令信息结构
-type GenerateCommandInfo struct {
+// Command 命令信息结构
+type Command struct {
 	Lang   string
 	Input  string
 	Output string
 }
 
 // CheckGenerateCommandInfo 检查命令信息
-func (gci *GenerateCommandInfo) CheckGenerateCommandInfo() error {
+func (gci *Command) CheckGenerateCommandInfo() error {
 
 	if gci.Lang == "" {
 		return fmt.Errorf("The target language name is empty")

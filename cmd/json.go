@@ -3,14 +3,14 @@ package cmd
 import (
 	"log"
 
-	"CodeFly/model"
+	"CodeFly/command"
 	"CodeFly/printer"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
 )
 
-var genInfo = &model.GenerateCommandInfo{}
+var genInfo = &command.Command{}
 
 // JSONGenerate json代码生成命令
 var JSONGenerate = cli.Command{

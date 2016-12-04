@@ -7,7 +7,7 @@ import (
 	"sync"
 	"text/template"
 
-	"CodeFly/model"
+	"CodeFly/command"
 	tpl "CodeFly/template"
 	tps "CodeFly/types"
 
@@ -15,7 +15,7 @@ import (
 )
 
 // Generate 代码生成
-func Generate(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) {
+func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 
 	op := genInfo.Output
 	if err := os.MkdirAll(op, 0755); err != nil {

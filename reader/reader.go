@@ -3,13 +3,13 @@ package reader
 import (
 	"fmt"
 
-	"CodeFly/model"
+	"CodeFly/command"
 
 	"github.com/arrors/go-thrift/parser"
 )
 
 // ReadThrift 读取Thrift文件信息
-func ReadThrift(genInfo *model.GenerateCommandInfo) (map[string]*parser.Thrift, error) {
+func ReadThrift(genInfo *command.Command) (map[string]*parser.Thrift, error) {
 
 	p := parser.Parser{}
 
@@ -22,7 +22,7 @@ func ReadThrift(genInfo *model.GenerateCommandInfo) (map[string]*parser.Thrift, 
 }
 
 // CheckLanguageNameSpace 检查Namespace信息
-func CheckLanguageNameSpace(ts map[string]*parser.Thrift, genInfo *model.GenerateCommandInfo) error {
+func CheckLanguageNameSpace(ts map[string]*parser.Thrift, genInfo *command.Command) error {
 
 	for n, t := range ts {
 		if t.Namespaces[genInfo.Lang] == "" {
