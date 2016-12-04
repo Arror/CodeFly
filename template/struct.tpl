@@ -11,7 +11,7 @@ public class {{ .Name }}: JSON {
     {{ $f.PropertDefine $ss.Thrifts $ss.Thrift $ss.Lang }}
     {{ end }}
 
-    override func from(json: Any) -> Bool {
+    override public func from(json: Any) -> Bool {
         
         guard let dict = json as? [String: Any] else { return false }
         {{ range $i, $f := .Fields }}
@@ -20,7 +20,7 @@ public class {{ .Name }}: JSON {
         return true
     }
     
-    override var json: Any {
+    override public var json: Any {
         
         var dict = [String: Any]()
         {{ range $i, $f := .Fields }}
