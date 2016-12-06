@@ -10,5 +10,5 @@ type SwiftEnum struct {
 
 // Name 枚举名称
 func (e *SwiftEnum) Name() string {
-	return e.Namespace + e.Enum.Name[1:]
+	return e.Namespace + e.Enum.Name
 }
