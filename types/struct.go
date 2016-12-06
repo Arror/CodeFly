@@ -12,6 +12,6 @@ type SwiftStruct struct {
 }
 
 // Name 结构名称
-func (e *SwiftStruct) Name() string {
-	return e.Namespace + e.Struct.Name
+func (s *SwiftStruct) Name() string {
+	return s.Namespace + s.Struct.Name
 }
