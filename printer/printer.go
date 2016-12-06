@@ -69,6 +69,29 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 		}
 	}()
 
+	serviceTplName := tpl.SwiftServiceTemplateName
+	serviceTmpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for _, s := range t.Services {
+
+			ss := &tps.SwiftService{}
+			ss.Service = s
+			ss.Thrifts = ts
+			ss.Thrift = t
+			ss.Lang = genInfo.Lang
+			ss.Namespace = t.Namespaces[genInfo.Lang]
+
+			name := ss.Name()
+
+			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+			printFile(path, serviceTmpl, serviceTplName, ss)
+		}
+	}()
+
 	wg.Wait()
 }
 
