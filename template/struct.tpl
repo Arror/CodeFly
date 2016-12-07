@@ -15,7 +15,7 @@ public class {{ .Name }}: JSON {
         
         guard let dict = json as? [String: Any] else { return false }
         {{ range $i, $f := .Fields }}
-        {{ $f.FromJSON $ss.Thrifts $ss.Thrift $ss.Lang }}{{ end }}
+        {{ $f.Name }} = {{ $f.FromJSON $ss.Thrifts $ss.Thrift $ss.Lang }}{{ end }}
 
         return true
     }
@@ -24,7 +24,7 @@ public class {{ .Name }}: JSON {
         
         var dict = [String: Any]()
         {{ range $i, $f := .Fields }}
-        {{ $f.ToJSON $ss.Thrifts $ss.Thrift $ss.Lang }}{{ end }}
+        dict["{{ $f.Name }}"] = {{ $f.ToJSON $ss.Thrifts $ss.Thrift $ss.Lang true }}{{ end }}
 
         return dict
     }

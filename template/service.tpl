@@ -7,35 +7,33 @@
 import Foundation
 {{ $ss := . }}
 public final class {{ .Name }}: NSObject {
-    {{ range $i, $m := .Methods }}
-    public class func {{ .Name }}({{ range $i, $f := .Fields }}{{ $ss.GetParam $f }}, {{ end }}completion: ({{ $ss.ReturnType $m }}?) -> Void, failure: (NSError?) -> Void) -> Bool {
+    {{ range $i, $m := .Service.Methods }}{{ $void := $m.ReturnTypeIsVoid }}
+    public static func {{ $m.Name }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $f.Type.SwiftString  $ss.Thrifts $ss.Thrift $ss.Lang }}, {{end}}completion: ({{ if ne $void true }}{{ $m.ReturnType.SwiftString $ss.Thrifts $ss.Thrift $ss.Lang }}{{ end }}) -> Void, failure: (Error) -> Void) -> Bool {
 
-        guard let apiServerEngine = AppDelegate.current?.apiServiceEngine else { return false }
-
-        let url: String = "{{ .URL }}"{{ $len := .Fields|len }}
+        let path = {{ $ss.Path $m }}
+        let url = host.appendingPathComponent(path){{ $len := $m.Arguments|len }}
         {{ if ne $len 0 }}
-        var params = [String: AnyObject]()
-        {{ range $i, $f := .Fields }}
-        params["{{ $f.Name }}"] = {{ $ss.ToDict $f }}{{ end }}
-         
-        debugPrint("req: ", url, "\n", "params: ", params)
-        {{ else }}
-        debugPrint("req: ", url, "\n", "params: []")
-        {{ end }}
-        apiServerEngine.Post(url, parameters: {{ if ne $len 0 }}params{{ else }}nil{{ end }}, completion: { data in
-            
-            debugPrint("req: ", url, "\n", "rsp: ", data)
-            
-            let value = {{ $ss.ReturnType $m }}(json: data)
-            
-            completion(value)
-            
-            }, failure: { error in
-                
-                debugPrint("req: ", url, "\n", "rsp: ", error?.localizedDescription)
-                
+        var params = [String: Any]()
+        {{ range $i, $f := $m.Arguments }}
+        params["{{ $f.Name }}"] = {{ $f.ToJSON $ss.Thrifts $ss.Thrift $ss.Lang false }}{{ end }}{{ end }}
+
+        Alamofire.request(url, method: {{ $m.HttpMothod }}{{ if ne $len 0 }}, parameters: params{{end}}).responseJSON { response in
+        
+            switch response.result {
+
+            case .success(let value):
+
+                {{ if ne $void true }}if let result = {{ $m.ReturnType.ReturnValueFromJSON $ss.Thrifts $ss.Thrift $ss.Lang }} {
+                    completion(result)
+                } else {
+                    failure(AppError.invalidResponse)
+                }{{ else }}completion(){{ end }}
+
+            case .failure(let error):
+
                 failure(error)
-        })
+            }
+        }
 
         return true
     }
