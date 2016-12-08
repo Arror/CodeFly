@@ -45,10 +45,6 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		if err := reader.CheckLanguageNameSpace(ts, genInfo); err != nil {
-			log.Fatalln(err.Error())
-		}
-
 		printer.Generate(ts, genInfo)
 
 		return nil
