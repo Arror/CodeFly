@@ -41,7 +41,10 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 
 			name := se.Name()
 
-			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
 			printFile(path, enumTpl, enumTplName, se)
 		}
 	}()
@@ -64,7 +67,10 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 
 			name := ss.Name()
 
-			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
 			printFile(path, structTpl, structTplName, ss)
 		}
 	}()
@@ -87,7 +93,10 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 
 			name := ss.Name()
 
-			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
+			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
 			printFile(path, serviceTpl, serviceTplName, ss)
 		}
 	}()
