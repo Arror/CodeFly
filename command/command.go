@@ -7,28 +7,16 @@ import (
 )
 
 const (
-	// Swift Swift 语言
-	Swift = "swift"
-	// ObjectiveC ObjectiveC 语言
-	ObjectiveC = "objectivec"
-	// Go Go 语言
-	Go = "go"
-	// Java Java语言
-	Java = "java"
-	// JavaScript JavaScript语言
-	JavaScript = "javascript"
+	swift = "swift"
 )
 
-var langs = [...]string{Swift}
-
 func validLang(lang string) bool {
-	for _, l := range langs {
-		if l == lang {
-			return true
-		}
-		continue
+	switch lang {
+	case swift:
+		return true
+	default:
+		return false
 	}
-	return false
 }
 
 // Command 命令信息结构
@@ -38,41 +26,79 @@ type Command struct {
 	Output string
 }
 
-// CheckGenerateCommandInfo 检查命令信息
-func (gci *Command) CheckGenerateCommandInfo() error {
+// CheckCommand 检查命令信息
+func (c *Command) CheckCommand() error {
 
-	if gci.Lang == "" {
-		return fmt.Errorf("The target language name is empty")
-	}
-
-	if !validLang(gci.Lang) {
-		return fmt.Errorf("Unsupported language")
-	}
-
-	if gci.Input == "" {
-		return fmt.Errorf("The thrift file input path is empty")
-	}
-	p, err := filepath.Abs(gci.Input)
+	lang, err := checkLang(c.Lang)
 	if err != nil {
-		return fmt.Errorf("The input thrift file path not exist")
+		return err
 	}
-	inputFileInfo, err := os.Stat(p)
-	if err != nil {
-		return fmt.Errorf("The input thrift file path not exist")
-	}
-	if inputFileInfo.IsDir() {
-		return fmt.Errorf("The input thrift file path not exist")
-	}
-	gci.Input = p
+	c.Lang = lang
 
-	if gci.Output == "" {
-		return fmt.Errorf("File output path is empty")
-	}
-	p, err = filepath.Abs(gci.Output)
+	input, err := checkInputPath(c.Input)
 	if err != nil {
-		return fmt.Errorf("File output path error")
+		return err
 	}
-	gci.Output = p
+	c.Input = input
+
+	output, err := checkOutputPath(c.Output)
+	if err != nil {
+		return err
+	}
+	c.Output = output
 
 	return nil
+}
+
+func checkLang(lang string) (string, error) {
+
+	if lang == "" {
+		return "", fmt.Errorf("The target language name is empty")
+	}
+
+	if !validLang(lang) {
+		return "", fmt.Errorf("Unsupported language")
+	}
+
+	return lang, nil
+}
+
+func checkInputPath(ip string) (string, error) {
+
+	if ip == "" {
+		return "", fmt.Errorf("The thrift file input path is empty")
+	}
+
+	p, err := filepath.Abs(ip)
+
+	if err != nil {
+		return "", fmt.Errorf("The input thrift file path not exist")
+	}
+
+	info, err := os.Stat(p)
+
+	if err != nil {
+		return "", fmt.Errorf("The input thrift file path not exist")
+	}
+
+	if info.IsDir() {
+		return "", fmt.Errorf("The input path is a directory")
+	}
+
+	return p, nil
+}
+
+func checkOutputPath(op string) (string, error) {
+
+	if op == "" {
+		return "", fmt.Errorf("File output path is empty")
+	}
+
+	p, err := filepath.Abs(op)
+
+	if err != nil {
+		return "", fmt.Errorf("File output path error")
+	}
+
+	return p, nil
 }

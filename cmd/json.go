@@ -36,7 +36,7 @@ var JSONGenerate = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		if err := genInfo.CheckGenerateCommandInfo(); err != nil {
+		if err := genInfo.CheckCommand(); err != nil {
 			log.Fatalln(err.Error())
 		}
 
