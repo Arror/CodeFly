@@ -27,7 +27,7 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 	wg := sync.WaitGroup{}
 
 	enumTplName := tpl.SwiftEnumTplName
-	enumTmpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
+	enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
 
 	wg.Add(1)
 	go func() {
@@ -42,12 +42,12 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 			name := se.Name()
 
 			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
-			printFile(path, enumTmpl, enumTplName, se)
+			printFile(path, enumTpl, enumTplName, se)
 		}
 	}()
 
-	structTplName := tpl.SwiftStructTemplateName
-	structTmpl := initTemplate(structTplName, tpl.SwiftStructTpl())
+	structTplName := tpl.SwiftStructTplName
+	structTpl := initTemplate(structTplName, tpl.SwiftStructTpl())
 
 	wg.Add(1)
 	go func() {
@@ -65,12 +65,12 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 			name := ss.Name()
 
 			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
-			printFile(path, structTmpl, structTplName, ss)
+			printFile(path, structTpl, structTplName, ss)
 		}
 	}()
 
-	serviceTplName := tpl.SwiftServiceTemplateName
-	serviceTmpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
+	serviceTplName := tpl.SwiftServiceTpleName
+	serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
 
 	wg.Add(1)
 	go func() {
@@ -88,7 +88,7 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 			name := ss.Name()
 
 			path, _ := filepath.Abs(filepath.Join(op, name+".swift"))
-			printFile(path, serviceTmpl, serviceTplName, ss)
+			printFile(path, serviceTpl, serviceTplName, ss)
 		}
 	}()
 
