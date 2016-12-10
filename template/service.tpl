@@ -1,12 +1,12 @@
 //
-// {{ .Name }}.swift
+// {{ .Namespace }}{{ .Service.Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
 //
 
 import Foundation
 {{ $ss := . }}
-public final class {{ .Name }}: NSObject {
+public final class {{ .Namespace }}{{ .Service.Name }}: NSObject {
     {{ range $i, $m := .Service.Methods }}{{ $void := $m.ReturnTypeIsVoid }}
     public static func {{ $m.Name }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $f.Type.SwiftString  $ss.Thrifts $ss.Thrift $ss.Lang }}, {{end}}completion: ({{ if ne $void true }}{{ $m.ReturnType.SwiftString $ss.Thrifts $ss.Thrift $ss.Lang }}{{ end }}) -> Void, failure: (Error) -> Void) -> Bool {
 

@@ -24,6 +24,17 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 	t := ts[cmd.Input]
 
+	var namespaceMapping = make(map[string]string)
+
+	for fn, fp := range t.Includes {
+		for p, t := range ts {
+			if p == fp {
+				namespaceMapping[fn] = t.Namespaces[cmd.Lang]
+				break
+			}
+		}
+	}
+
 	wg := sync.WaitGroup{}
 
 	wg.Add(1)
@@ -56,38 +67,37 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			ss := &tps.SwiftStruct{}
 			ss.Struct = s
-			ss.Thrifts = ts
-			ss.Thrift = t
-			ss.Lang = cmd.Lang
 			ss.Namespace = t.Namespaces[cmd.Lang]
+			ss.NamespaceMapping = namespaceMapping
 
-			name := ss.Name()
+			name := ss.Namespace + ss.Struct.Name
 
 			outputSwiftFile(op, name, structTpl, structTplName, ss)
 		}
 	}()
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
 
-		serviceTplName := tpl.SwiftServiceTpleName
-		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
+	// 	serviceTplName := tpl.SwiftServiceTpleName
+	// 	serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
 
-		for _, s := range t.Services {
+	// 	for _, s := range t.Services {
 
-			ss := &tps.SwiftService{}
-			ss.Service = s
-			ss.Thrifts = ts
-			ss.Thrift = t
-			ss.Lang = cmd.Lang
-			ss.Namespace = t.Namespaces[cmd.Lang]
+	// 		ss := &tps.SwiftService{}
+	// 		ss.Service = s
+	// 		ss.Thrifts = ts
+	// 		ss.Thrift = t
+	// 		ss.Lang = cmd.Lang
+	// 		ss.Namespace = t.Namespaces[cmd.Lang]
+	// 		ss.NamespaceMapping = namespaceMapping
 
-			name := ss.Name()
+	// 		name := ss.Name()
 
-			outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
-		}
-	}()
+	// 		outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
+	// 	}
+	// }()
 
 	wg.Wait()
 }
