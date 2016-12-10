@@ -10,7 +10,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-var genInfo = &command.Command{}
+var info = &command.Command{}
 
 // JSONGenerate json代码生成命令
 var JSONGenerate = cli.Command{
@@ -21,31 +21,31 @@ var JSONGenerate = cli.Command{
 		cli.StringFlag{
 			Name:        "lang, l",
 			Usage:       "Target language.",
-			Destination: &genInfo.Lang,
+			Destination: &info.Lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
 			Usage:       "Input thrift file path.",
-			Destination: &genInfo.Input,
+			Destination: &info.Input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
 			Usage:       "File output path.",
-			Destination: &genInfo.Output,
+			Destination: &info.Output,
 		},
 	},
 	Action: func(c *cli.Context) error {
 
-		if err := genInfo.CheckCommand(); err != nil {
+		if err := info.CheckCommand(); err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		ts, err := reader.ReadThrift(genInfo)
+		ts, err := reader.ReadThrift(info)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		printer.Generate(ts, genInfo)
+		printer.Generate(ts, info)
 
 		return nil
 	},

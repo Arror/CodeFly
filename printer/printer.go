@@ -15,14 +15,14 @@ import (
 )
 
 // Generate 代码生成
-func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
+func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
-	op := genInfo.Output
+	op := cmd.Output
 	if err := os.MkdirAll(op, 0755); err != nil {
 		panic(err.Error())
 	}
 
-	t := ts[genInfo.Input]
+	t := ts[cmd.Input]
 
 	wg := sync.WaitGroup{}
 
@@ -37,7 +37,7 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 
 			se := &tps.SwiftEnum{}
 			se.Enum = e
-			se.Namespace = t.Namespaces[genInfo.Lang]
+			se.Namespace = t.Namespaces[cmd.Lang]
 
 			name := se.Name()
 
@@ -62,8 +62,8 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 			ss.Struct = s
 			ss.Thrifts = ts
 			ss.Thrift = t
-			ss.Lang = genInfo.Lang
-			ss.Namespace = t.Namespaces[genInfo.Lang]
+			ss.Lang = cmd.Lang
+			ss.Namespace = t.Namespaces[cmd.Lang]
 
 			name := ss.Name()
 
@@ -88,8 +88,8 @@ func Generate(ts map[string]*parser.Thrift, genInfo *command.Command) {
 			ss.Service = s
 			ss.Thrifts = ts
 			ss.Thrift = t
-			ss.Lang = genInfo.Lang
-			ss.Namespace = t.Namespaces[genInfo.Lang]
+			ss.Lang = cmd.Lang
+			ss.Namespace = t.Namespaces[cmd.Lang]
 
 			name := ss.Name()
 
