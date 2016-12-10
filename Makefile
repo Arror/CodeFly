@@ -5,6 +5,9 @@ init:
 build:
 	go build Codefly
 
+gen:
+	./Codefly json -l swift -i /Users/Arror/thrift/Base.thrift -o ./outputPath
+
 help:
 	./Codefly -h
     
