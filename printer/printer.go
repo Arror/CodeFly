@@ -26,12 +26,12 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 	wg := sync.WaitGroup{}
 
-	enumTplName := tpl.SwiftEnumTplName
-	enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
-
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+
+		enumTplName := tpl.SwiftEnumTplName
+		enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
 
 		for _, e := range t.Enums {
 
@@ -39,22 +39,18 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 			se.Enum = e
 			se.Namespace = t.Namespaces[cmd.Lang]
 
-			name := se.Name()
+			name := se.Namespace + se.Enum.Name
 
-			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-			printFile(path, enumTpl, enumTplName, se)
+			outputSwiftFile(op, name, enumTpl, enumTplName, se)
 		}
 	}()
-
-	structTplName := tpl.SwiftStructTplName
-	structTpl := initTemplate(structTplName, tpl.SwiftStructTpl())
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+
+		structTplName := tpl.SwiftStructTplName
+		structTpl := initTemplate(structTplName, tpl.SwiftStructTpl())
 
 		for _, s := range t.Structs {
 
@@ -67,20 +63,16 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := ss.Name()
 
-			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-			printFile(path, structTpl, structTplName, ss)
+			outputSwiftFile(op, name, structTpl, structTplName, ss)
 		}
 	}()
-
-	serviceTplName := tpl.SwiftServiceTpleName
-	serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+
+		serviceTplName := tpl.SwiftServiceTpleName
+		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
 
 		for _, s := range t.Services {
 
@@ -93,11 +85,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := ss.Name()
 
-			path, err := filepath.Abs(filepath.Join(op, name+".swift"))
-			if err != nil {
-				log.Fatalln(err.Error())
-			}
-			printFile(path, serviceTpl, serviceTplName, ss)
+			outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
 		}
 	}()
 
@@ -123,4 +111,14 @@ func printFile(fp string, t *template.Template, tplname string, data interface{}
 	if err := t.ExecuteTemplate(file, tplname, data); err != nil {
 		log.Fatal(err.Error())
 	}
+}
+
+func outputSwiftFile(op string, fn string, t *template.Template, tplname string, data interface{}) {
+
+	path, err := filepath.Abs(filepath.Join(op, fn+".swift"))
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	printFile(path, t, tplname, data)
 }

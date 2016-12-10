@@ -7,8 +7,3 @@ type SwiftEnum struct {
 	*p.Enum
 	Namespace string
 }
-
-// Name 枚举名称
-func (e *SwiftEnum) Name() string {
-	return e.Namespace + e.Enum.Name
-}
