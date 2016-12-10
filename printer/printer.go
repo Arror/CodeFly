@@ -24,7 +24,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 	t := ts[cmd.Input]
 
-	var namespaceMapping = make(map[string]string)
+	namespaceMapping := make(map[string]string)
 
 	for fn, fp := range t.Includes {
 		for p, t := range ts {
@@ -34,6 +34,8 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 			}
 		}
 	}
+
+	namespace := t.Namespaces[cmd.Lang]
 
 	wg := sync.WaitGroup{}
 
@@ -48,7 +50,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			se := &tps.SwiftEnum{}
 			se.Enum = e
-			se.Namespace = t.Namespaces[cmd.Lang]
+			se.Namespace = namespace
 
 			name := se.Namespace + se.Enum.Name
 
@@ -67,7 +69,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			ss := &tps.SwiftStruct{}
 			ss.Struct = s
-			ss.Namespace = t.Namespaces[cmd.Lang]
+			ss.Namespace = namespace
 			ss.NamespaceMapping = namespaceMapping
 
 			name := ss.Namespace + ss.Struct.Name
@@ -76,28 +78,25 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		}
 	}()
 
-	// wg.Add(1)
-	// go func() {
-	// 	defer wg.Done()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-	// 	serviceTplName := tpl.SwiftServiceTpleName
-	// 	serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
+		serviceTplName := tpl.SwiftServiceTpleName
+		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
 
-	// 	for _, s := range t.Services {
+		for _, s := range t.Services {
 
-	// 		ss := &tps.SwiftService{}
-	// 		ss.Service = s
-	// 		ss.Thrifts = ts
-	// 		ss.Thrift = t
-	// 		ss.Lang = cmd.Lang
-	// 		ss.Namespace = t.Namespaces[cmd.Lang]
-	// 		ss.NamespaceMapping = namespaceMapping
+			ss := &tps.SwiftService{}
+			ss.Service = s
+			ss.Namespace = namespace
+			ss.NamespaceMapping = namespaceMapping
 
-	// 		name := ss.Name()
+			name := s.Name + "Service"
 
-	// 		outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
-	// 	}
-	// }()
+			outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
+		}
+	}()
 
 	wg.Wait()
 }
