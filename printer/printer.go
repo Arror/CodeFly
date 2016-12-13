@@ -54,7 +54,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := se.Namespace + se.Enum.Name
 
-			outputSwiftFile(op, name, enumTpl, enumTplName, se)
+			outputSwiftFile(op, name+".swift", enumTpl, enumTplName, se)
 		}
 	}()
 
@@ -74,7 +74,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := ss.Namespace + ss.Struct.Name
 
-			outputSwiftFile(op, name, structTpl, structTplName, ss)
+			outputSwiftFile(op, name+".swift", structTpl, structTplName, ss)
 		}
 	}()
 
@@ -94,7 +94,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := s.Name + "Service"
 
-			outputSwiftFile(op, name, serviceTpl, serviceTplName, ss)
+			outputSwiftFile(op, name+".swift", serviceTpl, serviceTplName, ss)
 		}
 	}()
 
@@ -124,7 +124,7 @@ func printFile(fp string, t *template.Template, tplname string, data interface{}
 
 func outputSwiftFile(op string, fn string, t *template.Template, tplname string, data interface{}) {
 
-	path, err := filepath.Abs(filepath.Join(op, fn+".swift"))
+	path, err := filepath.Abs(filepath.Join(op, fn))
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
