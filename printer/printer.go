@@ -9,7 +9,7 @@ import (
 
 	"CodeFly/command"
 	"CodeFly/lang/swift"
-	tpl "CodeFly/template"
+	"CodeFly/lang/swift/tpl"
 
 	"github.com/arrors/go-thrift/parser"
 )
@@ -44,7 +44,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		enumTplName := tpl.SwiftEnumTplName
-		enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl())
+		enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl)
 
 		for _, e := range t.Enums {
 
@@ -63,7 +63,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		structTplName := tpl.SwiftStructTplName
-		structTpl := initTemplate(structTplName, tpl.SwiftStructTpl())
+		structTpl := initTemplate(structTplName, tpl.SwiftStructTpl)
 
 		for _, s := range t.Structs {
 
@@ -83,7 +83,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		serviceTplName := tpl.SwiftServiceTpleName
-		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl())
+		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl)
 
 		for _, s := range t.Services {
 
