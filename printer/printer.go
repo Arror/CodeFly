@@ -8,7 +8,7 @@ import (
 	"text/template"
 
 	"CodeFly/command"
-	"CodeFly/lang/swift"
+	"CodeFly/lang/swift/model"
 	"CodeFly/lang/swift/tpl"
 
 	"github.com/arrors/go-thrift/parser"
@@ -48,7 +48,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 		for _, e := range t.Enums {
 
-			se := &swift.Enum{}
+			se := &model.Enum{}
 			se.Enum = e
 			se.Namespace = namespace
 
@@ -67,7 +67,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 		for _, s := range t.Structs {
 
-			ss := &swift.Struct{}
+			ss := &model.Struct{}
 			ss.Struct = s
 			ss.Namespace = namespace
 			ss.NamespaceMapping = namespaceMapping
@@ -87,7 +87,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 		for _, s := range t.Services {
 
-			ss := &swift.Service{}
+			ss := &model.Service{}
 			ss.Service = s
 			ss.Namespace = namespace
 			ss.NamespaceMapping = namespaceMapping

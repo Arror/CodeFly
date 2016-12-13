@@ -1,4 +1,4 @@
-package swift
+package model
 
 import "github.com/arrors/go-thrift/parser"
 
