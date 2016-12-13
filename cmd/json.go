@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"CodeFly/command"
-	"CodeFly/printer"
+	"CodeFly/lang/swift/generator"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
@@ -45,7 +45,7 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		printer.Generate(ts, info)
+		generator.Generate(ts, info)
 
 		return nil
 	},

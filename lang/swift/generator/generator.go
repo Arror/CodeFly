@@ -1,15 +1,13 @@
-package printer
+package generator
 
 import (
-	"log"
 	"os"
-	"path/filepath"
 	"sync"
-	"text/template"
 
 	"CodeFly/command"
 	"CodeFly/lang/swift/model"
 	"CodeFly/lang/swift/tpl"
+	"CodeFly/writer"
 
 	"github.com/arrors/go-thrift/parser"
 )
@@ -44,7 +42,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		enumTplName := tpl.SwiftEnumTplName
-		enumTpl := initTemplate(enumTplName, tpl.SwiftEnumTpl)
+		enumTpl := writer.InitTemplate(enumTplName, tpl.SwiftEnumTpl)
 
 		for _, e := range t.Enums {
 
@@ -54,7 +52,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := se.Namespace + se.Enum.Name
 
-			printFile(assembleFilePath(op, name+".swift"), enumTpl, enumTplName, se)
+			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), enumTpl, enumTplName, se)
 		}
 	}()
 
@@ -63,7 +61,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		structTplName := tpl.SwiftStructTplName
-		structTpl := initTemplate(structTplName, tpl.SwiftStructTpl)
+		structTpl := writer.InitTemplate(structTplName, tpl.SwiftStructTpl)
 
 		for _, s := range t.Structs {
 
@@ -74,7 +72,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := ss.Namespace + ss.Struct.Name
 
-			printFile(assembleFilePath(op, name+".swift"), structTpl, structTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), structTpl, structTplName, ss)
 		}
 	}()
 
@@ -83,7 +81,7 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 		defer wg.Done()
 
 		serviceTplName := tpl.SwiftServiceTpleName
-		serviceTpl := initTemplate(serviceTplName, tpl.SwiftServiceTpl)
+		serviceTpl := writer.InitTemplate(serviceTplName, tpl.SwiftServiceTpl)
 
 		for _, s := range t.Services {
 
@@ -94,41 +92,9 @@ func Generate(ts map[string]*parser.Thrift, cmd *command.Command) {
 
 			name := s.Name + "Service"
 
-			printFile(assembleFilePath(op, name+".swift"), serviceTpl, serviceTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), serviceTpl, serviceTplName, ss)
 		}
 	}()
 
 	wg.Wait()
-}
-
-func initTemplate(name string, tmpl string) *template.Template {
-
-	template, err := template.New(name).Parse(tmpl)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
-}
-
-func printFile(fp string, t *template.Template, tplname string, data interface{}) {
-
-	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer file.Close()
-	if err := t.ExecuteTemplate(file, tplname, data); err != nil {
-		log.Fatal(err.Error())
-	}
-}
-
-func assembleFilePath(op string, fn string) string {
-
-	p, err := filepath.Abs(filepath.Join(op, fn))
-
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	return p
 }
