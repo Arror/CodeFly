@@ -3,14 +3,14 @@ package cmd
 import (
 	"log"
 
-	"CodeFly/command"
-	"CodeFly/lang/swift/generator"
+	"CodeFly/generator"
+	"CodeFly/parameter"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
 )
 
-var info = &command.Command{}
+var param = &parameter.Parameter{}
 
 // JSONGenerate json代码生成命令
 var JSONGenerate = cli.Command{
@@ -21,31 +21,36 @@ var JSONGenerate = cli.Command{
 		cli.StringFlag{
 			Name:        "lang, l",
 			Usage:       "Target language.",
-			Destination: &info.Lang,
+			Destination: &param.Lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
 			Usage:       "Input thrift file path.",
-			Destination: &info.Input,
+			Destination: &param.Input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
 			Usage:       "File output path.",
-			Destination: &info.Output,
+			Destination: &param.Output,
 		},
 	},
 	Action: func(c *cli.Context) error {
 
-		if err := info.CheckCommand(); err != nil {
+		if err := param.CheckParameter(); err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		ts, err := reader.ReadThrift(info)
+		ts, err := reader.ReadThrift(param)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		generator.Generate(ts, info)
+		gen, err := generator.MakeGenerator(param)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
+		gen.Generate(ts, param)
 
 		return nil
 	},

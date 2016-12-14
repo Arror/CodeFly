@@ -1,53 +1,51 @@
-package command
+package parameter
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"CodeFly/lang"
 )
 
-const (
-	swift = "swift"
-)
-
-func validLang(lang string) bool {
-	switch lang {
-	case swift:
-		return true
-	default:
-		return false
-	}
-}
-
-// Command 命令信息结构
-type Command struct {
+// Parameter 命令参数结构
+type Parameter struct {
 	Lang   string
 	Input  string
 	Output string
 }
 
-// CheckCommand 检查命令信息
-func (c *Command) CheckCommand() error {
+// CheckParameter 检查参数信息
+func (param *Parameter) CheckParameter() error {
 
-	lang, err := checkLang(c.Lang)
+	lang, err := checkLang(param.Lang)
 	if err != nil {
 		return err
 	}
-	c.Lang = lang
+	param.Lang = lang
 
-	input, err := checkInputPath(c.Input)
+	input, err := checkInputPath(param.Input)
 	if err != nil {
 		return err
 	}
-	c.Input = input
+	param.Input = input
 
-	output, err := checkOutputPath(c.Output)
+	output, err := checkOutputPath(param.Output)
 	if err != nil {
 		return err
 	}
-	c.Output = output
+	param.Output = output
 
 	return nil
+}
+
+func validLang(l string) bool {
+	switch l {
+	case lang.Swift:
+		return true
+	default:
+		return false
+	}
 }
 
 func checkLang(lang string) (string, error) {
