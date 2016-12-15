@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"CodeFly/lang"
+	"CodeFly/global"
 )
 
 // Parameter 命令参数结构
@@ -39,9 +39,9 @@ func (param *Parameter) CheckParameter() error {
 	return nil
 }
 
-func validLang(l string) bool {
-	switch l {
-	case lang.Swift:
+func validLang(lang string) bool {
+	switch lang {
+	case global.Swift:
 		return true
 	default:
 		return false

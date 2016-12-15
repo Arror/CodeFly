@@ -1,4 +1,4 @@
-package model
+package swift
 
 import (
 	"os"
@@ -11,11 +11,11 @@ import (
 	"github.com/arrors/go-thrift/parser"
 )
 
-// SwiftGenerator Swift 代码生器
-type SwiftGenerator struct{}
+// Generator Swift generator
+type Generator struct{}
 
-// Generate 遵守Generate协议
-func (sg *SwiftGenerator) Generate(ts map[string]*parser.Thrift, param *parameter.Parameter) {
+// Generate 实现Generator协议
+func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Parameter) {
 
 	op := param.Output
 	if err := os.MkdirAll(op, 0755); err != nil {

@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"CodeFly/generator"
+	"CodeFly/maker"
 	"CodeFly/parameter"
 	"CodeFly/reader"
 
@@ -12,7 +12,7 @@ import (
 
 var param = &parameter.Parameter{}
 
-// JSONGenerate json代码生成命令
+// JSONGenerate Json generate command
 var JSONGenerate = cli.Command{
 	Name:      "json",
 	ShortName: "json",
@@ -45,12 +45,12 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		gen, err := generator.MakeGenerator(param)
+		generator, err := maker.MakeGenerator(param)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		gen.Generate(ts, param)
+		generator.Generate(ts, param)
 
 		return nil
 	},
