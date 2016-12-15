@@ -34,21 +34,6 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 	gen.input = param.Input
 	gen.output = param.Output
 
-	t := ts[param.Input]
-
-	namespaceMapping := make(map[string]string)
-
-	for fn, fp := range t.Includes {
-		for p, t := range ts {
-			if p == fp {
-				namespaceMapping[fn] = t.Namespaces[param.Lang]
-				break
-			}
-		}
-	}
-
-	namespace := t.Namespaces[param.Lang]
-
 	wg := sync.WaitGroup{}
 
 	wg.Add(1)
@@ -58,7 +43,7 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 		enumTplName := tpl.SwiftEnumTplName
 		enumTpl := writer.InitTemplate(enumTplName, tpl.SwiftEnumTpl)
 
-		for _, e := range t.Enums {
+		for _, e := range gen.t.Enums {
 
 			se := &Enum{}
 			se.Enum = e
@@ -75,7 +60,7 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 		structTplName := tpl.SwiftStructTplName
 		structTpl := writer.InitTemplate(structTplName, tpl.SwiftStructTpl)
 
-		for _, s := range t.Structs {
+		for _, s := range gen.t.Structs {
 
 			ss := &Struct{}
 			ss.Struct = s
@@ -92,26 +77,17 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 		serviceTplName := tpl.SwiftServiceTpleName
 		serviceTpl := writer.InitTemplate(serviceTplName, tpl.SwiftServiceTpl)
 
-		for _, s := range t.Services {
+		for _, s := range gen.t.Services {
 
 			ss := &Service{}
 			ss.Service = s
-			ss.Namespace = namespace
-			ss.NamespaceMapping = namespaceMapping
+			ss.Generator = gen
 
-			name := s.Name + "Service"
-
-			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), serviceTpl, serviceTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.ServiceName(s)+".swift"), serviceTpl, serviceTplName, ss)
 		}
 	}()
 
 	wg.Wait()
-}
-
-// Namespaces 名称空间信息
-type Namespaces struct {
-	Namespace        string
-	NamespaceMapping map[string]string
 }
 
 // Enum Swift枚举类型
@@ -130,7 +106,6 @@ type Struct struct {
 type Service struct {
 	*parser.Service
 	*Generator
-	Namespaces
 }
 
 // EnumName enum name
@@ -141,6 +116,11 @@ func (gen *Generator) EnumName(e *parser.Enum) string {
 // StructName struct name
 func (gen *Generator) StructName(s *parser.Struct) string {
 	return gen.t.Namespaces[gen.lang] + s.Name
+}
+
+// ServiceName service name
+func (gen *Generator) ServiceName(s *parser.Service) string {
+	return s.Name + "Service"
 }
 
 // PropertyType property type
