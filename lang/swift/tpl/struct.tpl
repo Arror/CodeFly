@@ -1,21 +1,21 @@
-//
-// {{ .Namespace }}{{ .Struct.Name }}.swift
+// {{ $ss := . }}
+// {{ $ss.Generator.StructName $ss.Struct }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
 //
 
 import Foundation
-{{ $ss := . }}
-public class {{ .Namespace }}{{ .Struct.Name }}: Base {
+
+public class {{ $ss.Generator.StructName $ss.Struct }}: Base {
     {{ range $i, $f := .Fields }}
-    public var {{ $f.Name }}: {{ $f.Type.PrintTypeString $ss.Namespace $ss.NamespaceMapping }}{{ $f.Type.DefaultValueString }}
+    public var {{ $f.Name }}: {{ $ss.Generator.PropertyType $f }} {{ $ss.Generator.DefaultValue $f }}
     {{ end }}
 
     override public func from(json: Any) -> Bool {
         
         guard let dict = json as? [String: Any] else { return false }
         {{ range $i, $f := .Fields }}
-        {{ $f.Name }} = {{ $f.ValueFromDict  $ss.Namespace $ss.NamespaceMapping }}{{ end }}
+        {{ $f.Name }} = {{ $ss.Generator.ValueFromJSON $f }}{{ end }}
 
         return true
     }
@@ -24,7 +24,7 @@ public class {{ .Namespace }}{{ .Struct.Name }}: Base {
         
         var dict = [String: Any]()
         {{ range $i, $f := .Fields }}
-        dict["{{ $f.Name }}"] = {{ $f.Name }}{{ $f.Type.ToDictValue }}{{ end }}
+        dict["{{ $f.Name }}"] = {{ $ss.Generator.ValueToJSON $f }}{{ end }}
 
         return dict
     }

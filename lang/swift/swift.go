@@ -79,12 +79,9 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 
 			ss := &Struct{}
 			ss.Struct = s
-			ss.Namespace = namespace
-			ss.NamespaceMapping = namespaceMapping
+			ss.Generator = gen
 
-			name := ss.Namespace + ss.Struct.Name
-
-			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), structTpl, structTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.StructName(s)+".swift"), structTpl, structTplName, ss)
 		}
 	}()
 
@@ -127,7 +124,6 @@ type Enum struct {
 type Struct struct {
 	*parser.Struct
 	*Generator
-	Namespaces
 }
 
 // Service Swift服务类型
@@ -140,4 +136,29 @@ type Service struct {
 // EnumName enum name
 func (gen *Generator) EnumName(e *parser.Enum) string {
 	return gen.t.Namespaces[gen.lang] + e.Name
+}
+
+// StructName struct name
+func (gen *Generator) StructName(s *parser.Struct) string {
+	return gen.t.Namespaces[gen.lang] + s.Name
+}
+
+// PropertyType property type
+func (gen *Generator) PropertyType(f *parser.Field) string {
+	return "PT -> " + f.Name
+}
+
+// DefaultValue default value
+func (gen *Generator) DefaultValue(f *parser.Field) string {
+	return "DV -> " + f.Name
+}
+
+// ValueFromJSON value from json string
+func (gen *Generator) ValueFromJSON(f *parser.Field) string {
+	return "VFJ -> " + f.Name
+}
+
+// ValueToJSON value to json string
+func (gen *Generator) ValueToJSON(f *parser.Field) string {
+	return "VTJ -> " + f.Name
 }
