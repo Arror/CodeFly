@@ -8,14 +8,14 @@ import (
 	"CodeFly/global"
 )
 
-// Parameter 命令参数结构
+// Parameter Input infomation struct
 type Parameter struct {
 	Lang   string
 	Input  string
 	Output string
 }
 
-// CheckParameter 检查参数信息
+// CheckParameter Check input infomation
 func (param *Parameter) CheckParameter() error {
 
 	lang, err := checkLang(param.Lang)

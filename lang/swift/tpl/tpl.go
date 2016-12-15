@@ -22,20 +22,20 @@ func fileToString(fp string) string {
 	return string(buffer)
 }
 
-// SwiftEnumTplName Swift Enum 模板名称
+// SwiftEnumTplName Swift enum template name
 const SwiftEnumTplName = "EnumTemplate"
 
-// SwiftStructTplName Swift Struct 模板名称
+// SwiftStructTplName Swift struct template name
 const SwiftStructTplName = "StructTemplate"
 
-// SwiftServiceTpleName Swift Service 模板名称
+// SwiftServiceTpleName Swift service template name
 const SwiftServiceTpleName = "ServiceTemplate"
 
-// SwiftEnumTpl Swift Enum 模板
+// SwiftEnumTpl Swift enum template
 var SwiftEnumTpl = fileToString(enumTplPath)
 
-// SwiftStructTpl Swift Struct 模板
+// SwiftStructTpl Swift struct template
 var SwiftStructTpl = fileToString(structTplPath)
 
-// SwiftServiceTpl Swift Service 模板
+// SwiftServiceTpl Swift service template
 var SwiftServiceTpl = fileToString(serviceTplPath)

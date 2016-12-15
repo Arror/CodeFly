@@ -8,7 +8,7 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
-// ReadThrift 读取Thrift文件信息
+// ReadThrift Read thrift file via input infomation
 func ReadThrift(param *parameter.Parameter) (map[string]*parser.Thrift, error) {
 
 	p := parser.Parser{}

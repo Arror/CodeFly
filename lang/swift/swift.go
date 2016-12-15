@@ -20,7 +20,7 @@ type Generator struct {
 	output string
 }
 
-// Generate 实现Generator协议
+// Generate Generate implement Generator interface
 func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Parameter) {
 
 	op := param.Output
@@ -90,19 +90,19 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 	wg.Wait()
 }
 
-// Enum Swift枚举类型
+// Enum Swift enum type
 type Enum struct {
 	*parser.Enum
 	*Generator
 }
 
-// Struct Swift结构类型
+// Struct Swift struct type
 type Struct struct {
 	*parser.Struct
 	*Generator
 }
 
-// Service Swift服务类型
+// Service Swift service type
 type Service struct {
 	*parser.Service
 	*Generator
