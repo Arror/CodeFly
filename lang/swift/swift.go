@@ -4,6 +4,7 @@ import (
 	"os"
 	"sync"
 
+	"CodeFly/global"
 	"CodeFly/lang/swift/tpl"
 	"CodeFly/parameter"
 	"CodeFly/writer"
@@ -141,4 +142,27 @@ func (gen *Generator) ValueFromJSON(f *parser.Field) string {
 // ValueToJSON value to json string
 func (gen *Generator) ValueToJSON(f *parser.Field) string {
 	return "VTJ -> " + f.Name
+}
+
+const (
+	swiftInt    = "Int"
+	swiftInt64  = "Int64"
+	swiftDouble = "Double"
+	swiftBool   = "Bool"
+	swiftString = "String"
+)
+
+const (
+	swiftVoid = "Void"
+)
+
+var mapping = map[string]string{
+	global.ThriftI16:    swiftInt,
+	global.ThriftI32:    swiftInt,
+	global.ThriftI64:    swiftInt64,
+	global.ThriftBool:   swiftBool,
+	global.ThriftDouble: swiftDouble,
+	global.ThriftString: swiftString,
+	global.ThriftByte:   global.Unsupported,
+	global.ThriftBinary: global.Unsupported,
 }
