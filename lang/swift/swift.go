@@ -12,7 +12,13 @@ import (
 )
 
 // Generator Swift generator
-type Generator struct{}
+type Generator struct {
+	t      *parser.Thrift
+	ts     map[string]*parser.Thrift
+	lang   string
+	input  string
+	output string
+}
 
 // Generate 实现Generator协议
 func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Parameter) {
@@ -21,6 +27,12 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 	if err := os.MkdirAll(op, 0755); err != nil {
 		panic(err.Error())
 	}
+
+	gen.ts = ts
+	gen.t = ts[param.Input]
+	gen.lang = param.Lang
+	gen.input = param.Input
+	gen.output = param.Output
 
 	t := ts[param.Input]
 
@@ -50,11 +62,9 @@ func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Pa
 
 			se := &Enum{}
 			se.Enum = e
-			se.Namespace = namespace
+			se.Generator = gen
 
-			name := se.Namespace + se.Enum.Name
-
-			writer.WriteFile(writer.AssembleFilePath(op, name+".swift"), enumTpl, enumTplName, se)
+			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.EnumName(e)+".swift"), enumTpl, enumTplName, se)
 		}
 	}()
 
@@ -110,17 +120,24 @@ type Namespaces struct {
 // Enum Swift枚举类型
 type Enum struct {
 	*parser.Enum
-	Namespaces
+	*Generator
 }
 
 // Struct Swift结构类型
 type Struct struct {
 	*parser.Struct
+	*Generator
 	Namespaces
 }
 
 // Service Swift服务类型
 type Service struct {
 	*parser.Service
+	*Generator
 	Namespaces
+}
+
+// EnumName enum name
+func (gen *Generator) EnumName(e *parser.Enum) string {
+	return gen.t.Namespaces[gen.lang] + e.Name
 }
