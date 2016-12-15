@@ -3,7 +3,7 @@ package protocol
 import (
 	"CodeFly/parameter"
 
-	"github.com/arrors/go-thrift/parser"
+	"github.com/samuel/go-thrift/parser"
 )
 
 // Generator Generator protocol

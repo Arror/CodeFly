@@ -8,7 +8,7 @@ import (
 	"CodeFly/parameter"
 	"CodeFly/writer"
 
-	"github.com/arrors/go-thrift/parser"
+	"github.com/samuel/go-thrift/parser"
 )
 
 // Generator Swift generator

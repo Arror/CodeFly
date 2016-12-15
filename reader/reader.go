@@ -5,7 +5,7 @@ import (
 
 	"CodeFly/parameter"
 
-	"github.com/arrors/go-thrift/parser"
+	"github.com/samuel/go-thrift/parser"
 )
 
 // ReadThrift 读取Thrift文件信息
