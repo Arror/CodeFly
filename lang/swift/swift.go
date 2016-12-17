@@ -6,7 +6,6 @@ import (
 
 	"CodeFly/global"
 	"CodeFly/lang/swift/tpl"
-	"CodeFly/parameter"
 	"CodeFly/writer"
 
 	"github.com/samuel/go-thrift/parser"
@@ -22,18 +21,17 @@ type Generator struct {
 }
 
 // Generate Generate implement Generator interface
-func (gen *Generator) Generate(ts map[string]*parser.Thrift, param *parameter.Parameter) {
+func (gen *Generator) Generate() {
 
-	op := param.Output
-	if err := os.MkdirAll(op, 0755); err != nil {
+	if err := os.MkdirAll(global.Output, 0755); err != nil {
 		panic(err.Error())
 	}
 
-	gen.ts = ts
-	gen.t = ts[param.Input]
-	gen.lang = param.Lang
-	gen.input = param.Input
-	gen.output = param.Output
+	gen.ts = global.ThriftMapping
+	gen.t = global.ThriftMapping[global.Input]
+	gen.lang = global.Lang
+	gen.input = global.Input
+	gen.output = global.Output
 
 	wg := sync.WaitGroup{}
 

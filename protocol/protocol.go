@@ -1,12 +1,16 @@
 package protocol
 
 import (
-	"CodeFly/parameter"
-
-	"github.com/samuel/go-thrift/parser"
+	"CodeFly/global"
+	"CodeFly/lang/swift"
 )
 
 // Generator Generator protocol
 type Generator interface {
-	Generate(ts map[string]*parser.Thrift, param *parameter.Parameter)
+	Generate()
+}
+
+// GeneratorMapping generator mapping
+var GeneratorMapping = map[string]Generator{
+	global.Swift: &swift.Generator{},
 }
