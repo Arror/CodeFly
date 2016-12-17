@@ -8,9 +8,9 @@ import (
 )
 
 // InitTemplate Init template
-func InitTemplate(name string, tmpl string) *template.Template {
+func InitTemplate(name string, tmpl []byte) *template.Template {
 
-	template, err := template.New(name).Parse(tmpl)
+	template, err := template.New(name).Parse(string(tmpl))
 	if err != nil {
 		log.Fatal(err.Error())
 	}

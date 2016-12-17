@@ -2,6 +2,10 @@ all:
 
 init:
 
+buildTpl:
+	rm -rf ./lang/swift/swift_tpl.go
+	go-bindata -pkg swift -o ./lang/swift/swift_tpl.go lang/swift/tpl
+
 build:
 	go build Codefly
 

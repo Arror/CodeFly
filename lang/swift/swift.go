@@ -5,10 +5,21 @@ import (
 	"sync"
 
 	"CodeFly/global"
-	"CodeFly/lang/swift/tpl"
 	"CodeFly/writer"
 
 	"github.com/samuel/go-thrift/parser"
+)
+
+const (
+	enumTplPath    = "lang/swift/tpl/enum.tpl"
+	structTplPath  = "lang/swift/tpl/struct.tpl"
+	serviceTplPath = "lang/swift/tpl/service.tpl"
+)
+
+const (
+	enumTplName    = "EnumTemplate"
+	structTplName  = "StructTemplate"
+	serviceTplName = "ServiceTemplate"
 )
 
 // Generator Swift generator
@@ -39,8 +50,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		enumTplName := tpl.SwiftEnumTplName
-		enumTpl := writer.InitTemplate(enumTplName, tpl.SwiftEnumTpl)
+		enumTpl := writer.InitTemplate(enumTplName, MustAsset(enumTplPath))
 
 		for _, e := range gen.t.Enums {
 
@@ -56,8 +66,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		structTplName := tpl.SwiftStructTplName
-		structTpl := writer.InitTemplate(structTplName, tpl.SwiftStructTpl)
+		structTpl := writer.InitTemplate(structTplName, MustAsset(structTplPath))
 
 		for _, s := range gen.t.Structs {
 
@@ -73,8 +82,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		serviceTplName := tpl.SwiftServiceTpleName
-		serviceTpl := writer.InitTemplate(serviceTplName, tpl.SwiftServiceTpl)
+		serviceTpl := writer.InitTemplate(serviceTplName, MustAsset(serviceTplPath))
 
 		for _, s := range gen.t.Services {
 
