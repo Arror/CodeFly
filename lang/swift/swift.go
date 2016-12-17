@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	enumTplPath    = "lang/swift/tpl/enum.tpl"
-	structTplPath  = "lang/swift/tpl/struct.tpl"
-	serviceTplPath = "lang/swift/tpl/service.tpl"
+	enumTplPath    = "templates/swift/enum.tpl"
+	structTplPath  = "templates/swift/struct.tpl"
+	serviceTplPath = "templates/swift/service.tpl"
 )
 
 const (
@@ -50,7 +50,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		enumTpl := writer.InitTemplate(enumTplName, MustAsset(enumTplPath))
+		enumTpl := writer.InitTemplate(enumTplName, enumTplPath)
 
 		for _, e := range gen.t.Enums {
 
@@ -66,7 +66,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		structTpl := writer.InitTemplate(structTplName, MustAsset(structTplPath))
+		structTpl := writer.InitTemplate(structTplName, structTplPath)
 
 		for _, s := range gen.t.Structs {
 
@@ -82,7 +82,7 @@ func (gen *Generator) Generate() {
 	go func() {
 		defer wg.Done()
 
-		serviceTpl := writer.InitTemplate(serviceTplName, MustAsset(serviceTplPath))
+		serviceTpl := writer.InitTemplate(serviceTplName, serviceTplPath)
 
 		for _, s := range gen.t.Services {
 

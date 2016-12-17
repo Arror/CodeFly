@@ -5,12 +5,16 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+
+	"CodeFly/templates"
 )
 
 // InitTemplate Init template
-func InitTemplate(name string, tmpl []byte) *template.Template {
+func InitTemplate(name string, path string) *template.Template {
 
-	template, err := template.New(name).Parse(string(tmpl))
+	buffer := templates.MustAsset(path)
+
+	template, err := template.New(name).Parse(string(buffer))
 	if err != nil {
 		log.Fatal(err.Error())
 	}

@@ -4,7 +4,7 @@ init:
 
 buildTpl:
 	rm -rf ./lang/swift/swift_tpl.go
-	go-bindata -pkg swift -o ./lang/swift/swift_tpl.go lang/swift/tpl
+	go-bindata -pkg templates -o ./templates/templates.go templates/swift
 
 build:
 	go build Codefly
