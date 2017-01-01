@@ -140,6 +140,10 @@ func (gen *Generator) typeString(t *parser.Type) string {
 
 	switch t.Name {
 	case global.List:
+		switch t.ValueType.Name {
+		case global.List, global.Set, global.Map:
+			panic("Unsupported inner container type.")
+		}
 		return "[" + gen.typeString(t.ValueType) + "]"
 	case global.Map, global.Set:
 		panic("Unsupported container type.")
@@ -159,7 +163,7 @@ func (gen *Generator) typeString(t *parser.Type) string {
 	switch componentCount {
 	case 1:
 		_thrift = gen.t
-		_type = t.Name
+		_type = typeComponents[0]
 	case 2:
 		if key := gen.t.Includes[typeComponents[0]]; key != "" {
 			_thrift = gen.ts[key]
