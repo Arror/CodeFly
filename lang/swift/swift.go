@@ -131,12 +131,12 @@ func (gen *Generator) ServiceName(s *parser.Service) string {
 	return s.Name + "Service"
 }
 
-// PropertyType property type
-func (gen *Generator) PropertyType(f *parser.Field) string {
-	return gen.typeString(f.Type)
-}
+// TypeString swift type string
+func (gen *Generator) TypeString(t *parser.Type) string {
 
-func (gen *Generator) typeString(t *parser.Type) string {
+	if t == nil {
+		return swiftVoid
+	}
 
 	switch t.Name {
 	case global.List:
@@ -144,7 +144,7 @@ func (gen *Generator) typeString(t *parser.Type) string {
 		case global.List, global.Set, global.Map:
 			panic("Unsupported inner container type.")
 		}
-		return "[" + gen.typeString(t.ValueType) + "]"
+		return "[" + gen.TypeString(t.ValueType) + "]"
 	case global.Map, global.Set:
 		panic("Unsupported container type.")
 	}
