@@ -131,6 +131,11 @@ func (gen *Generator) ServiceName(s *parser.Service) string {
 	return s.Name + "Service"
 }
 
+// MethodName Swift method name
+func (gen *Generator) MethodName(m *parser.Method) string {
+	return strings.ToLower(m.Name[:1]) + m.Name[1:]
+}
+
 // TypeString swift type string
 func (gen *Generator) TypeString(t *parser.Type) string {
 

@@ -6,9 +6,9 @@
 
 import Foundation
 
-public final class {{ $ss.Generator.ServiceName $ss.Service }}: NSObject {
+public struct {{ $ss.Generator.ServiceName $ss.Service }} {
     {{ range $i, $m := $ss.Service.Methods }}
-    public static func {{ $m.Name }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $f.Type.String }} ,{{end}}completion: () -> Void, failure: (Error) -> Void) -> Bool {
+    public static func {{ $ss.Generator.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $ss.Generator.TypeString $m.ReturnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         return true
     }
