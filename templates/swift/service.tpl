@@ -7,8 +7,27 @@
 import Foundation
 
 public struct {{ $ss.Generator.ServiceName $ss.Service }} {
-    {{ range $i, $m := $ss.Service.Methods }}
-    public static func {{ $ss.Generator.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $ss.Generator.TypeString $m.ReturnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
+    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.Generator.TypeString $m.ReturnType }}
+    public static func {{ $ss.Generator.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
+
+        guard let caller = caller else { return false }
+
+        let path = "{{ $ss.Name }}/{{ $m.Name }}"{{ $argumentCount := $m.Arguments | len }}
+        {{ if ne $argumentCount 0 }}
+        var params = [String: Any](){{ range $i, $f := $m.Arguments }}
+        params["{{ $f.Name }}"] = {{ $f.Name }}.json
+        {{ end }}{{ end }}
+        caller.invoke(path: path, {{ if ne $argumentCount 0 }}params: params, {{ end }}, completion: { response in
+            {{ if ne $returnType "Void" }}
+            if let result = {{ $returnType }}(json: response) {
+                completion(result)
+            } else {
+                failure(InvokeError.invalidResponse)
+            }
+            {{ else }}
+            completion()
+            {{ end }}
+        }, failure: failure)
 
         return true
     }
