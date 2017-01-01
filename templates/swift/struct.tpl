@@ -6,25 +6,22 @@
 
 import Foundation
 
-public class {{ $ss.Generator.StructName $ss.Struct }}: Base {
+public struct {{ $ss.Generator.StructName $ss.Struct }}: Base {
     {{ range $i, $f := .Fields }}
-    public var {{ $f.Name }}: {{ $ss.Generator.PropertyType $f }} {{ $ss.Generator.DefaultValue $f }}
-    {{ end }}
+    public var {{ $f.Name }}: {{ $ss.Generator.PropertyType $f }}?{{ end }}
 
-    override public func from(json: Any) -> Bool {
+    public init?(json: Any?) {
         
-        guard let dict = json as? [String: Any] else { return false }
+        guard let dict = json as? [String: Any] else { return nil }
         {{ range $i, $f := .Fields }}
-        {{ $f.Name }} = {{ $ss.Generator.ValueFromJSON $f }}{{ end }}
-
-        return true
+        {{ $f.Name }} = dict <- "{{ $f.Name }}"{{ end }}
     }
     
-    override public var json: Any {
+    public var json: Any {
         
         var dict = [String: Any]()
         {{ range $i, $f := .Fields }}
-        dict["{{ $f.Name }}"] = {{ $ss.Generator.ValueToJSON $f }}{{ end }}
+        dict["{{ $f.Name }}"] = {{ $f.Name }}?.json{{ end }}
 
         return dict
     }

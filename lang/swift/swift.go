@@ -2,6 +2,7 @@ package swift
 
 import (
 	"os"
+	"strings"
 	"sync"
 
 	"CodeFly/global"
@@ -132,22 +133,47 @@ func (gen *Generator) ServiceName(s *parser.Service) string {
 
 // PropertyType property type
 func (gen *Generator) PropertyType(f *parser.Field) string {
-	return "PT -> " + f.Name
+	return gen.typeString(f.Type)
 }
 
-// DefaultValue default value
-func (gen *Generator) DefaultValue(f *parser.Field) string {
-	return "DV -> " + f.Name
-}
+func (gen *Generator) typeString(t *parser.Type) string {
 
-// ValueFromJSON value from json string
-func (gen *Generator) ValueFromJSON(f *parser.Field) string {
-	return "VFJ -> " + f.Name
-}
+	switch t.Name {
+	case global.List:
+		return "[" + gen.typeString(t.ValueType) + "]"
+	case global.Map, global.Set:
+		panic("Unsupported container type.")
+	}
 
-// ValueToJSON value to json string
-func (gen *Generator) ValueToJSON(f *parser.Field) string {
-	return "VTJ -> " + f.Name
+	if base := mapping[t.Name]; base != "" {
+		return base
+	}
+
+	typeComponents := strings.Split(t.Name, ".")
+
+	componentCount := len(typeComponents)
+
+	var _thrift *parser.Thrift
+	var _type string
+
+	switch componentCount {
+	case 1:
+		_thrift = gen.t
+		_type = t.Name
+	case 2:
+		if key := gen.t.Includes[typeComponents[0]]; key != "" {
+			_thrift = gen.ts[key]
+			_type = typeComponents[1]
+		} else {
+			panic(typeComponents[0] + ".thrift not find in file include.")
+		}
+	}
+
+	if _thrift != nil && _type != "" {
+		return _thrift.Namespaces[global.Swift] + _type
+	}
+
+	panic("Unsupported type.")
 }
 
 const (
