@@ -14,10 +14,15 @@ public struct {{ $ss.Generator.ServiceName $ss.Service }} {
 
         let path = "{{ $ss.Name }}/{{ $m.Name }}"{{ $argumentCount := $m.Arguments | len }}
         {{ if ne $argumentCount 0 }}
-        var params = [String: Any](){{ range $i, $f := $m.Arguments }}
-        params["{{ $f.Name }}"] = {{ $f.Name }}.json
-        {{ end }}{{ end }}
+        var params = [String: Any]()
+        {{ range $i, $f := $m.Arguments }}
+        params["{{ $f.Name }}"] = {{ $f.Name }}.json{{ end }}{{ end }}
+        {{  if ne $argumentCount 0  }}
+        debugPrint("API: \(path)", "Request: \(params)"){{ else }}debugPrint("API: \(path)", "Request: [:]"){{ end }}
+        
         caller.invoke(path: path, params: {{ if ne $argumentCount 0 }}params{{ else }}[:]{{ end }}, completion: { response in
+
+            debugPrint("Response: \(response)")
             {{ if ne $returnType "Void" }}
             if let result = {{ $returnType }}(json: response) {
                 completion(result)
