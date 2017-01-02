@@ -18,21 +18,35 @@ public struct {{ $ss.Generator.ServiceName $ss.Service }} {
         {{ range $i, $f := $m.Arguments }}
         params["{{ $f.Name }}"] = {{ $f.Name }}.json{{ end }}{{ end }}
         {{  if ne $argumentCount 0  }}
-        debugPrint("API: \(path)", "Request: \(params)"){{ else }}debugPrint("API: \(path)", "Request: [:]"){{ end }}
+        debugPrint("API: \(path)", "Request: ", params){{ else }}debugPrint("API: \(path)", "Request: [:]"){{ end }}
         
         caller.invoke(path: path, params: {{ if ne $argumentCount 0 }}params{{ else }}[:]{{ end }}, completion: { response in
-
-            debugPrint("Response: \(response)")
             {{ if ne $returnType "Void" }}
             if let result = {{ $returnType }}(json: response) {
+
+                debugPrint("API: \(path)", "Response: ", response)
+                
                 completion(result)
+
             } else {
-                failure(InvokeError.invalidResponse)
+
+                let error = InvokeError.invalidResponse
+                
+                debugPrint("API: \(path)", "Error: ", error)
+                
+                failure(error)
             }
             {{ else }}
+            debugPrint("API: \(path)", "Response: [:]")
+
             completion()
             {{ end }}
-        }, failure: failure)
+        }, failure: { error in
+
+            debugPrint("API: \(path)", "Error: ", error)
+            
+            failure(error)
+        })
 
         return true
     }
