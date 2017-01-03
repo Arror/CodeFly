@@ -66,6 +66,7 @@ import Foundation
 
 public struct GreetService {
     
+    @discardableResult
     public static func sayHallo(person: TTPerson ,completion: @escaping (String) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         guard let caller = Invokers.caller else { return false }
