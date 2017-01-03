@@ -8,6 +8,7 @@ import Foundation
 
 public struct {{ $ss.Generator.ServiceName $ss.Service }} {
     {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.Generator.TypeString $m.ReturnType }}
+    @discardableResult
     public static func {{ $ss.Generator.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         guard let caller = Invokers.caller else { return false }
