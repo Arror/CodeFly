@@ -7,6 +7,8 @@
 import Foundation
 
 public enum {{ .Generator.EnumName .Enum }}: Int, Enum {
+
+    public typealias E = Int
     {{ range $i, $f := .Enum.Values }}
     case {{ $f.Name }} = {{ $f.Value }} {{ end }}
 }
