@@ -25,6 +25,8 @@ import Foundation
 
 public enum TTSex: Int, Enum {
     
+    public typealias E = Int
+    
     case female = 2 
     case male = 1 
 }
@@ -78,7 +80,6 @@ public struct GreetService {
         
         caller.invoke(path: path, params: params, completion: { response in
 
-            
             if let result = String(json: response) {
 
                 debugPrint("API: \(path)", "Response: ", response)
