@@ -53,6 +53,11 @@ func (ss *SwiftService) Name() string {
 	return ss.Service.Name + "Service"
 }
 
+// MethodName Method Name
+func (ss *SwiftService) MethodName(m *parser.Method) string {
+	return strings.ToLower(m.Name[:1]) + m.Name[1:]
+}
+
 func (sc *SwiftCompiler) genEnumCode(ctx *context.Context, e *parser.Enum) {
 
 	swift.Ctx = ctx
