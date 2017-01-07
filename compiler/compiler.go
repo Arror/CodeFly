@@ -7,6 +7,7 @@ import (
 	"github.com/samuel/go-thrift/parser"
 
 	"CodeFly/context"
+	"CodeFly/global"
 )
 
 // Compiler Compiler interface
@@ -16,8 +17,14 @@ type Compiler interface {
 	genServiceCode(ctx *context.Context, s *parser.Service)
 }
 
+var compilerMapping = map[string]Compiler{
+	global.Swift: &SwiftCompiler{},
+}
+
 // GenCode Generate code
-func GenCode(ctx *context.Context, compiler Compiler) {
+func GenCode(ctx *context.Context) {
+
+	compiler := compilerMapping[ctx.Lang]
 
 	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
 		panic(err.Error())
