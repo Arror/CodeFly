@@ -1,14 +1,14 @@
 // {{ $ss := . }}
-// {{ $ss.Generator.StructName $ss.Struct }}.swift
+// {{ $ss.Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
 //
 
 import Foundation
 
-public struct {{ $ss.Generator.StructName $ss.Struct }}: Base {
+public struct {{ $ss.Name }}: Base {
     {{ range $i, $f := .Fields }}
-    public var {{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }}?{{ end }}
+    public var {{ $f.Name }}: {{ $ss.GenContext.TypeString $f.Type }}?{{ end }}
 
     public init?(json: Any?) {
         

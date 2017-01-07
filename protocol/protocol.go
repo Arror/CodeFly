@@ -12,5 +12,5 @@ type Generator interface {
 
 // GeneratorMapping generator mapping
 var GeneratorMapping = map[string]Generator{
-	global.Swift: &swift.Generator{},
+	global.Swift: &swift.GenContext{},
 }

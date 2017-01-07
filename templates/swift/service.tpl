@@ -1,15 +1,15 @@
 // {{ $ss := . }}
-// {{ $ss.Generator.ServiceName $ss.Service }}.swift
+// {{ $ss.Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
 //
 
 import Foundation
 
-public struct {{ $ss.Generator.ServiceName $ss.Service }} {
-    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.Generator.TypeString $m.ReturnType }}
+public struct {{ $ss.Name }} {
+    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.GenContext.TypeString $m.ReturnType }}
     @discardableResult
-    public static func {{ $ss.Generator.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.Generator.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
+    public static func {{ $ss.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.GenContext.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         guard let caller = Invokers.caller else { return false }
 

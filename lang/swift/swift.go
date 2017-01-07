@@ -23,27 +23,45 @@ const (
 	serviceTplName = "ServiceTemplate"
 )
 
-// Generator Swift generator
-type Generator struct {
-	t      *parser.Thrift
-	ts     map[string]*parser.Thrift
-	lang   string
-	input  string
-	output string
+// GenContext Generate context
+type GenContext struct {
+	lang    string
+	input   string
+	output  string
+	thrifts map[string]*parser.Thrift
+	thrift  *parser.Thrift
 }
 
-// Generate Generate implement Generator interface
-func (gen *Generator) Generate() {
+// EnumGenContext Enum generate context
+type EnumGenContext struct {
+	*parser.Enum
+	*GenContext
+}
+
+// StructGenContext Struct generate context
+type StructGenContext struct {
+	*parser.Struct
+	*GenContext
+}
+
+// ServiceGenContext Service generate context
+type ServiceGenContext struct {
+	*parser.Service
+	*GenContext
+}
+
+// Generate GenContext implement Generator interface
+func (ctx *GenContext) Generate() {
 
 	if err := os.MkdirAll(global.Output, 0755); err != nil {
 		panic(err.Error())
 	}
 
-	gen.ts = global.ThriftMapping
-	gen.t = global.ThriftMapping[global.Input]
-	gen.lang = global.Lang
-	gen.input = global.Input
-	gen.output = global.Output
+	ctx.lang = global.Lang
+	ctx.input = global.Input
+	ctx.output = global.Output
+	ctx.thrifts = global.ThriftMapping
+	ctx.thrift = global.ThriftMapping[ctx.input]
 
 	wg := sync.WaitGroup{}
 
@@ -53,13 +71,13 @@ func (gen *Generator) Generate() {
 
 		enumTpl := writer.InitTemplate(enumTplName, enumTplPath)
 
-		for _, e := range gen.t.Enums {
+		for _, e := range ctx.thrift.Enums {
 
-			se := &Enum{}
-			se.Enum = e
-			se.Generator = gen
+			eCtx := &EnumGenContext{}
+			eCtx.Enum = e
+			eCtx.GenContext = ctx
 
-			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.EnumName(e)+".swift"), enumTpl, enumTplName, se)
+			writer.WriteFile(writer.AssembleFilePath(eCtx.GenContext.output, eCtx.Name()+".swift"), enumTpl, enumTplName, eCtx)
 		}
 	}()
 
@@ -69,13 +87,13 @@ func (gen *Generator) Generate() {
 
 		structTpl := writer.InitTemplate(structTplName, structTplPath)
 
-		for _, s := range gen.t.Structs {
+		for _, s := range ctx.thrift.Structs {
 
-			ss := &Struct{}
-			ss.Struct = s
-			ss.Generator = gen
+			sCtx := &StructGenContext{}
+			sCtx.Struct = s
+			sCtx.GenContext = ctx
 
-			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.StructName(s)+".swift"), structTpl, structTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(sCtx.GenContext.output, sCtx.Name()+".swift"), structTpl, structTplName, sCtx)
 		}
 	}()
 
@@ -85,59 +103,41 @@ func (gen *Generator) Generate() {
 
 		serviceTpl := writer.InitTemplate(serviceTplName, serviceTplPath)
 
-		for _, s := range gen.t.Services {
+		for _, s := range ctx.thrift.Services {
 
-			ss := &Service{}
-			ss.Service = s
-			ss.Generator = gen
+			sCtx := &ServiceGenContext{}
+			sCtx.Service = s
+			sCtx.GenContext = ctx
 
-			writer.WriteFile(writer.AssembleFilePath(gen.output, gen.ServiceName(s)+".swift"), serviceTpl, serviceTplName, ss)
+			writer.WriteFile(writer.AssembleFilePath(sCtx.GenContext.output, sCtx.Name()+".swift"), serviceTpl, serviceTplName, sCtx)
 		}
 	}()
 
 	wg.Wait()
 }
 
-// Enum Swift enum type
-type Enum struct {
-	*parser.Enum
-	*Generator
+// Name Enum name
+func (ctx *EnumGenContext) Name() string {
+	return ctx.GenContext.thrift.Namespaces[ctx.GenContext.lang] + ctx.Enum.Name
 }
 
-// Struct Swift struct type
-type Struct struct {
-	*parser.Struct
-	*Generator
+// Name Struct name
+func (ctx *StructGenContext) Name() string {
+	return ctx.GenContext.thrift.Namespaces[ctx.GenContext.lang] + ctx.Struct.Name
 }
 
-// Service Swift service type
-type Service struct {
-	*parser.Service
-	*Generator
+// Name Service name
+func (ctx *ServiceGenContext) Name() string {
+	return ctx.Service.Name + "Service"
 }
 
-// EnumName enum name
-func (gen *Generator) EnumName(e *parser.Enum) string {
-	return gen.t.Namespaces[gen.lang] + e.Name
-}
-
-// StructName struct name
-func (gen *Generator) StructName(s *parser.Struct) string {
-	return gen.t.Namespaces[gen.lang] + s.Name
-}
-
-// ServiceName service name
-func (gen *Generator) ServiceName(s *parser.Service) string {
-	return s.Name + "Service"
-}
-
-// MethodName Swift method name
-func (gen *Generator) MethodName(m *parser.Method) string {
+// MethodName Method name
+func (ctx *ServiceGenContext) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-// TypeString swift type string
-func (gen *Generator) TypeString(t *parser.Type) string {
+// TypeString Type string
+func (ctx *GenContext) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid
@@ -149,7 +149,7 @@ func (gen *Generator) TypeString(t *parser.Type) string {
 		case global.List, global.Set, global.Map:
 			panic("Unsupported inner container type.")
 		}
-		return "[" + gen.TypeString(t.ValueType) + "]"
+		return "[" + ctx.TypeString(t.ValueType) + "]"
 	case global.Map, global.Set:
 		panic("Unsupported container type.")
 	}
@@ -167,11 +167,11 @@ func (gen *Generator) TypeString(t *parser.Type) string {
 
 	switch componentCount {
 	case 1:
-		_thrift = gen.t
+		_thrift = ctx.thrift
 		_type = typeComponents[0]
 	case 2:
-		if key := gen.t.Includes[typeComponents[0]]; key != "" {
-			_thrift = gen.ts[key]
+		if key := ctx.thrift.Includes[typeComponents[0]]; key != "" {
+			_thrift = ctx.thrifts[key]
 			_type = typeComponents[1]
 		} else {
 			panic(typeComponents[0] + ".thrift not find in file include.")
