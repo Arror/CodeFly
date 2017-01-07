@@ -29,8 +29,25 @@ type Context struct {
 	ServiceTemplate *template.Template
 }
 
-// InitTemplates Init Templates
-func (ctx *Context) InitTemplates() {
+// Init Context init
+func Init(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
+
+	ctx := &Context{}
+
+	ctx.Lang = lang
+	ctx.Input = input
+	ctx.Output = output
+
+	ctx.Thrifts = thrifts
+
+	ctx.Thrift = thrifts[input]
+
+	ctx.initTemplates()
+
+	return ctx
+}
+
+func (ctx *Context) initTemplates() {
 
 	switch ctx.Lang {
 	case global.Swift:
@@ -46,8 +63,8 @@ func (ctx *Context) InitTemplates() {
 
 		serviceName := "Service"
 		servicePath := "templates/swift/service.tpl"
-		ctx.EnumTemplateName = serviceName
-		ctx.EmunTemplate = initTemplate(serviceName, servicePath)
+		ctx.ServiceTemplateName = serviceName
+		ctx.ServiceTemplate = initTemplate(serviceName, servicePath)
 	}
 }
 

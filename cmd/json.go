@@ -6,8 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"CodeFly/compiler"
+	"CodeFly/context"
 	"CodeFly/global"
-	"CodeFly/protocol"
 	"CodeFly/reader"
 
 	"github.com/urfave/cli"
@@ -41,35 +42,31 @@ var JSONGenerate = cli.Command{
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
-		global.Lang = lang
 
 		input, err := checkInputPath()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
-		global.Input = input
 
 		output, err := checkOutputPath()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
-		global.Output = output
 
-		ts, err := reader.ReadThrift(global.Input)
+		ts, err := reader.ReadThrift(input)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
-		global.ThriftMapping = ts
 
-		for n, t := range global.ThriftMapping {
-			if t.Namespaces[global.Lang] == "" {
-				log.Fatalln("%s language namespace info not found in %s.thrift", global.Lang, n)
+		for n, t := range ts {
+			if t.Namespaces[lang] == "" {
+				log.Fatalln("%s language namespace info not found in %s.thrift", lang, n)
 			}
 		}
 
-		generator := protocol.GeneratorMapping[global.Lang]
+		ctx := context.Init(lang, input, output, ts)
 
-		generator.Generate()
+		compiler.GenCode(ctx)
 
 		return nil
 	},

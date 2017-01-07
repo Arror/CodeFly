@@ -4,22 +4,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
 	"text/template"
-
-	"CodeFly/templates"
 )
-
-// InitTemplate Init template
-func InitTemplate(name string, path string) *template.Template {
-
-	buffer := templates.MustAsset(path)
-
-	template, err := template.New(name).Parse(string(buffer))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
-}
 
 // WriteFile Write file
 func WriteFile(fp string, t *template.Template, tplname string, data interface{}) {
