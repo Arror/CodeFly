@@ -18,6 +18,6 @@ func Execute() {
 
 func init() {
 	Root.Commands = []cli.Command{
-		JSONGenerate,
+		JSONCommand,
 	}
 }

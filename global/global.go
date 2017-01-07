@@ -1,21 +1,5 @@
 package global
 
-import "github.com/samuel/go-thrift/parser"
-
-var (
-	// Lang language
-	Lang string
-
-	// Input input thrift file path
-	Input string
-
-	// Output output files path
-	Output string
-
-	// ThriftMapping thrift mapping
-	ThriftMapping map[string]*parser.Thrift
-)
-
 const (
 	// Swift Swift language
 	Swift = "swift"

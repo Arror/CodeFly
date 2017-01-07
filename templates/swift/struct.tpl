@@ -8,7 +8,7 @@ import Foundation
 
 public struct {{ $ss.Name }}: Base {
     {{ range $i, $f := .Fields }}
-    public var {{ $f.Name }}: {{ $ss.GenContext.TypeString $f.Type }}?{{ end }}
+    public var {{ $f.Name }}: {{ $ss.Swift.TypeString $f.Type }}?{{ end }}
 
     public init?(json: Any?) {
         
