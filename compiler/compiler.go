@@ -1,8 +1,11 @@
 package compiler
 
 import (
+	"log"
 	"os"
+	"path/filepath"
 	"sync"
+	"text/template"
 
 	"github.com/samuel/go-thrift/parser"
 
@@ -57,4 +60,27 @@ func GenCode(ctx *context.Context) {
 	}()
 
 	wg.Wait()
+}
+
+func writeFile(fp string, t *template.Template, tplname string, data interface{}) {
+
+	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer file.Close()
+	if err := t.ExecuteTemplate(file, tplname, data); err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+func assembleFilePath(op string, fn string) string {
+
+	p, err := filepath.Abs(filepath.Join(op, fn))
+
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	return p
 }

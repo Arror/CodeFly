@@ -9,13 +9,13 @@ import (
 	"CodeFly/compiler"
 	"CodeFly/context"
 	"CodeFly/global"
-	"CodeFly/reader"
 
+	"github.com/samuel/go-thrift/parser"
 	"github.com/urfave/cli"
 )
 
-// JSONGenerate Json generate command
-var JSONGenerate = cli.Command{
+// JSONCommand Json generate command
+var JSONCommand = cli.Command{
 	Name:      "json",
 	ShortName: "json",
 	Usage:     "Command of generate the target language code.",
@@ -53,7 +53,8 @@ var JSONGenerate = cli.Command{
 			log.Fatalln(err.Error())
 		}
 
-		ts, err := reader.ReadThrift(input)
+		p := parser.Parser{}
+		ts, _, err := p.ParseFile(input)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}

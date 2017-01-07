@@ -7,7 +7,6 @@ import (
 
 	"CodeFly/context"
 	"CodeFly/global"
-	"CodeFly/writer"
 )
 
 // SwiftCompiler Swift Code Compiler
@@ -66,9 +65,9 @@ func (sc *SwiftCompiler) genEnumCode(ctx *context.Context, e *parser.Enum) {
 	swiftEnum.Swift = swift
 	swiftEnum.Enum = e
 
-	path := writer.AssembleFilePath(swiftEnum.Ctx.Output, swiftEnum.Name()+".swift")
+	path := assembleFilePath(swiftEnum.Ctx.Output, swiftEnum.Name()+".swift")
 
-	writer.WriteFile(path, ctx.EmunTemplate, ctx.EnumTemplateName, swiftEnum)
+	writeFile(path, ctx.EmunTemplate, ctx.EnumTemplateName, swiftEnum)
 }
 
 func (sc *SwiftCompiler) genStructCode(ctx *context.Context, s *parser.Struct) {
@@ -79,9 +78,9 @@ func (sc *SwiftCompiler) genStructCode(ctx *context.Context, s *parser.Struct) {
 	swiftStruct.Swift = swift
 	swiftStruct.Struct = s
 
-	path := writer.AssembleFilePath(swiftStruct.Ctx.Output, swiftStruct.Name()+".swift")
+	path := assembleFilePath(swiftStruct.Ctx.Output, swiftStruct.Name()+".swift")
 
-	writer.WriteFile(path, ctx.StructTemplate, ctx.StructTemplateName, swiftStruct)
+	writeFile(path, ctx.StructTemplate, ctx.StructTemplateName, swiftStruct)
 }
 
 func (sc *SwiftCompiler) genServiceCode(ctx *context.Context, s *parser.Service) {
@@ -92,9 +91,9 @@ func (sc *SwiftCompiler) genServiceCode(ctx *context.Context, s *parser.Service)
 	swiftService.Swift = swift
 	swiftService.Service = s
 
-	path := writer.AssembleFilePath(swiftService.Ctx.Output, swiftService.Name()+".swift")
+	path := assembleFilePath(swiftService.Ctx.Output, swiftService.Name()+".swift")
 
-	writer.WriteFile(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, swiftService)
+	writeFile(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, swiftService)
 }
 
 // TypeString Type string
