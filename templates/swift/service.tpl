@@ -13,7 +13,7 @@ public struct {{ $ss.Name }} {
 
         guard let caller = Invokers.caller else { return false }
 
-        let path = "{{ $ss.Name }}/{{ $m.Name }}"{{ $argumentCount := $m.Arguments | len }}
+        let path = "{{ $ss.Service.Name }}/{{ $m.Name }}"{{ $argumentCount := $m.Arguments | len }}
         {{ if ne $argumentCount 0 }}
         var params = [String: Any]()
         {{ range $i, $f := $m.Arguments }}
