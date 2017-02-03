@@ -1,31 +1,45 @@
 package compiler
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"CodeFly/context"
-	"CodeFly/global"
 	"CodeFly/templates"
 )
+
+const swift = "swift"
 
 // Compiler Compiler interface
 type Compiler interface {
 	genCodes(ctx *context.Context)
 }
 
-var compilerMapping = map[string]Compiler{
-	global.Swift: &SwiftCompiler{},
+func compilerOf(lang string) Compiler {
+
+	switch lang {
+	case swift:
+		return &SwiftCompiler{}
+	}
+
+	return nil
 }
 
 // GenCode Generate code
-func GenCode(ctx *context.Context) {
+func GenCode(ctx *context.Context) error {
 
-	compiler := compilerMapping[ctx.Lang]
+	if compiler := compilerOf(strings.ToLower(ctx.Lang)); compiler != nil {
 
-	compiler.genCodes(ctx)
+		compiler.genCodes(ctx)
+
+		return nil
+	}
+
+	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
 }
 
 func initTemplate(name string, path string) *template.Template {

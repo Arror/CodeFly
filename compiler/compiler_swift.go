@@ -9,7 +9,7 @@ import (
 	"github.com/samuel/go-thrift/parser"
 
 	"CodeFly/context"
-	"CodeFly/global"
+	"CodeFly/types"
 )
 
 // SwiftCompiler Swift Code Compiler
@@ -156,13 +156,13 @@ func (sCtx *SwiftContext) TypeString(t *parser.Type) string {
 	}
 
 	switch t.Name {
-	case global.ThriftList:
+	case types.ThriftList:
 		switch t.ValueType.Name {
-		case global.ThriftList, global.ThriftSet, global.ThriftMap:
+		case types.ThriftList, types.ThriftSet, types.ThriftMap:
 			panic("Unsupported inner container type.")
 		}
 		return "[" + sCtx.TypeString(t.ValueType) + "]"
-	case global.ThriftMap, global.ThriftSet:
+	case types.ThriftMap, types.ThriftSet:
 		panic("Unsupported container type.")
 	}
 
@@ -210,12 +210,12 @@ const (
 )
 
 var mapping = map[string]string{
-	global.ThriftI16:    swiftInt,
-	global.ThriftI32:    swiftInt,
-	global.ThriftI64:    swiftInt64,
-	global.ThriftBool:   swiftBool,
-	global.ThriftDouble: swiftDouble,
-	global.ThriftString: swiftString,
-	global.ThriftByte:   global.UnsupportedType,
-	global.ThriftBinary: global.UnsupportedType,
+	types.ThriftI16:    swiftInt,
+	types.ThriftI32:    swiftInt,
+	types.ThriftI64:    swiftInt64,
+	types.ThriftBool:   swiftBool,
+	types.ThriftDouble: swiftDouble,
+	types.ThriftString: swiftString,
+	types.ThriftByte:   types.UnsupportedType,
+	types.ThriftBinary: types.UnsupportedType,
 }

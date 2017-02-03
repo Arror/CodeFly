@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"CodeFly/compiler"
 	"CodeFly/context"
-	"CodeFly/global"
 
 	"github.com/samuel/go-thrift/parser"
 	"github.com/urfave/cli"
@@ -67,7 +67,10 @@ var JSONCommand = cli.Command{
 
 		ctx := context.Init(lang, input, output, ts)
 
-		compiler.GenCode(ctx)
+		err = compiler.GenCode(ctx)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
 
 		return nil
 	},
@@ -77,14 +80,18 @@ var lang string
 var input string
 var output string
 
+const (
+	swift = "swift"
+)
+
 func checkLanguage() (string, error) {
 
 	if lang == "" {
 		return "", fmt.Errorf("The target language name is empty")
 	}
 
-	switch lang {
-	case global.Swift:
+	switch strings.ToLower(lang) {
+	case swift:
 		return lang, nil
 	default:
 		return "", fmt.Errorf("Unsupported language")

@@ -1,9 +1,4 @@
-package global
-
-const (
-	// Swift Swift language
-	Swift = "swift"
-)
+package types
 
 const (
 	// ThriftI16 i16
@@ -28,9 +23,6 @@ const (
 	ThriftMap = "map"
 	// ThriftList list
 	ThriftList = "list"
-)
-
-const (
 	// UnsupportedType unsupported type
 	UnsupportedType = "unsupported_type"
 )
