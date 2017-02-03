@@ -1,7 +1,10 @@
 package compiler
 
 import (
+	"os"
 	"strings"
+	"sync"
+	"text/template"
 
 	"github.com/samuel/go-thrift/parser"
 
@@ -12,39 +15,66 @@ import (
 // SwiftCompiler Swift Code Compiler
 type SwiftCompiler struct{}
 
-// Swift Swift
-type Swift struct {
+// SwiftContext Swift code context
+type SwiftContext struct {
 	Ctx *context.Context
+
+	EnumTemplateName    string
+	StructTemplateName  string
+	ServiceTemplateName string
+
+	EmunTemplate    *template.Template
+	StructTemplate  *template.Template
+	ServiceTemplate *template.Template
 }
 
 // SwiftEnum Swift Enum
 type SwiftEnum struct {
-	*Swift
+	SCtx *SwiftContext
 	*parser.Enum
 }
 
 // SwiftStruct Swift Struct
 type SwiftStruct struct {
-	*Swift
+	SCtx *SwiftContext
 	*parser.Struct
 }
 
 // SwiftService Swift Service
 type SwiftService struct {
-	*Swift
+	SCtx *SwiftContext
 	*parser.Service
 }
 
-var swift = &Swift{}
+func initSwiftContext(ctx *context.Context) *SwiftContext {
+
+	sCtx := &SwiftContext{}
+
+	sCtx.Ctx = ctx
+
+	enumName := "Enum"
+	sCtx.EnumTemplateName = enumName
+	sCtx.EmunTemplate = initTemplate(enumName, "templates/swift/enum.tpl")
+
+	structName := "Struct"
+	sCtx.StructTemplateName = structName
+	sCtx.StructTemplate = initTemplate(structName, "templates/swift/struct.tpl")
+
+	serviceName := "Service"
+	sCtx.ServiceTemplateName = serviceName
+	sCtx.ServiceTemplate = initTemplate(serviceName, "templates/swift/service.tpl")
+
+	return sCtx
+}
 
 // Name Enum name
 func (se *SwiftEnum) Name() string {
-	return se.Swift.Ctx.Thrift.Namespaces[se.Swift.Ctx.Lang] + se.Enum.Name
+	return se.SCtx.Ctx.Thrift.Namespaces[se.SCtx.Ctx.Lang] + se.Enum.Name
 }
 
 // Name Struct name
 func (ss *SwiftStruct) Name() string {
-	return ss.Swift.Ctx.Thrift.Namespaces[ss.Swift.Ctx.Lang] + ss.Struct.Name
+	return ss.SCtx.Ctx.Thrift.Namespaces[ss.SCtx.Ctx.Lang] + ss.Struct.Name
 }
 
 // Name Service name
@@ -57,47 +87,69 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-func (sc *SwiftCompiler) genEnumCode(ctx *context.Context, e *parser.Enum) {
+func (sc *SwiftCompiler) genCodes(ctx *context.Context) {
 
-	swift.Ctx = ctx
+	sCtx := initSwiftContext(ctx)
 
-	swiftEnum := &SwiftEnum{}
-	swiftEnum.Swift = swift
-	swiftEnum.Enum = e
+	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
+		panic(err.Error())
+	}
 
-	path := assembleFilePath(swiftEnum.Ctx.Output, swiftEnum.Name()+".swift")
+	wg := sync.WaitGroup{}
 
-	writeFile(path, ctx.EmunTemplate, ctx.EnumTemplateName, swiftEnum)
-}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, e := range ctx.Thrift.Enums {
 
-func (sc *SwiftCompiler) genStructCode(ctx *context.Context, s *parser.Struct) {
+			se := &SwiftEnum{
+				SCtx: sCtx,
+				Enum: e,
+			}
 
-	swift.Ctx = ctx
+			path := assembleFilePath(ctx.Output, se.Name()+".swift")
 
-	swiftStruct := &SwiftStruct{}
-	swiftStruct.Swift = swift
-	swiftStruct.Struct = s
+			writeFile(path, sCtx.EmunTemplate, sCtx.EnumTemplateName, se)
+		}
+	}()
 
-	path := assembleFilePath(swiftStruct.Ctx.Output, swiftStruct.Name()+".swift")
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, s := range ctx.Thrift.Structs {
 
-	writeFile(path, ctx.StructTemplate, ctx.StructTemplateName, swiftStruct)
-}
+			ss := &SwiftStruct{
+				SCtx:   sCtx,
+				Struct: s,
+			}
 
-func (sc *SwiftCompiler) genServiceCode(ctx *context.Context, s *parser.Service) {
+			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
 
-	swift.Ctx = ctx
+			writeFile(path, sCtx.StructTemplate, sCtx.StructTemplateName, ss)
+		}
+	}()
 
-	swiftService := &SwiftService{}
-	swiftService.Swift = swift
-	swiftService.Service = s
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, s := range ctx.Thrift.Services {
 
-	path := assembleFilePath(swiftService.Ctx.Output, swiftService.Name()+".swift")
+			ss := &SwiftService{
+				SCtx:    sCtx,
+				Service: s,
+			}
 
-	writeFile(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, swiftService)
+			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
+
+			writeFile(path, sCtx.ServiceTemplate, sCtx.ServiceTemplateName, ss)
+		}
+	}()
+
+	wg.Wait()
 }
 
 // TypeString Type string
-func (swift *Swift) TypeString(t *parser.Type) string {
+func (swift *SwiftContext) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid

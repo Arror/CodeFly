@@ -4,20 +4,16 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 	"text/template"
-
-	"github.com/samuel/go-thrift/parser"
 
 	"CodeFly/context"
 	"CodeFly/global"
+	"CodeFly/templates"
 )
 
 // Compiler Compiler interface
 type Compiler interface {
-	genEnumCode(ctx *context.Context, e *parser.Enum)
-	genStructCode(ctx *context.Context, s *parser.Struct)
-	genServiceCode(ctx *context.Context, s *parser.Service)
+	genCodes(ctx *context.Context)
 }
 
 var compilerMapping = map[string]Compiler{
@@ -29,37 +25,18 @@ func GenCode(ctx *context.Context) {
 
 	compiler := compilerMapping[ctx.Lang]
 
-	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
-		panic(err.Error())
+	compiler.genCodes(ctx)
+}
+
+func initTemplate(name string, path string) *template.Template {
+
+	buffer := templates.MustAsset(path)
+
+	template, err := template.New(name).Parse(string(buffer))
+	if err != nil {
+		log.Fatal(err.Error())
 	}
-
-	wg := sync.WaitGroup{}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, e := range ctx.Thrift.Enums {
-			compiler.genEnumCode(ctx, e)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, s := range ctx.Thrift.Structs {
-			compiler.genStructCode(ctx, s)
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, s := range ctx.Thrift.Services {
-			compiler.genServiceCode(ctx, s)
-		}
-	}()
-
-	wg.Wait()
+	return template
 }
 
 func writeFile(fp string, t *template.Template, tplname string, data interface{}) {
