@@ -28,24 +28,6 @@ type SwiftContext struct {
 	ServiceTemplate *template.Template
 }
 
-// SwiftEnum Swift Enum
-type SwiftEnum struct {
-	SCtx *SwiftContext
-	*parser.Enum
-}
-
-// SwiftStruct Swift Struct
-type SwiftStruct struct {
-	SCtx *SwiftContext
-	*parser.Struct
-}
-
-// SwiftService Swift Service
-type SwiftService struct {
-	SCtx *SwiftContext
-	*parser.Service
-}
-
 func initSwiftContext(ctx *context.Context) *SwiftContext {
 
 	sCtx := &SwiftContext{}
@@ -65,6 +47,24 @@ func initSwiftContext(ctx *context.Context) *SwiftContext {
 	sCtx.ServiceTemplate = initTemplate(serviceName, "templates/swift/service.tpl")
 
 	return sCtx
+}
+
+// SwiftEnum Swift Enum
+type SwiftEnum struct {
+	SCtx *SwiftContext
+	*parser.Enum
+}
+
+// SwiftStruct Swift Struct
+type SwiftStruct struct {
+	SCtx *SwiftContext
+	*parser.Struct
+}
+
+// SwiftService Swift Service
+type SwiftService struct {
+	SCtx *SwiftContext
+	*parser.Service
 }
 
 // Name Enum name
@@ -149,20 +149,20 @@ func (sc *SwiftCompiler) genCodes(ctx *context.Context) {
 }
 
 // TypeString Type string
-func (swift *SwiftContext) TypeString(t *parser.Type) string {
+func (sCtx *SwiftContext) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid
 	}
 
 	switch t.Name {
-	case global.List:
+	case global.ThriftList:
 		switch t.ValueType.Name {
-		case global.List, global.Set, global.Map:
+		case global.ThriftList, global.ThriftSet, global.ThriftMap:
 			panic("Unsupported inner container type.")
 		}
-		return "[" + swift.TypeString(t.ValueType) + "]"
-	case global.Map, global.Set:
+		return "[" + sCtx.TypeString(t.ValueType) + "]"
+	case global.ThriftMap, global.ThriftSet:
 		panic("Unsupported container type.")
 	}
 
@@ -179,11 +179,11 @@ func (swift *SwiftContext) TypeString(t *parser.Type) string {
 
 	switch componentCount {
 	case 1:
-		_thrift = swift.Ctx.Thrift
+		_thrift = sCtx.Ctx.Thrift
 		_type = typeComponents[0]
 	case 2:
-		if key := swift.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
-			_thrift = swift.Ctx.Thrifts[key]
+		if key := sCtx.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
+			_thrift = sCtx.Ctx.Thrifts[key]
 			_type = typeComponents[1]
 		} else {
 			panic(typeComponents[0] + ".thrift not find in file include.")
@@ -191,7 +191,7 @@ func (swift *SwiftContext) TypeString(t *parser.Type) string {
 	}
 
 	if _thrift != nil && _type != "" {
-		return _thrift.Namespaces[global.Swift] + _type
+		return _thrift.Namespaces[sCtx.Ctx.Lang] + _type
 	}
 
 	panic("Unsupported type.")
@@ -216,6 +216,6 @@ var mapping = map[string]string{
 	global.ThriftBool:   swiftBool,
 	global.ThriftDouble: swiftDouble,
 	global.ThriftString: swiftString,
-	global.ThriftByte:   global.Unsupported,
-	global.ThriftBinary: global.Unsupported,
+	global.ThriftByte:   global.UnsupportedType,
+	global.ThriftBinary: global.UnsupportedType,
 }

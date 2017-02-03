@@ -22,18 +22,15 @@ const (
 	ThriftByte = "byte"
 	// ThriftBinary binary
 	ThriftBinary = "binary"
+	// ThriftSet set
+	ThriftSet = "set"
+	// ThriftMap map
+	ThriftMap = "map"
+	// ThriftList list
+	ThriftList = "list"
 )
 
 const (
-	// Set set
-	Set = "set"
-	// Map map
-	Map = "map"
-	// List list
-	List = "list"
-)
-
-const (
-	// Unsupported unsupported
-	Unsupported = "unsupported"
+	// UnsupportedType unsupported type
+	UnsupportedType = "unsupported_type"
 )
