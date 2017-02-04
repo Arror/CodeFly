@@ -14,7 +14,7 @@ type SwiftContext struct {
 	StructTemplateName  string
 	ServiceTemplateName string
 
-	EmunTemplate    *template.Template
+	EnumTemplate    *template.Template
 	StructTemplate  *template.Template
 	ServiceTemplate *template.Template
 }
@@ -28,7 +28,7 @@ func InitSwiftContext(ctx Context) SwiftContext {
 
 	enumName := "Enum"
 	sCtx.EnumTemplateName = enumName
-	sCtx.EmunTemplate = templates.InitTemplate(enumName, "templates/swift/enum.tpl")
+	sCtx.EnumTemplate = templates.InitTemplate(enumName, "templates/swift/enum.tpl")
 
 	structName := "Struct"
 	sCtx.StructTemplateName = structName

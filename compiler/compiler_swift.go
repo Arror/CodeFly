@@ -35,6 +35,7 @@ type SwiftService struct {
 type SwiftCommon interface {
 	Name() string
 	TypeString(t *parser.Type) string
+	ExportSwiftFiles(ctx context.SwiftContext)
 }
 
 // Name Enum name
@@ -67,6 +68,24 @@ func (ss *SwiftService) TypeString(t *parser.Type) string {
 	return typeString(t)
 }
 
+// ExportSwiftFiles Export swift enum files
+func (se *SwiftEnum) ExportSwiftFiles(ctx context.SwiftContext) {
+	path := assembleFilePath(ctx.Output, se.Name())
+	exportFiles(path, ctx.EnumTemplate, ctx.EnumTemplateName, se)
+}
+
+// ExportSwiftFiles Export swift struct files
+func (ss *SwiftStruct) ExportSwiftFiles(ctx context.SwiftContext) {
+	path := assembleFilePath(ctx.Output, ss.Name())
+	exportFiles(path, ctx.StructTemplate, ctx.StructTemplateName, ss)
+}
+
+// ExportSwiftFiles Export swift service files
+func (ss *SwiftService) ExportSwiftFiles(ctx context.SwiftContext) {
+	path := assembleFilePath(ctx.Output, ss.Name())
+	exportFiles(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, ss)
+}
+
 // MethodName Method Name
 func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
@@ -86,14 +105,10 @@ func (sc *SwiftCompiler) genCodes(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		for _, e := range ctx.Thrift.Enums {
-
 			se := &SwiftEnum{
 				Enum: e,
 			}
-
-			path := assembleFilePath(ctx.Output, se.Name()+".swift")
-
-			writeFile(path, sCtx.EmunTemplate, sCtx.EnumTemplateName, se)
+			se.ExportSwiftFiles(sCtx)
 		}
 	}()
 
@@ -101,14 +116,10 @@ func (sc *SwiftCompiler) genCodes(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		for _, s := range ctx.Thrift.Structs {
-
 			ss := &SwiftStruct{
 				Struct: s,
 			}
-
-			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-
-			writeFile(path, sCtx.StructTemplate, sCtx.StructTemplateName, ss)
+			ss.ExportSwiftFiles(sCtx)
 		}
 	}()
 
@@ -116,14 +127,10 @@ func (sc *SwiftCompiler) genCodes(ctx context.Context) {
 	go func() {
 		defer wg.Done()
 		for _, s := range ctx.Thrift.Services {
-
 			ss := &SwiftService{
 				Service: s,
 			}
-
-			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-
-			writeFile(path, sCtx.ServiceTemplate, sCtx.ServiceTemplateName, ss)
+			ss.ExportSwiftFiles(sCtx)
 		}
 	}()
 
