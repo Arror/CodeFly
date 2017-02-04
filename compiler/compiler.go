@@ -15,10 +15,10 @@ const swift = "swift"
 
 // Compiler Compiler interface
 type Compiler interface {
-	genCodes(ctx context.Context)
+	compile(ctx context.Context)
 }
 
-func compilerOf(lang string) Compiler {
+func compilerOfLang(lang string) Compiler {
 
 	switch lang {
 	case swift:
@@ -28,12 +28,12 @@ func compilerOf(lang string) Compiler {
 	return nil
 }
 
-// GenCode Generate code
-func GenCode(ctx context.Context) error {
+// Compile Compile code
+func Compile(ctx context.Context) error {
 
-	if compiler := compilerOf(strings.ToLower(ctx.Lang)); compiler != nil {
+	if compiler := compilerOfLang(strings.ToLower(ctx.Lang)); compiler != nil {
 
-		compiler.genCodes(ctx)
+		compiler.compile(ctx)
 
 		return nil
 	}

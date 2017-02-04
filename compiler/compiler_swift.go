@@ -91,7 +91,7 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-func (sc *SwiftCompiler) genCodes(ctx context.Context) {
+func (sc *SwiftCompiler) compile(ctx context.Context) {
 
 	sCtx = context.InitSwiftContext(ctx)
 

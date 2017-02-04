@@ -1,10 +1,6 @@
 package context
 
-import (
-	"text/template"
-
-	"CodeFly/templates"
-)
+import "text/template"
 
 // SwiftContext Swift context
 type SwiftContext struct {
@@ -28,15 +24,15 @@ func InitSwiftContext(ctx Context) SwiftContext {
 
 	enumName := "Enum"
 	sCtx.EnumTemplateName = enumName
-	sCtx.EnumTemplate = templates.InitTemplate(enumName, "templates/swift/enum.tpl")
+	sCtx.EnumTemplate = initTemplate(enumName, "templates/swift/enum.tpl")
 
 	structName := "Struct"
 	sCtx.StructTemplateName = structName
-	sCtx.StructTemplate = templates.InitTemplate(structName, "templates/swift/struct.tpl")
+	sCtx.StructTemplate = initTemplate(structName, "templates/swift/struct.tpl")
 
 	serviceName := "Service"
 	sCtx.ServiceTemplateName = serviceName
-	sCtx.ServiceTemplate = templates.InitTemplate(serviceName, "templates/swift/service.tpl")
+	sCtx.ServiceTemplate = initTemplate(serviceName, "templates/swift/service.tpl")
 
 	return sCtx
 }

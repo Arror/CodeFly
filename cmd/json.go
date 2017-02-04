@@ -67,7 +67,7 @@ var JSONCommand = cli.Command{
 
 		ctx := context.InitContext(lang, input, output, ts)
 
-		err = compiler.GenCode(ctx)
+		err = compiler.Compile(ctx)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
