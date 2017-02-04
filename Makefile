@@ -12,6 +12,8 @@ build:
 gen:
 	./Codefly json -l swift -i /Users/Arror/thrift/Base.thrift -o ./outputPath
 
+test: clean buildTpl build gen
+
 help:
 	./Codefly -h
     
