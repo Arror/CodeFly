@@ -13,10 +13,10 @@ type Context struct {
 	Thrifts map[string]*parser.Thrift
 }
 
-// Init Context init
-func Init(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
+// InitContext Context init
+func InitContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) Context {
 
-	ctx := &Context{}
+	ctx := Context{}
 
 	ctx.Lang = lang
 	ctx.Input = input

@@ -9,14 +9,13 @@ import (
 	"text/template"
 
 	"CodeFly/context"
-	"CodeFly/templates"
 )
 
 const swift = "swift"
 
 // Compiler Compiler interface
 type Compiler interface {
-	genCodes(ctx *context.Context)
+	genCodes(ctx context.Context)
 }
 
 func compilerOf(lang string) Compiler {
@@ -30,7 +29,7 @@ func compilerOf(lang string) Compiler {
 }
 
 // GenCode Generate code
-func GenCode(ctx *context.Context) error {
+func GenCode(ctx context.Context) error {
 
 	if compiler := compilerOf(strings.ToLower(ctx.Lang)); compiler != nil {
 
@@ -40,17 +39,6 @@ func GenCode(ctx *context.Context) error {
 	}
 
 	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
-}
-
-func initTemplate(name string, path string) *template.Template {
-
-	buffer := templates.MustAsset(path)
-
-	template, err := template.New(name).Parse(string(buffer))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
 }
 
 func writeFile(fp string, t *template.Template, tplname string, data interface{}) {
