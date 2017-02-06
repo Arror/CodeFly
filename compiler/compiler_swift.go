@@ -70,19 +70,19 @@ func (ss *SwiftService) TypeString(t *parser.Type) string {
 
 // ExportSwiftFiles Export swift enum files
 func (se *SwiftEnum) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, se.Name())
+	path := assembleFilePath(ctx.Output, se.Name()+".swift")
 	exportFiles(path, ctx.EnumTemplate, ctx.EnumTemplateName, se)
 }
 
 // ExportSwiftFiles Export swift struct files
 func (ss *SwiftStruct) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, ss.Name())
+	path := assembleFilePath(ctx.Output, ss.Name()+".swift")
 	exportFiles(path, ctx.StructTemplate, ctx.StructTemplateName, ss)
 }
 
 // ExportSwiftFiles Export swift service files
 func (ss *SwiftService) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, ss.Name())
+	path := assembleFilePath(ctx.Output, ss.Name()+".swift")
 	exportFiles(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, ss)
 }
 
