@@ -2,22 +2,19 @@ all:
 
 init:
 
-buildTpl:
-	rm -rf ./lang/swift/swift_tpl.go
-	go-bindata -pkg templates -o ./templates/templates.go templates/swift
+gen_swift_test:
+	./Codefly json -l swift -i ./sample/Base.thrift -o ./sample/swift
 
-build:
+test: clean build gen_swift_test
+
+buildTpl:
+	rm -rf ./templates/templates.go
+	go-bindata -pkg templates -o ./templates/templates.go templates/...
+
+build: clean buildTpl
 	go build Codefly
 
-gen:
-	./Codefly json -l swift -i /Users/Arror/thrift/Base.thrift -o ./outputPath
-
-test: clean buildTpl build gen
-
-help:
-	./Codefly -h
-    
 clean:
 	go clean
 	rm -rf Codefly
-	rm -rf outputPath
+	rm -rf ./sample/swift
