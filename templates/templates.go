@@ -85,7 +85,7 @@ func templatesSwiftEnumTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/swift/enum.tpl", size: 263, mode: os.FileMode(420), modTime: time.Unix(1483766146, 0)}
+	info := bindataFileInfo{name: "templates/swift/enum.tpl", size: 263, mode: os.FileMode(420), modTime: time.Unix(1487071673, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -105,7 +105,7 @@ func templatesSwiftServiceTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/swift/service.tpl", size: 1769, mode: os.FileMode(420), modTime: time.Unix(1486386370, 0)}
+	info := bindataFileInfo{name: "templates/swift/service.tpl", size: 1769, mode: os.FileMode(420), modTime: time.Unix(1487071673, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -125,7 +125,7 @@ func templatesSwiftStructTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/swift/struct.tpl", size: 677, mode: os.FileMode(420), modTime: time.Unix(1486227043, 0)}
+	info := bindataFileInfo{name: "templates/swift/struct.tpl", size: 677, mode: os.FileMode(420), modTime: time.Unix(1487071673, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

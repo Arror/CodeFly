@@ -3,18 +3,18 @@ all:
 init:
 
 gen_swift_test:
-	./Codefly json -l swift -i ./sample/Base.thrift -o ./sample/swift
+	./CodeFly json -l swift -i ./sample/Sample.thrift -o ./Sample/Swift
 
 test: clean build gen_swift_test
 
 buildTpl:
 	rm -rf ./templates/templates.go
-	go-bindata -pkg templates -o ./templates/templates.go templates/...
+	go-bindata -pkg templates -o ./templates/templates.go templates/*/*.tpl
 
 build: clean buildTpl
-	go build Codefly
+	go build
 
 clean:
 	go clean
-	rm -rf Codefly
+	rm -rf CodeFly
 	rm -rf ./sample/swift
