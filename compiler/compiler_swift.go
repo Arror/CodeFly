@@ -7,8 +7,8 @@ import (
 
 	"github.com/samuel/go-thrift/parser"
 
-	"github.com/Arror/CodeFly/context"
-	"github.com/Arror/CodeFly/types"
+	"CodeFly/context"
+	"CodeFly/types"
 )
 
 var sCtx context.SwiftContext

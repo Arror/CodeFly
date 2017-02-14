@@ -1,10 +1,10 @@
 package context
 
 import (
+	"CodeFly/templates"
 	"log"
 	"text/template"
 
-	"github.com/Arror/CodeFly/templates"
 	"github.com/samuel/go-thrift/parser"
 )
 

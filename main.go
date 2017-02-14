@@ -1,6 +1,6 @@
 package main
 
-import "github.com/Arror/CodeFly/cmd"
+import "CodeFly/cmd"
 
 func main() {
 	cmd.Execute()

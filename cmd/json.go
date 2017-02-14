@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Arror/CodeFly/compiler"
-	"github.com/Arror/CodeFly/context"
+	"CodeFly/compiler"
+	"CodeFly/context"
 
 	"github.com/samuel/go-thrift/parser"
 	"github.com/urfave/cli"

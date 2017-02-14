@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Arror/CodeFly/context"
+	"CodeFly/context"
 )
 
 const swift = "swift"
