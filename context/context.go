@@ -1,12 +1,6 @@
 package context
 
-import (
-	"log"
-	"text/template"
-
-	"github.com/Arror/CodeFly/templates"
-	"github.com/samuel/go-thrift/parser"
-)
+import "github.com/samuel/go-thrift/parser"
 
 // Context Generate context
 type Context struct {
@@ -33,15 +27,4 @@ func InitContext(lang string, input string, output string, thrifts map[string]*p
 	ctx.Thrift = thrifts[input]
 
 	return ctx
-}
-
-func initTemplate(name string, path string) *template.Template {
-
-	buffer := templates.MustAsset(path)
-
-	template, err := template.New(name).Parse(string(buffer))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
 }

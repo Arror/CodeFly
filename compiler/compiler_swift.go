@@ -11,79 +11,61 @@ import (
 	"github.com/Arror/CodeFly/types"
 )
 
-var sCtx context.SwiftContext
+const (
+	enumName    = "Enum"
+	structName  = "Struct"
+	serviceName = "Service"
+
+	enumTplPath    = "templates/swift/enum.tpl"
+	structTplPath  = "templates/swift/struct.tpl"
+	serviceTplPath = "templates/swift/service.tpl"
+)
+
+var (
+	enumTemplate    = initTemplate(enumName, enumTplPath)
+	structTemplate  = initTemplate(structName, structTplPath)
+	serviceTemplate = initTemplate(serviceName, serviceTplPath)
+)
 
 // SwiftCompiler Swift Code Compiler
 type SwiftCompiler struct{}
 
+// SwiftCompilerAssistant Swift compiler assistant
+type SwiftCompilerAssistant struct {
+	Ctx context.Context
+}
+
 // SwiftEnum Swift Enum
 type SwiftEnum struct {
 	*parser.Enum
+	SCA SwiftCompilerAssistant
 }
 
 // SwiftStruct Swift Struct
 type SwiftStruct struct {
 	*parser.Struct
+	SCA SwiftCompilerAssistant
 }
 
 // SwiftService Swift Service
 type SwiftService struct {
 	*parser.Service
-}
-
-// SwiftCommon Swift common protocol
-type SwiftCommon interface {
-	Name() string
-	TypeString(t *parser.Type) string
-	ExportSwiftFiles(ctx context.SwiftContext)
+	SCA SwiftCompilerAssistant
 }
 
 // Name Enum name
 func (se *SwiftEnum) Name() string {
-	return sCtx.Thrift.Namespaces[sCtx.Lang] + se.Enum.Name
+	return se.SCA.Ctx.Thrift.Namespaces[se.SCA.Ctx.Lang] + se.Enum.Name
 }
 
 // Name Struct name
 func (ss *SwiftStruct) Name() string {
-	return sCtx.Thrift.Namespaces[sCtx.Lang] + ss.Struct.Name
+	return ss.SCA.Ctx.Thrift.Namespaces[ss.SCA.Ctx.Lang] + ss.Struct.Name
 }
 
 // Name Service name
 func (ss *SwiftService) Name() string {
 	return ss.Service.Name + "Service"
-}
-
-// TypeString Enum type string
-func (se *SwiftEnum) TypeString(t *parser.Type) string {
-	return typeString(t)
-}
-
-// TypeString Struct type string
-func (ss *SwiftStruct) TypeString(t *parser.Type) string {
-	return typeString(t)
-}
-
-// TypeString Struct type string
-func (ss *SwiftService) TypeString(t *parser.Type) string {
-	return typeString(t)
-}
-
-// ExportSwiftFiles Export swift enum files
-func (se *SwiftEnum) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, se.Name()+".swift")
-	exportFiles(path, ctx.EnumTemplate, ctx.EnumTemplateName, se)
-}
-
-// ExportSwiftFiles Export swift struct files
-func (ss *SwiftStruct) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-	exportFiles(path, ctx.StructTemplate, ctx.StructTemplateName, ss)
-}
-
-// ExportSwiftFiles Export swift service files
-func (ss *SwiftService) ExportSwiftFiles(ctx context.SwiftContext) {
-	path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-	exportFiles(path, ctx.ServiceTemplate, ctx.ServiceTemplateName, ss)
 }
 
 // MethodName Method Name
@@ -92,8 +74,6 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 }
 
 func (sc *SwiftCompiler) compile(ctx context.Context) {
-
-	sCtx = context.InitSwiftContext(ctx)
 
 	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
 		panic(err.Error())
@@ -107,8 +87,12 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
+				SCA: SwiftCompilerAssistant{
+					Ctx: ctx,
+				},
 			}
-			se.ExportSwiftFiles(sCtx)
+			path := assembleFilePath(ctx.Output, se.Name()+".swift")
+			exportFiles(path, enumTemplate, enumName, se)
 		}
 	}()
 
@@ -118,8 +102,12 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
+				SCA: SwiftCompilerAssistant{
+					Ctx: ctx,
+				},
 			}
-			ss.ExportSwiftFiles(sCtx)
+			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
+			exportFiles(path, structTemplate, structName, ss)
 		}
 	}()
 
@@ -129,15 +117,20 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
+				SCA: SwiftCompilerAssistant{
+					Ctx: ctx,
+				},
 			}
-			ss.ExportSwiftFiles(sCtx)
+			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
+			exportFiles(path, serviceTemplate, serviceName, ss)
 		}
 	}()
 
 	wg.Wait()
 }
 
-func typeString(t *parser.Type) string {
+// TypeString Type string
+func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid
@@ -149,7 +142,7 @@ func typeString(t *parser.Type) string {
 		case types.ThriftList, types.ThriftSet, types.ThriftMap:
 			panic("Unsupported inner container type.")
 		}
-		return "[" + typeString(t.ValueType) + "]"
+		return "[" + SCA.TypeString(t.ValueType) + "]"
 	case types.ThriftMap, types.ThriftSet:
 		panic("Unsupported container type.")
 	}
@@ -167,11 +160,11 @@ func typeString(t *parser.Type) string {
 
 	switch componentCount {
 	case 1:
-		_thrift = sCtx.Thrift
+		_thrift = SCA.Ctx.Thrift
 		_type = typeComponents[0]
 	case 2:
-		if key := sCtx.Thrift.Includes[typeComponents[0]]; key != "" {
-			_thrift = sCtx.Thrifts[key]
+		if key := SCA.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
+			_thrift = SCA.Ctx.Thrifts[key]
 			_type = typeComponents[1]
 		} else {
 			panic(typeComponents[0] + ".thrift not find in file include.")
@@ -179,7 +172,7 @@ func typeString(t *parser.Type) string {
 	}
 
 	if _thrift != nil && _type != "" {
-		return _thrift.Namespaces[sCtx.Lang] + _type
+		return _thrift.Namespaces[SCA.Ctx.Lang] + _type
 	}
 
 	panic("Unsupported type.")
@@ -191,10 +184,7 @@ const (
 	swiftDouble = "Double"
 	swiftBool   = "Bool"
 	swiftString = "String"
-)
-
-const (
-	swiftVoid = "Void"
+	swiftVoid   = "Void"
 )
 
 var mapping = map[string]string{
