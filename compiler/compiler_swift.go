@@ -30,37 +30,37 @@ var (
 // SwiftCompiler Swift Code Compiler
 type SwiftCompiler struct{}
 
-// SwiftThriftAssistant Swift thrift assistant
-type SwiftThriftAssistant struct {
+// SwiftCompilerAssistant Swift compiler assistant
+type SwiftCompilerAssistant struct {
 	Ctx context.Context
 }
 
 // SwiftEnum Swift Enum
 type SwiftEnum struct {
 	*parser.Enum
-	STA SwiftThriftAssistant
+	SCA SwiftCompilerAssistant
 }
 
 // SwiftStruct Swift Struct
 type SwiftStruct struct {
 	*parser.Struct
-	STA SwiftThriftAssistant
+	SCA SwiftCompilerAssistant
 }
 
 // SwiftService Swift Service
 type SwiftService struct {
 	*parser.Service
-	STA SwiftThriftAssistant
+	SCA SwiftCompilerAssistant
 }
 
 // Name Enum name
 func (se *SwiftEnum) Name() string {
-	return se.STA.Ctx.Thrift.Namespaces[se.STA.Ctx.Lang] + se.Enum.Name
+	return se.SCA.Ctx.Thrift.Namespaces[se.SCA.Ctx.Lang] + se.Enum.Name
 }
 
 // Name Struct name
 func (ss *SwiftStruct) Name() string {
-	return ss.STA.Ctx.Thrift.Namespaces[ss.STA.Ctx.Lang] + ss.Struct.Name
+	return ss.SCA.Ctx.Thrift.Namespaces[ss.SCA.Ctx.Lang] + ss.Struct.Name
 }
 
 // Name Service name
@@ -87,7 +87,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
-				STA: SwiftThriftAssistant{
+				SCA: SwiftCompilerAssistant{
 					Ctx: ctx,
 				},
 			}
@@ -102,7 +102,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
-				STA: SwiftThriftAssistant{
+				SCA: SwiftCompilerAssistant{
 					Ctx: ctx,
 				},
 			}
@@ -117,7 +117,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
-				STA: SwiftThriftAssistant{
+				SCA: SwiftCompilerAssistant{
 					Ctx: ctx,
 				},
 			}
@@ -130,7 +130,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 }
 
 // TypeString Type string
-func (STA SwiftThriftAssistant) TypeString(t *parser.Type) string {
+func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid
@@ -142,7 +142,7 @@ func (STA SwiftThriftAssistant) TypeString(t *parser.Type) string {
 		case types.ThriftList, types.ThriftSet, types.ThriftMap:
 			panic("Unsupported inner container type.")
 		}
-		return "[" + STA.TypeString(t.ValueType) + "]"
+		return "[" + SCA.TypeString(t.ValueType) + "]"
 	case types.ThriftMap, types.ThriftSet:
 		panic("Unsupported container type.")
 	}
@@ -160,11 +160,11 @@ func (STA SwiftThriftAssistant) TypeString(t *parser.Type) string {
 
 	switch componentCount {
 	case 1:
-		_thrift = STA.Ctx.Thrift
+		_thrift = SCA.Ctx.Thrift
 		_type = typeComponents[0]
 	case 2:
-		if key := STA.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
-			_thrift = STA.Ctx.Thrifts[key]
+		if key := SCA.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
+			_thrift = SCA.Ctx.Thrifts[key]
 			_type = typeComponents[1]
 		} else {
 			panic(typeComponents[0] + ".thrift not find in file include.")
@@ -172,7 +172,7 @@ func (STA SwiftThriftAssistant) TypeString(t *parser.Type) string {
 	}
 
 	if _thrift != nil && _type != "" {
-		return _thrift.Namespaces[STA.Ctx.Lang] + _type
+		return _thrift.Namespaces[SCA.Ctx.Lang] + _type
 	}
 
 	panic("Unsupported type.")
