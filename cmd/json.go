@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Arror/CodeFly/compiler"
-	"github.com/Arror/CodeFly/context"
-
 	"github.com/samuel/go-thrift/parser"
 	"github.com/urfave/cli"
+
+	"github.com/Arror/CodeFly/compiler"
+	"github.com/Arror/CodeFly/context"
 )
 
 // JSONCommand Json generate command

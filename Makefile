@@ -3,7 +3,7 @@ all:
 init:
 
 gen_swift_test:
-	./CodeFly json -l swift -i ./sample/sample.thrift -o ./Sample/Swift
+	./CodeFly json -l swift -i ./sample/sample.thrift -o ./sample/swift
 
 test: clean build gen_swift_test
 
