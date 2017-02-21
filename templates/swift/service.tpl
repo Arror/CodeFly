@@ -7,9 +7,9 @@
 import Foundation
 
 public struct {{ $ss.Name }} {
-    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.TypeString $m.ReturnType }}
+    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.STA.TypeString $m.ReturnType }}
     @discardableResult
-    public static func {{ $ss.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
+    public static func {{ $ss.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $f.Name }}: {{ $ss.STA.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         guard let engine = WebAPIEngine.engine else { return false }
 

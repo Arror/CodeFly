@@ -9,6 +9,7 @@ import (
 	"text/template"
 
 	"github.com/Arror/CodeFly/context"
+	"github.com/Arror/CodeFly/templates"
 )
 
 const swift = "swift"
@@ -39,6 +40,17 @@ func Compile(ctx context.Context) error {
 	}
 
 	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
+}
+
+func initTemplate(name string, path string) *template.Template {
+
+	buffer := templates.MustAsset(path)
+
+	template, err := template.New(name).Parse(string(buffer))
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	return template
 }
 
 func exportFiles(fp string, t *template.Template, tplname string, data interface{}) {
