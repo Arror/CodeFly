@@ -27,13 +27,15 @@ var (
 	serviceTemplate = initTemplate(serviceName, serviceTplPath)
 )
 
+var (
+	_ctx context.Context
+)
+
 // SwiftCompiler Swift Code Compiler
 type SwiftCompiler struct{}
 
 // SwiftCompilerAssistant Swift compiler assistant
-type SwiftCompilerAssistant struct {
-	Ctx context.Context
-}
+type SwiftCompilerAssistant struct{}
 
 // SwiftEnum Swift Enum
 type SwiftEnum struct {
@@ -55,12 +57,12 @@ type SwiftService struct {
 
 // Name Enum name
 func (se *SwiftEnum) Name() string {
-	return se.SCA.Ctx.Thrift.Namespaces[se.SCA.Ctx.Lang] + se.Enum.Name
+	return _ctx.Thrift.Namespaces[_ctx.Lang] + se.Enum.Name
 }
 
 // Name Struct name
 func (ss *SwiftStruct) Name() string {
-	return ss.SCA.Ctx.Thrift.Namespaces[ss.SCA.Ctx.Lang] + ss.Struct.Name
+	return _ctx.Thrift.Namespaces[_ctx.Lang] + ss.Struct.Name
 }
 
 // Name Service name
@@ -75,6 +77,8 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 
 func (sc *SwiftCompiler) compile(ctx context.Context) {
 
+	_ctx = ctx
+
 	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
 		panic(err.Error())
 	}
@@ -87,9 +91,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
-				SCA: SwiftCompilerAssistant{
-					Ctx: ctx,
-				},
+				SCA:  SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, se.Name()+".swift")
 			exportFiles(path, enumTemplate, enumName, se)
@@ -102,9 +104,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
-				SCA: SwiftCompilerAssistant{
-					Ctx: ctx,
-				},
+				SCA:    SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
 			exportFiles(path, structTemplate, structName, ss)
@@ -117,9 +117,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
-				SCA: SwiftCompilerAssistant{
-					Ctx: ctx,
-				},
+				SCA:     SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
 			exportFiles(path, serviceTemplate, serviceName, ss)
@@ -160,11 +158,11 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 
 	switch componentCount {
 	case 1:
-		_thrift = SCA.Ctx.Thrift
+		_thrift = _ctx.Thrift
 		_type = typeComponents[0]
 	case 2:
-		if key := SCA.Ctx.Thrift.Includes[typeComponents[0]]; key != "" {
-			_thrift = SCA.Ctx.Thrifts[key]
+		if key := _ctx.Thrift.Includes[typeComponents[0]]; key != "" {
+			_thrift = _ctx.Thrifts[key]
 			_type = typeComponents[1]
 		} else {
 			panic(typeComponents[0] + ".thrift not find in file include.")
@@ -172,7 +170,7 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 	}
 
 	if _thrift != nil && _type != "" {
-		return _thrift.Namespaces[SCA.Ctx.Lang] + _type
+		return _thrift.Namespaces[_ctx.Lang] + _type
 	}
 
 	panic("Unsupported type.")
