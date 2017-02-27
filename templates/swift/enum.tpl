@@ -1,4 +1,4 @@
-//
+// {{ $ss := . }}
 // {{ .Name }}.swift
 //
 // 此文件由 CodeFly 生成，请不要手动修改
@@ -10,5 +10,5 @@ public enum {{ .Name }}: Int, Enum {
 
     public typealias E = Int
     {{ range $i, $f := .Enum.Values }}
-    case {{ $f.Name }} = {{ $f.Value }} {{ end }}
+    case {{ $ss.SCA.FormatFiledName $f.Name }} = {{ $f.Value }} {{ end }}
 }

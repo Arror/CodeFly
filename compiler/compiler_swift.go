@@ -127,6 +127,32 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 	wg.Wait()
 }
 
+// FormatFiledName Format filed name
+func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
+
+	name := n
+
+	if !strings.Contains(name, "_") {
+		return name
+	}
+
+	components := strings.Split(name, "_")
+
+	name = ""
+
+	for _, component := range components {
+		if component != "" {
+			name += (strings.ToUpper(component[:1]) + component[1:])
+		}
+	}
+
+	if name == "" {
+		return ""
+	}
+
+	return strings.ToLower(name[:1]) + name[1:]
+}
+
 // TypeString Type string
 func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 
