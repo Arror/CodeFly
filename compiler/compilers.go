@@ -2,8 +2,6 @@ package compiler
 
 import (
 	"fmt"
-	"log"
-	"path/filepath"
 	"strings"
 
 	"github.com/Arror/CodeFly/context"
@@ -37,15 +35,4 @@ func Compile(ctx context.Context) error {
 	}
 
 	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
-}
-
-func assembleFilePath(op string, fn string) string {
-
-	p, err := filepath.Abs(filepath.Join(op, fn))
-
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	return p
 }

@@ -87,8 +87,8 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				Enum: e,
 				SCA:  SwiftCompilerAssistant{},
 			}
-			path := assembleFilePath(ctx.Output, se.Name()+".swift")
-			ctx.ExportFiles(path, enumTplName, enumTplPath, se)
+			fn := se.Name() + ".swift"
+			ctx.ExportFiles(fn, enumTplName, enumTplPath, se)
 		}
 	}()
 
@@ -100,8 +100,8 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				Struct: s,
 				SCA:    SwiftCompilerAssistant{},
 			}
-			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			ctx.ExportFiles(path, structTplName, structTplPath, ss)
+			fn := ss.Name() + ".swift"
+			ctx.ExportFiles(fn, structTplName, structTplPath, ss)
 		}
 	}()
 
@@ -113,8 +113,8 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				Service: s,
 				SCA:     SwiftCompilerAssistant{},
 			}
-			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			ctx.ExportFiles(path, serviceTplName, serviceTplPath, ss)
+			fn := ss.Name() + ".swift"
+			ctx.ExportFiles(fn, serviceTplName, serviceTplPath, ss)
 		}
 	}()
 
