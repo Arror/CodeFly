@@ -3,13 +3,10 @@ package compiler
 import (
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/Arror/CodeFly/context"
-	"github.com/Arror/CodeFly/templates"
 )
 
 const swift = "swift"
@@ -40,29 +37,6 @@ func Compile(ctx context.Context) error {
 	}
 
 	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
-}
-
-func initTemplate(name string, path string) *template.Template {
-
-	buffer := templates.MustAsset(path)
-
-	template, err := template.New(name).Parse(string(buffer))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
-}
-
-func exportFiles(fp string, t *template.Template, tplname string, data interface{}) {
-
-	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer file.Close()
-	if err := t.ExecuteTemplate(file, tplname, data); err != nil {
-		log.Fatal(err.Error())
-	}
 }
 
 func assembleFilePath(op string, fn string) string {

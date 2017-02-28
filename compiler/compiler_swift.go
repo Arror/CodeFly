@@ -22,12 +22,6 @@ const (
 )
 
 var (
-	enumTemplate    = initTemplate(enumName, enumTplPath)
-	structTemplate  = initTemplate(structName, structTplPath)
-	serviceTemplate = initTemplate(serviceName, serviceTplPath)
-)
-
-var (
 	_ctx context.Context
 )
 
@@ -94,7 +88,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:  SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, se.Name()+".swift")
-			exportFiles(path, enumTemplate, enumName, se)
+			ctx.ExportFiles(path, enumName, enumTplPath, se)
 		}
 	}()
 
@@ -107,7 +101,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:    SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			exportFiles(path, structTemplate, structName, ss)
+			ctx.ExportFiles(path, structName, structTplPath, ss)
 		}
 	}()
 
@@ -120,7 +114,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:     SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			exportFiles(path, serviceTemplate, serviceName, ss)
+			ctx.ExportFiles(path, serviceName, serviceTplPath, ss)
 		}
 	}()
 
