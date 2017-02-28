@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	enumName    = "Enum"
-	structName  = "Struct"
-	serviceName = "Service"
+	enumTplName    = "SwiftEnum"
+	structTplName  = "SwiftStruct"
+	serviceTplName = "SwiftService"
 
 	enumTplPath    = "templates/swift/enum.tpl"
 	structTplPath  = "templates/swift/struct.tpl"
@@ -88,7 +88,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:  SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, se.Name()+".swift")
-			ctx.ExportFiles(path, enumName, enumTplPath, se)
+			ctx.ExportFiles(path, enumTplName, enumTplPath, se)
 		}
 	}()
 
@@ -101,7 +101,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:    SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			ctx.ExportFiles(path, structName, structTplPath, ss)
+			ctx.ExportFiles(path, structTplName, structTplPath, ss)
 		}
 	}()
 
@@ -114,7 +114,7 @@ func (sc *SwiftCompiler) compile(ctx context.Context) {
 				SCA:     SwiftCompilerAssistant{},
 			}
 			path := assembleFilePath(ctx.Output, ss.Name()+".swift")
-			ctx.ExportFiles(path, serviceName, serviceTplPath, ss)
+			ctx.ExportFiles(path, serviceTplName, serviceTplPath, ss)
 		}
 	}()
 
