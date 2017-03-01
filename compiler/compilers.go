@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/Arror/CodeFly/context"
@@ -32,7 +33,7 @@ func Compile(ctx context.Context) error {
 		return err
 	}
 
-	err = ctx.MakeOutputFolder()
+	err = os.MkdirAll(ctx.Output, 0755)
 	if err != nil {
 		return err
 	}
