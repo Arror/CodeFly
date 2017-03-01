@@ -164,23 +164,23 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 		return base
 	}
 
-	typeComponents := strings.Split(t.Name, ".")
+	components := strings.Split(t.Name, ".")
 
-	componentCount := len(typeComponents)
+	count := len(components)
 
 	var _thrift *parser.Thrift
 	var _type string
 
-	switch componentCount {
+	switch count {
 	case 1:
 		_thrift = _ctx.Thrift
-		_type = typeComponents[0]
+		_type = components[0]
 	case 2:
-		if key := _ctx.Thrift.Includes[typeComponents[0]]; key != "" {
+		if key := _ctx.Thrift.Includes[components[0]]; key != "" {
 			_thrift = _ctx.Thrifts[key]
-			_type = typeComponents[1]
+			_type = components[1]
 		} else {
-			panic(typeComponents[0] + ".thrift not find in file include.")
+			panic(components[0] + ".thrift not find in file include.")
 		}
 	}
 
