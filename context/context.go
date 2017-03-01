@@ -59,6 +59,14 @@ func initTemplate(name string, path string) *template.Template {
 	return template
 }
 
+// MakeOutputFolder Make output folder
+func (ctx Context) MakeOutputFolder() error {
+
+	err := os.MkdirAll(ctx.Output, 0755)
+
+	return err
+}
+
 // ExportFiles Export files
 func (ctx Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) {
 

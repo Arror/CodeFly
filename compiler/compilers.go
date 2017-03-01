@@ -29,9 +29,13 @@ func Compile(ctx context.Context) error {
 
 	if compiler := compilerOfLang(strings.ToLower(ctx.Lang)); compiler != nil {
 
-		compiler.compile(ctx)
+		err := ctx.MakeOutputFolder()
 
-		return nil
+		if err == nil {
+			compiler.compile(ctx)
+		}
+
+		return err
 	}
 
 	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)

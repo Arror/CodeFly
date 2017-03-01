@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"os"
 	"strings"
 	"sync"
 
@@ -72,10 +71,6 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 func (sc *SwiftCompiler) compile(ctx context.Context) {
 
 	_ctx = ctx
-
-	if err := os.MkdirAll(ctx.Output, 0755); err != nil {
-		panic(err.Error())
-	}
 
 	wg := sync.WaitGroup{}
 
