@@ -136,7 +136,7 @@ func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
 	}
 
 	if name == "" {
-		return ""
+		panic("Invaild filed name: " + n)
 	}
 
 	return strings.ToLower(name[:1]) + name[1:]
