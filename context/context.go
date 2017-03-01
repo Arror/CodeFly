@@ -1,7 +1,6 @@
 package context
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -37,26 +36,15 @@ func InitContext(lang string, input string, output string, thrifts map[string]*p
 	return ctx
 }
 
-func assembleFilePath(op string, fn string) string {
+func initTemplate(name string, path string) (*template.Template, error) {
 
-	p, err := filepath.Abs(filepath.Join(op, fn))
+	buffer, err := templates.Asset(path)
 
 	if err != nil {
-		log.Fatalln(err.Error())
+		return nil, err
 	}
 
-	return p
-}
-
-func initTemplate(name string, path string) *template.Template {
-
-	buffer := templates.MustAsset(path)
-
-	template, err := template.New(name).Parse(string(buffer))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return template
+	return template.New(name).Parse(string(buffer))
 }
 
 // MakeOutputFolder Make output folder
@@ -68,19 +56,29 @@ func (ctx Context) MakeOutputFolder() error {
 }
 
 // ExportFiles Export files
-func (ctx Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) {
+func (ctx Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) error {
 
-	fp := assembleFilePath(ctx.Output, fn)
+	fp, err := filepath.Abs(filepath.Join(ctx.Output, fn))
+	if err != nil {
+		return err
+	}
 
 	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
+
 	defer file.Close()
 
-	t := initTemplate(tplname, tplPath)
-
-	if err := t.ExecuteTemplate(file, tplname, data); err != nil {
-		log.Fatal(err.Error())
+	t, err := initTemplate(tplname, tplPath)
+	if err != nil {
+		return err
 	}
+
+	err = t.ExecuteTemplate(file, tplname, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
