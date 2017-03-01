@@ -207,6 +207,6 @@ var mapping = map[string]string{
 	types.ThriftBool:   swiftBool,
 	types.ThriftDouble: swiftDouble,
 	types.ThriftString: swiftString,
-	types.ThriftByte:   types.UnsupportedType,
-	types.ThriftBinary: types.UnsupportedType,
+	types.ThriftByte:   types.Unsupported,
+	types.ThriftBinary: types.Unsupported,
 }

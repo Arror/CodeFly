@@ -23,6 +23,6 @@ const (
 	ThriftMap = "map"
 	// ThriftList list
 	ThriftList = "list"
-	// UnsupportedType unsupported type
-	UnsupportedType = "unsupported_type"
+	// Unsupported unsupported type
+	Unsupported = "unsupported"
 )
