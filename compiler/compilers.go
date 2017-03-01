@@ -14,29 +14,30 @@ type Compiler interface {
 	compile(ctx context.Context)
 }
 
-func compilerOfLang(lang string) Compiler {
+func compilerOfLang(lang string) (Compiler, error) {
 
 	switch lang {
 	case swift:
-		return &SwiftCompiler{}
+		return &SwiftCompiler{}, nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("compiler of %s not found", lang)
 }
 
 // Compile Compile code
 func Compile(ctx context.Context) error {
 
-	if compiler := compilerOfLang(strings.ToLower(ctx.Lang)); compiler != nil {
-
-		err := ctx.MakeOutputFolder()
-
-		if err == nil {
-			compiler.compile(ctx)
-		}
-
+	compiler, err := compilerOfLang(strings.ToLower(ctx.Lang))
+	if err != nil {
 		return err
 	}
 
-	return fmt.Errorf("Can't find compiler for language: %s", ctx.Lang)
+	err = ctx.MakeOutputFolder()
+	if err != nil {
+		return err
+	}
+
+	compiler.compile(ctx)
+
+	return nil
 }
