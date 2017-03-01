@@ -10,7 +10,7 @@
 
 ### Usage
 
-    CodeFly <Generate commond> -l <Language> -i <Input thrift file path.> -o <Output files path.>
+    CodeFly json -l swift -i ./example.thrift -o ./
 
 ### Requirements
 
