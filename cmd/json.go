@@ -61,7 +61,7 @@ var JSONCommand = cli.Command{
 
 		for n, t := range ts {
 			if t.Namespaces[lang] == "" {
-				log.Fatalln("%s language namespace info not found in %s.thrift", lang, n)
+				log.Fatalln("%s language namespace not found in %s.thrift", lang, n)
 			}
 		}
 
@@ -87,37 +87,35 @@ const (
 func checkLanguage() (string, error) {
 
 	if lang == "" {
-		return "", fmt.Errorf("The target language name is empty")
+		return "", fmt.Errorf("target language name is empty")
 	}
 
 	switch strings.ToLower(lang) {
 	case swift:
 		return lang, nil
 	default:
-		return "", fmt.Errorf("Unsupported language")
+		return "", fmt.Errorf("unsupported language")
 	}
 }
 
 func checkInputPath() (string, error) {
 
 	if input == "" {
-		return "", fmt.Errorf("The thrift file input path is empty")
+		return "", fmt.Errorf("thrift file input path is empty")
 	}
 
 	p, err := filepath.Abs(input)
-
 	if err != nil {
-		return "", fmt.Errorf("The input thrift file path not exist")
+		return "", fmt.Errorf("thrift file not exist")
 	}
 
 	info, err := os.Stat(p)
-
 	if err != nil {
-		return "", fmt.Errorf("The input thrift file path not exist")
+		return "", fmt.Errorf("thrift file not exist")
 	}
 
 	if info.IsDir() {
-		return "", fmt.Errorf("The input path is a directory")
+		return "", fmt.Errorf("input is a directory")
 	}
 
 	return p, nil
@@ -126,13 +124,12 @@ func checkInputPath() (string, error) {
 func checkOutputPath() (string, error) {
 
 	if output == "" {
-		return "", fmt.Errorf("File output path is empty")
+		return "", fmt.Errorf("output path is empty")
 	}
 
 	p, err := filepath.Abs(output)
-
 	if err != nil {
-		return "", fmt.Errorf("File output path error")
+		return "", fmt.Errorf("output path error")
 	}
 
 	return p, nil
