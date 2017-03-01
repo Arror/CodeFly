@@ -83,7 +83,10 @@ func (sc *SwiftCompiler) compile(ctx *context.Context) {
 				SCA:  SwiftCompilerAssistant{},
 			}
 			fn := se.Name() + ".swift"
-			ctx.ExportFiles(fn, enumTplName, enumTplPath, se)
+			err := ctx.ExportFiles(fn, enumTplName, enumTplPath, se)
+			if err != nil {
+				panic(err.Error())
+			}
 		}
 	}()
 
@@ -96,7 +99,10 @@ func (sc *SwiftCompiler) compile(ctx *context.Context) {
 				SCA:    SwiftCompilerAssistant{},
 			}
 			fn := ss.Name() + ".swift"
-			ctx.ExportFiles(fn, structTplName, structTplPath, ss)
+			err := ctx.ExportFiles(fn, structTplName, structTplPath, ss)
+			if err != nil {
+				panic(err.Error())
+			}
 		}
 	}()
 
@@ -109,7 +115,10 @@ func (sc *SwiftCompiler) compile(ctx *context.Context) {
 				SCA:     SwiftCompilerAssistant{},
 			}
 			fn := ss.Name() + ".swift"
-			ctx.ExportFiles(fn, serviceTplName, serviceTplPath, ss)
+			err := ctx.ExportFiles(fn, serviceTplName, serviceTplPath, ss)
+			if err != nil {
+				panic(err.Error())
+			}
 		}
 	}()
 
@@ -136,7 +145,7 @@ func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
 	}
 
 	if name == "" {
-		panic("Invaild filed name: " + n)
+		panic("invaild filed name: " + n)
 	}
 
 	return strings.ToLower(name[:1]) + name[1:]
@@ -153,11 +162,11 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 	case types.ThriftList:
 		switch t.ValueType.Name {
 		case types.ThriftList, types.ThriftSet, types.ThriftMap:
-			panic("Unsupported inner container type.")
+			panic("unsupported [[Type]]], [Key : Value] or Set<Type>")
 		}
 		return "[" + SCA.TypeString(t.ValueType) + "]"
 	case types.ThriftMap, types.ThriftSet:
-		panic("Unsupported container type.")
+		panic("unsupported [Key : Value] or Set<Type>")
 	}
 
 	if base := mapping[t.Name]; base != "" {
@@ -176,19 +185,16 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 		_thrift = _ctx.Thrift
 		_type = components[0]
 	case 2:
-		if key := _ctx.Thrift.Includes[components[0]]; key != "" {
-			_thrift = _ctx.Thrifts[key]
-			_type = components[1]
-		} else {
-			panic(components[0] + ".thrift not find in file include.")
-		}
+		key := _ctx.Thrift.Includes[components[0]]
+		_thrift = _ctx.Thrifts[key]
+		_type = components[1]
 	}
 
-	if _thrift != nil && _type != "" {
-		return _thrift.Namespaces[_ctx.Lang] + _type
+	if _thrift == nil || _type == "" {
+		panic("unsupported type " + t.Name)
 	}
 
-	panic("Unsupported type.")
+	return _thrift.Namespaces[_ctx.Lang] + _type
 }
 
 const (
