@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	_ctx context.Context
+	_ctx *context.Context
 )
 
 // SwiftCompiler Swift Code Compiler
@@ -68,7 +68,7 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-func (sc *SwiftCompiler) compile(ctx context.Context) {
+func (sc *SwiftCompiler) compile(ctx *context.Context) {
 
 	_ctx = ctx
 

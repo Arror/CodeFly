@@ -21,9 +21,9 @@ type Context struct {
 }
 
 // InitContext Context init
-func InitContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) Context {
+func InitContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
 
-	ctx := Context{}
+	ctx := &Context{}
 
 	ctx.Lang = lang
 	ctx.Input = input
@@ -48,7 +48,7 @@ func initTemplate(name string, path string) (*template.Template, error) {
 }
 
 // ExportFiles Export files
-func (ctx Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) error {
+func (ctx *Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) error {
 
 	fp, err := filepath.Abs(filepath.Join(ctx.Output, fn))
 	if err != nil {

@@ -12,7 +12,7 @@ const swift = "swift"
 
 // Compiler Compiler interface
 type Compiler interface {
-	compile(ctx context.Context)
+	compile(ctx *context.Context)
 }
 
 func compilerOfLang(lang string) (Compiler, error) {
@@ -26,7 +26,7 @@ func compilerOfLang(lang string) (Compiler, error) {
 }
 
 // Compile Compile code
-func Compile(ctx context.Context) error {
+func Compile(ctx *context.Context) error {
 
 	compiler, err := compilerOfLang(strings.ToLower(ctx.Lang))
 	if err != nil {
