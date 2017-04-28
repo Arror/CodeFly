@@ -20,12 +20,16 @@ const (
 	serviceTplPath = "templates/swift/service.tpl"
 )
 
+func init() {
+	register(&swiftcompiler{}, "swift")
+}
+
 var (
 	_ctx *context.Context
 )
 
 // SwiftCompiler Swift Code Compiler
-type SwiftCompiler struct{}
+type swiftcompiler struct{}
 
 // SwiftCompilerAssistant Swift compiler assistant
 type SwiftCompilerAssistant struct{}
@@ -68,7 +72,7 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-func (sc *SwiftCompiler) compile(ctx *context.Context) {
+func (sc *swiftcompiler) compile(ctx *context.Context) {
 
 	_ctx = ctx
 
