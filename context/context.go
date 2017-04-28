@@ -20,8 +20,8 @@ type Context struct {
 	Thrifts map[string]*parser.Thrift
 }
 
-// InitContext Context init
-func InitContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
+// CreateContext create context
+func CreateContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
 
 	ctx := &Context{}
 

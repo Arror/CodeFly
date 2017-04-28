@@ -22,33 +22,33 @@ var JSONCommand = cli.Command{
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:        "lang, l",
-			Usage:       "Target language.",
+			Usage:       "target language",
 			Destination: &lang,
 		},
 		cli.StringFlag{
 			Name:        "input, i",
-			Usage:       "Input thrift file path.",
+			Usage:       "input thrift file path",
 			Destination: &input,
 		},
 		cli.StringFlag{
 			Name:        "output, o",
-			Usage:       "File output path.",
+			Usage:       "file output path",
 			Destination: &output,
 		},
 	},
 	Action: func(c *cli.Context) error {
 
-		lang, err := checkLanguage()
+		lang, err := verifyLanguage()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		input, err := checkInputPath()
+		input, err := verifyInputPath()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		output, err := checkOutputPath()
+		output, err := verifyOutputPath()
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
@@ -65,7 +65,7 @@ var JSONCommand = cli.Command{
 			}
 		}
 
-		ctx := context.InitContext(lang, input, output, ts)
+		ctx := context.CreateContext(lang, input, output, ts)
 
 		err = compiler.Compile(ctx)
 		if err != nil {
@@ -76,29 +76,25 @@ var JSONCommand = cli.Command{
 	},
 }
 
-var lang string
-var input string
-var output string
-
-const (
-	swift = "swift"
+var (
+	lang   string
+	input  string
+	output string
 )
 
-func checkLanguage() (string, error) {
+func verifyLanguage() (string, error) {
 
-	if lang == "" {
-		return "", fmt.Errorf("target language name is empty")
-	}
+	language := strings.ToLower(lang)
 
-	switch strings.ToLower(lang) {
-	case swift:
-		return lang, nil
+	switch language {
+	case "swift":
+		return language, nil
 	default:
-		return "", fmt.Errorf("unsupported language")
+		return "", fmt.Errorf("unsupported language: %s", language)
 	}
 }
 
-func checkInputPath() (string, error) {
+func verifyInputPath() (string, error) {
 
 	if input == "" {
 		return "", fmt.Errorf("thrift file input path is empty")
@@ -121,7 +117,7 @@ func checkInputPath() (string, error) {
 	return p, nil
 }
 
-func checkOutputPath() (string, error) {
+func verifyOutputPath() (string, error) {
 
 	if output == "" {
 		return "", fmt.Errorf("output path is empty")
