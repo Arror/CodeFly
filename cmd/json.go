@@ -14,8 +14,7 @@ import (
 	"github.com/Arror/CodeFly/context"
 )
 
-// JSONCommand Json generate command
-var JSONCommand = cli.Command{
+var jsonCommand = cli.Command{
 	Name:      "json",
 	ShortName: "json",
 	Usage:     "Command of generate the target language code.",

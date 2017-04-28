@@ -6,18 +6,17 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Root Root command
-var Root = cli.NewApp()
+var root = cli.NewApp()
 
 // Execute Excuate root command
 func Execute() {
-	if err := Root.Run(os.Args); err != nil {
+	if err := root.Run(os.Args); err != nil {
 		panic(err.Error())
 	}
 }
 
 func init() {
-	Root.Commands = []cli.Command{
-		JSONCommand,
+	root.Commands = []cli.Command{
+		jsonCommand,
 	}
 }
