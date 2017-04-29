@@ -28,46 +28,45 @@ var (
 	_ctx *context.Context
 )
 
-// SwiftCompiler Swift Code Compiler
 type swiftcompiler struct{}
 
-// SwiftCompilerAssistant Swift compiler assistant
+// SwiftCompilerAssistant swift compiler assistant
 type SwiftCompilerAssistant struct{}
 
-// SwiftEnum Swift Enum
+// SwiftEnum swift Enum
 type SwiftEnum struct {
 	*parser.Enum
 	SCA SwiftCompilerAssistant
 }
 
-// SwiftStruct Swift Struct
+// SwiftStruct swift Struct
 type SwiftStruct struct {
 	*parser.Struct
 	SCA SwiftCompilerAssistant
 }
 
-// SwiftService Swift Service
+// SwiftService swift Service
 type SwiftService struct {
 	*parser.Service
 	SCA SwiftCompilerAssistant
 }
 
-// Name Enum name
+// Name enum name
 func (se *SwiftEnum) Name() string {
 	return _ctx.Thrift.Namespaces[_ctx.Lang] + se.Enum.Name
 }
 
-// Name Struct name
+// Name struct name
 func (ss *SwiftStruct) Name() string {
 	return _ctx.Thrift.Namespaces[_ctx.Lang] + ss.Struct.Name
 }
 
-// Name Service name
+// Name service name
 func (ss *SwiftService) Name() string {
 	return ss.Service.Name + "Service"
 }
 
-// MethodName Method Name
+// MethodName method Name
 func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
@@ -129,7 +128,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 	wg.Wait()
 }
 
-// FormatFiledName Format filed name
+// FormatFiledName format filed name
 func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
 
 	name := n
@@ -155,7 +154,7 @@ func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
 	return strings.ToLower(name[:1]) + name[1:]
 }
 
-// TypeString Type string
+// TypeString type string
 func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 
 	if t == nil {
