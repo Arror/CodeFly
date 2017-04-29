@@ -47,8 +47,8 @@ func initTemplate(name string, path string) (*template.Template, error) {
 	return template.New(name).Parse(string(buffer))
 }
 
-// ExportFiles Export files
-func (ctx *Context) ExportFiles(fn string, tplname string, tplPath string, data interface{}) error {
+// ExportFile export file
+func (ctx *Context) ExportFile(fn string, tplname string, tplPath string, data interface{}) error {
 
 	fp, err := filepath.Abs(filepath.Join(ctx.Output, fn))
 	if err != nil {

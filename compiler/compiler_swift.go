@@ -87,7 +87,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				SCA:  SwiftCompilerAssistant{},
 			}
 			fn := se.Name() + ".swift"
-			err := ctx.ExportFiles(fn, enumTplName, enumTplPath, se)
+			err := ctx.ExportFile(fn, enumTplName, enumTplPath, se)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -103,7 +103,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				SCA:    SwiftCompilerAssistant{},
 			}
 			fn := ss.Name() + ".swift"
-			err := ctx.ExportFiles(fn, structTplName, structTplPath, ss)
+			err := ctx.ExportFile(fn, structTplName, structTplPath, ss)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -119,7 +119,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				SCA:     SwiftCompilerAssistant{},
 			}
 			fn := ss.Name() + ".swift"
-			err := ctx.ExportFiles(fn, serviceTplName, serviceTplPath, ss)
+			err := ctx.ExportFile(fn, serviceTplName, serviceTplPath, ss)
 			if err != nil {
 				panic(err.Error())
 			}
