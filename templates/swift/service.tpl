@@ -7,16 +7,16 @@
 import Foundation
 
 public struct {{ $ss.Name }} {
-    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.SCA.TypeString $m.ReturnType }}
+    {{ range $i, $m := $ss.Service.Methods }}{{ $returnType := $ss.Ass.TypeString $m.ReturnType }}
     @discardableResult
-    public static func {{ $ss.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $ss.SCA.FormatFiledName $f.Name }}: {{ $ss.SCA.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
+    public static func {{ $ss.MethodName $m }}({{ range $i, $f := $m.Arguments }}{{ $ss.Ass.FormatFiledName $f.Name }}: {{ $ss.Ass.TypeString $f.Type }} ,{{end}}completion: @escaping ({{ $returnType }}) -> Void, failure: @escaping (Error) -> Void) -> Bool {
 
         guard let engine = WebAPIEngine.engine else { return false }
 
         let path = "{{ $ss.Service.Name }}/{{ $m.Name }}"{{ $argumentCount := $m.Arguments | len }}
         {{ if ne $argumentCount 0 }}
         var params = [String: Any](){{ range $i, $f := $m.Arguments }}
-        params["{{ $f.Name }}"] = {{ $ss.SCA.FormatFiledName $f.Name }}.json{{ end }}{{ end }}
+        params["{{ $f.Name }}"] = {{ $ss.Ass.FormatFiledName $f.Name }}.json{{ end }}{{ end }}
         {{  if ne $argumentCount 0  }}
         debugPrint(path, "Request: ", params){{ else }}debugPrint(path, "Request:", [:]){{ end }}
         

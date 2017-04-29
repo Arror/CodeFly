@@ -30,25 +30,24 @@ var (
 
 type swiftcompiler struct{}
 
-// SwiftCompilerAssistant swift compiler assistant
-type SwiftCompilerAssistant struct{}
+type assistant struct{}
 
 // SwiftEnum swift Enum
 type SwiftEnum struct {
 	*parser.Enum
-	SCA SwiftCompilerAssistant
+	Ass assistant
 }
 
 // SwiftStruct swift Struct
 type SwiftStruct struct {
 	*parser.Struct
-	SCA SwiftCompilerAssistant
+	Ass assistant
 }
 
 // SwiftService swift Service
 type SwiftService struct {
 	*parser.Service
-	SCA SwiftCompilerAssistant
+	Ass assistant
 }
 
 // Name enum name
@@ -83,7 +82,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
-				SCA:  SwiftCompilerAssistant{},
+				Ass:  assistant{},
 			}
 			fn := se.Name() + ".swift"
 			err := ctx.ExportFile(fn, enumTplName, enumTplPath, se)
@@ -99,7 +98,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
-				SCA:    SwiftCompilerAssistant{},
+				Ass:    assistant{},
 			}
 			fn := ss.Name() + ".swift"
 			err := ctx.ExportFile(fn, structTplName, structTplPath, ss)
@@ -115,7 +114,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
-				SCA:     SwiftCompilerAssistant{},
+				Ass:     assistant{},
 			}
 			fn := ss.Name() + ".swift"
 			err := ctx.ExportFile(fn, serviceTplName, serviceTplPath, ss)
@@ -129,7 +128,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 }
 
 // FormatFiledName format filed name
-func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
+func (ass assistant) FormatFiledName(n string) string {
 
 	name := n
 
@@ -155,7 +154,7 @@ func (SCA SwiftCompilerAssistant) FormatFiledName(n string) string {
 }
 
 // TypeString type string
-func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
+func (ass assistant) TypeString(t *parser.Type) string {
 
 	if t == nil {
 		return swiftVoid
@@ -167,7 +166,7 @@ func (SCA SwiftCompilerAssistant) TypeString(t *parser.Type) string {
 		case types.ThriftList, types.ThriftSet, types.ThriftMap:
 			panic("unsupported [[Type]]], [Key : Value] or Set<Type>")
 		}
-		return "[" + SCA.TypeString(t.ValueType) + "]"
+		return "[" + ass.TypeString(t.ValueType) + "]"
 	case types.ThriftMap, types.ThriftSet:
 		panic("unsupported [Key : Value] or Set<Type>")
 	}

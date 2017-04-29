@@ -10,5 +10,5 @@ public enum {{ .Name }}: Int, Enum {
 
     public typealias E = Int
     {{ range $i, $f := .Enum.Values }}
-    case {{ $ss.SCA.FormatFiledName $f.Name }} = {{ $f.Value }} {{ end }}
+    case {{ $ss.Ass.FormatFiledName $f.Name }} = {{ $f.Value }} {{ end }}
 }
