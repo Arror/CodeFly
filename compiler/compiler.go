@@ -18,7 +18,7 @@ func register(complier compiler, lang string) {
 	compilerMapping[strings.ToLower(lang)] = complier
 }
 
-// Compile Compile code
+// Compile compile code with context
 func Compile(ctx *context.Context) error {
 
 	lang := strings.ToLower(ctx.Lang)

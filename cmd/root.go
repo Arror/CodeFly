@@ -8,7 +8,7 @@ import (
 
 var root = cli.NewApp()
 
-// Execute Excuate root command
+// Execute excuate root command
 func Execute() {
 	if err := root.Run(os.Args); err != nil {
 		panic(err.Error())

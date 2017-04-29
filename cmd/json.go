@@ -14,6 +14,18 @@ import (
 	"github.com/Arror/CodeFly/context"
 )
 
+var (
+	lang   string
+	input  string
+	output string
+
+	tp = parser.Parser{}
+)
+
+const (
+	swift = "swift"
+)
+
 var jsonCommand = cli.Command{
 	Name:      "json",
 	ShortName: "json",
@@ -37,23 +49,11 @@ var jsonCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		lang, err := verifyLanguage()
-		if err != nil {
+		if err := verifyAndCorrectCommondArgs(); err != nil {
 			log.Fatalln(err.Error())
 		}
 
-		input, err := verifyInputPath()
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
-
-		output, err := verifyOutputPath()
-		if err != nil {
-			log.Fatalln(err.Error())
-		}
-
-		p := parser.Parser{}
-		ts, _, err := p.ParseFile(input)
+		ts, _, err := tp.ParseFile(input)
 		if err != nil {
 			log.Fatalln(err.Error())
 		}
@@ -66,8 +66,7 @@ var jsonCommand = cli.Command{
 
 		ctx := context.CreateContext(lang, input, output, ts)
 
-		err = compiler.Compile(ctx)
-		if err != nil {
+		if err = compiler.Compile(ctx); err != nil {
 			log.Fatalln(err.Error())
 		}
 
@@ -75,57 +74,41 @@ var jsonCommand = cli.Command{
 	},
 }
 
-var (
-	lang   string
-	input  string
-	output string
-)
-
-func verifyLanguage() (string, error) {
+func verifyAndCorrectCommondArgs() error {
 
 	language := strings.ToLower(lang)
 
 	switch language {
-	case "swift":
-		return language, nil
+	case swift:
+		lang = language
 	default:
-		return "", fmt.Errorf("unsupported language: %s", language)
+		return fmt.Errorf("unsupported language: %s", language)
 	}
-}
-
-func verifyInputPath() (string, error) {
 
 	if input == "" {
-		return "", fmt.Errorf("thrift file input path is empty")
+		return fmt.Errorf("input path is empty")
 	}
-
-	p, err := filepath.Abs(input)
+	ip, err := filepath.Abs(input)
 	if err != nil {
-		return "", fmt.Errorf("thrift file not exist")
+		return fmt.Errorf("file not exist")
 	}
-
-	info, err := os.Stat(p)
+	info, err := os.Stat(ip)
 	if err != nil {
-		return "", fmt.Errorf("thrift file not exist")
+		return fmt.Errorf("file not exist")
 	}
-
 	if info.IsDir() {
-		return "", fmt.Errorf("input is a directory")
+		return fmt.Errorf("input is a directory")
 	}
-
-	return p, nil
-}
-
-func verifyOutputPath() (string, error) {
+	input = ip
 
 	if output == "" {
-		return "", fmt.Errorf("output path is empty")
+		output = "./"
 	}
-
-	p, err := filepath.Abs(output)
+	op, err := filepath.Abs(output)
 	if err != nil {
-		return "", fmt.Errorf("output path error")
+		return fmt.Errorf("output path error")
 	}
+	output = op
 
-	return p, nil
+	return nil
 }
