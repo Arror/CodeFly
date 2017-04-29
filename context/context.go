@@ -48,7 +48,7 @@ func initTemplate(name string, path string) (*template.Template, error) {
 }
 
 // ExportFile export file
-func (ctx *Context) ExportFile(fn string, tplname string, tplPath string, data interface{}) error {
+func (ctx *Context) ExportFile(fn string, tplName string, tplPath string, data interface{}) error {
 
 	fp, err := filepath.Abs(filepath.Join(ctx.Output, fn))
 	if err != nil {
@@ -62,12 +62,12 @@ func (ctx *Context) ExportFile(fn string, tplname string, tplPath string, data i
 
 	defer file.Close()
 
-	t, err := initTemplate(tplname, tplPath)
+	tpl, err := initTemplate(tplName, tplPath)
 	if err != nil {
 		return err
 	}
 
-	err = t.ExecuteTemplate(file, tplname, data)
+	err = tpl.ExecuteTemplate(file, tplName, data)
 	if err != nil {
 		return err
 	}
