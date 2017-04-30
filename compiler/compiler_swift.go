@@ -7,6 +7,7 @@ import (
 	"github.com/samuel/go-thrift/parser"
 
 	"github.com/Arror/CodeFly/context"
+	"github.com/Arror/CodeFly/funcs"
 	"github.com/Arror/CodeFly/types"
 )
 
@@ -18,7 +19,25 @@ const (
 	enumTplPath    = "templates/swift/enum.tpl"
 	structTplPath  = "templates/swift/struct.tpl"
 	serviceTplPath = "templates/swift/service.tpl"
+
+	swiftInt    = "Int"
+	swiftInt64  = "Int64"
+	swiftDouble = "Double"
+	swiftBool   = "Bool"
+	swiftString = "String"
+	swiftVoid   = "Void"
 )
+
+var mapping = map[string]string{
+	types.ThriftI16:    swiftInt,
+	types.ThriftI32:    swiftInt,
+	types.ThriftI64:    swiftInt64,
+	types.ThriftBool:   swiftBool,
+	types.ThriftDouble: swiftDouble,
+	types.ThriftString: swiftString,
+	types.ThriftByte:   types.Unsupported,
+	types.ThriftBinary: types.Unsupported,
+}
 
 func init() {
 	register(&swiftcompiler{}, "swift")
@@ -130,27 +149,35 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 // FormatFiledName format filed name
 func (ass assistant) FormatFiledName(n string) string {
 
-	name := n
-
-	if !strings.Contains(name, "_") {
-		return name
+	if !strings.Contains(n, "_") {
+		return n
 	}
 
-	components := strings.Split(name, "_")
+	components := strings.Split(n, "_")
 
-	name = ""
+	components = funcs.Filter(components, func(str string) bool {
+		return str == ""
+	})
 
-	for _, component := range components {
-		if component != "" {
-			name += (strings.ToUpper(component[:1]) + component[1:])
-		}
-	}
-
-	if name == "" {
+	if components == nil || len(components) == 0 {
 		panic("invaild filed name: " + n)
 	}
 
-	return strings.ToLower(name[:1]) + name[1:]
+	name := ""
+
+	for idx, component := range components {
+
+		if idx == 0 {
+			name += component
+			continue
+		}
+
+		if component != "" {
+			name += (strings.Title(component))
+		}
+	}
+
+	return name
 }
 
 // TypeString type string
@@ -197,24 +224,4 @@ func (ass assistant) TypeString(t *parser.Type) string {
 	}
 
 	return _thrift.Namespaces[_ctx.Lang] + _type
-}
-
-const (
-	swiftInt    = "Int"
-	swiftInt64  = "Int64"
-	swiftDouble = "Double"
-	swiftBool   = "Bool"
-	swiftString = "String"
-	swiftVoid   = "Void"
-)
-
-var mapping = map[string]string{
-	types.ThriftI16:    swiftInt,
-	types.ThriftI32:    swiftInt,
-	types.ThriftI64:    swiftInt64,
-	types.ThriftBool:   swiftBool,
-	types.ThriftDouble: swiftDouble,
-	types.ThriftString: swiftString,
-	types.ThriftByte:   types.Unsupported,
-	types.ThriftBinary: types.Unsupported,
 }
