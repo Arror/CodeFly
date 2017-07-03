@@ -1,4 +1,4 @@
-package compiler
+package generator
 
 import (
 	"strings"
@@ -7,8 +7,8 @@ import (
 	"github.com/samuel/go-thrift/parser"
 
 	"github.com/Arror/CodeFly/context"
-	"github.com/Arror/CodeFly/funcs"
 	"github.com/Arror/CodeFly/types"
+	"github.com/Arror/CodeFly/utils"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 	swiftVoid   = "Void"
 )
 
-var mapping = map[string]string{
+var typeMapping = map[string]string{
 	types.ThriftI16:    swiftInt,
 	types.ThriftI32:    swiftInt,
 	types.ThriftI64:    swiftInt64,
@@ -40,14 +40,14 @@ var mapping = map[string]string{
 }
 
 func init() {
-	register(&swiftcompiler{}, "swift")
+	enroll(&swiftgenerator{}, "swift")
 }
 
 var (
 	_ctx *context.Context
 )
 
-type swiftcompiler struct{}
+type swiftgenerator struct{}
 
 type assistant struct{}
 
@@ -71,12 +71,12 @@ type SwiftService struct {
 
 // Name enum name
 func (se *SwiftEnum) Name() string {
-	return _ctx.Thrift.Namespaces[_ctx.Lang] + se.Enum.Name
+	return _ctx.Thrift.Namespaces[_ctx.Args.Lang] + se.Enum.Name
 }
 
 // Name struct name
 func (ss *SwiftStruct) Name() string {
-	return _ctx.Thrift.Namespaces[_ctx.Lang] + ss.Struct.Name
+	return _ctx.Thrift.Namespaces[_ctx.Args.Lang] + ss.Struct.Name
 }
 
 // Name service name
@@ -89,7 +89,7 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 	return strings.ToLower(m.Name[:1]) + m.Name[1:]
 }
 
-func (sc *swiftcompiler) compile(ctx *context.Context) {
+func (sc *swiftgenerator) generate(ctx *context.Context) {
 
 	_ctx = ctx
 
@@ -104,7 +104,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				Ass:  assistant{},
 			}
 			fn := se.Name() + ".swift"
-			err := ctx.ExportFile(fn, enumTplName, enumTplPath, se)
+			err := ctx.GenerateFile(fn, enumTplName, enumTplPath, se)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -120,7 +120,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				Ass:    assistant{},
 			}
 			fn := ss.Name() + ".swift"
-			err := ctx.ExportFile(fn, structTplName, structTplPath, ss)
+			err := ctx.GenerateFile(fn, structTplName, structTplPath, ss)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -136,7 +136,7 @@ func (sc *swiftcompiler) compile(ctx *context.Context) {
 				Ass:     assistant{},
 			}
 			fn := ss.Name() + ".swift"
-			err := ctx.ExportFile(fn, serviceTplName, serviceTplPath, ss)
+			err := ctx.GenerateFile(fn, serviceTplName, serviceTplPath, ss)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -155,7 +155,7 @@ func (ass assistant) FormatFiledName(n string) string {
 
 	components := strings.Split(n, "_")
 
-	components = funcs.Filter(components, func(str string) bool {
+	components = utils.Filter(components, func(str string) bool {
 		return str == ""
 	})
 
@@ -198,7 +198,7 @@ func (ass assistant) TypeString(t *parser.Type) string {
 		panic("unsupported [Key : Value] or Set<Type>")
 	}
 
-	if base := mapping[t.Name]; base != "" {
+	if base := typeMapping[t.Name]; base != "" {
 		return base
 	}
 
@@ -223,5 +223,5 @@ func (ass assistant) TypeString(t *parser.Type) string {
 		panic("unsupported type " + t.Name)
 	}
 
-	return _thrift.Namespaces[_ctx.Lang] + _type
+	return _thrift.Namespaces[_ctx.Args.Lang] + _type
 }
