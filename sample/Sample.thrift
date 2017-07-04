@@ -1,14 +1,14 @@
 namespace swift TR
 
 struct Customer {
-    1: string name
-    2: Sex sex
-    3: list<string> hobbies
+    1: required string name
+    2: optional Sex sex
+    3: required list<string> hobbies
 }
 
 struct Result {
-    1: bool isSucceed
-    2: string message
+    1: required bool isSucceed
+    2: required string message
 }
 
 enum Sex {

@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"errors"
 	"strings"
 	"sync"
 
@@ -43,40 +44,38 @@ func init() {
 	enroll(&swiftgenerator{}, "swift")
 }
 
-var (
-	_ctx *context.Context
-)
-
 type swiftgenerator struct{}
 
-type assistant struct{}
+type contextwrapper struct {
+	ctx *context.Context
+}
 
 // SwiftEnum swift Enum
 type SwiftEnum struct {
 	*parser.Enum
-	Ass assistant
+	*contextwrapper
+}
+
+// Name enum name
+func (se *SwiftEnum) Name() string {
+	return se.contextwrapper.ctx.Thrift.Namespaces[se.contextwrapper.ctx.Args.Lang] + se.Enum.Name
 }
 
 // SwiftStruct swift Struct
 type SwiftStruct struct {
 	*parser.Struct
-	Ass assistant
+	*contextwrapper
+}
+
+// Name struct name
+func (ss *SwiftStruct) Name() string {
+	return ss.contextwrapper.ctx.Thrift.Namespaces[ss.contextwrapper.ctx.Args.Lang] + ss.Struct.Name
 }
 
 // SwiftService swift Service
 type SwiftService struct {
 	*parser.Service
-	Ass assistant
-}
-
-// Name enum name
-func (se *SwiftEnum) Name() string {
-	return _ctx.Thrift.Namespaces[_ctx.Args.Lang] + se.Enum.Name
-}
-
-// Name struct name
-func (ss *SwiftStruct) Name() string {
-	return _ctx.Thrift.Namespaces[_ctx.Args.Lang] + ss.Struct.Name
+	*contextwrapper
 }
 
 // Name service name
@@ -91,8 +90,6 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 
 func (sc *swiftgenerator) generate(ctx *context.Context) {
 
-	_ctx = ctx
-
 	wg := sync.WaitGroup{}
 
 	wg.Add(1)
@@ -101,7 +98,9 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
-				Ass:  assistant{},
+				contextwrapper: &contextwrapper{
+					ctx: ctx,
+				},
 			}
 			fn := se.Name() + ".swift"
 			err := ctx.GenerateFile(fn, enumTplName, enumTplPath, se)
@@ -117,7 +116,9 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
-				Ass:    assistant{},
+				contextwrapper: &contextwrapper{
+					ctx: ctx,
+				},
 			}
 			fn := ss.Name() + ".swift"
 			err := ctx.GenerateFile(fn, structTplName, structTplPath, ss)
@@ -133,7 +134,9 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
-				Ass:     assistant{},
+				contextwrapper: &contextwrapper{
+					ctx: ctx,
+				},
 			}
 			fn := ss.Name() + ".swift"
 			err := ctx.GenerateFile(fn, serviceTplName, serviceTplPath, ss)
@@ -146,8 +149,8 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 	wg.Wait()
 }
 
-// FormatFiledName format filed name
-func (ass assistant) FormatFiledName(n string) string {
+// FormatedFiledName format filed name
+func (ctxW contextwrapper) FormatedFiledName(n string) string {
 
 	if !strings.Contains(n, "_") {
 		return n
@@ -180,26 +183,50 @@ func (ass assistant) FormatFiledName(n string) string {
 	return name
 }
 
-// TypeString type string
-func (ass assistant) TypeString(t *parser.Type) string {
+func (ctxW *contextwrapper) DefaultValue(t string) string {
+
+	switch t {
+	case swiftInt, swiftInt64:
+		return "0"
+	case swiftDouble:
+		return "0.0"
+	case swiftBool:
+		return "false"
+	case swiftString:
+		return "\"\""
+	}
+
+	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
+		return "[]"
+	}
+	errMes := "type of " + t + " default value not implemented"
+	panic(errMes)
+}
+
+// TypeString parse type string
+func (ctxW *contextwrapper) TypeString(t *parser.Type) (string, error) {
 
 	if t == nil {
-		return swiftVoid
+		return swiftVoid, nil
 	}
 
 	switch t.Name {
 	case types.ThriftList:
 		switch t.ValueType.Name {
 		case types.ThriftList, types.ThriftSet, types.ThriftMap:
-			panic("unsupported [[Type]]], [Key : Value] or Set<Type>")
+			return "", errors.New("Array inner type [Array、Set、Map] not implemented")
 		}
-		return "[" + ass.TypeString(t.ValueType) + "]"
+		innerType, err := ctxW.TypeString(t.ValueType)
+		if err != nil {
+			return "", err
+		}
+		return "[" + innerType + "]", nil
 	case types.ThriftMap, types.ThriftSet:
-		panic("unsupported [Key : Value] or Set<Type>")
+		return "", errors.New("Type [Set、Map] are not implemented")
 	}
 
-	if base := typeMapping[t.Name]; base != "" {
-		return base
+	if baseType := typeMapping[t.Name]; baseType != "" {
+		return baseType, nil
 	}
 
 	components := strings.Split(t.Name, ".")
@@ -211,17 +238,18 @@ func (ass assistant) TypeString(t *parser.Type) string {
 
 	switch count {
 	case 1:
-		_thrift = _ctx.Thrift
+		_thrift = ctxW.ctx.Thrift
 		_type = components[0]
 	case 2:
-		key := _ctx.Thrift.Includes[components[0]]
-		_thrift = _ctx.Thrifts[key]
+		_thrift = ctxW.ctx.Thrifts[ctxW.ctx.Thrift.Includes[components[0]]]
 		_type = components[1]
 	}
 
 	if _thrift == nil || _type == "" {
-		panic("unsupported type " + t.Name)
+		return "", errors.New("")
 	}
 
-	return _thrift.Namespaces[_ctx.Args.Lang] + _type
+	typeStr := _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type
+
+	return typeStr, nil
 }

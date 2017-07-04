@@ -5,24 +5,28 @@
 //
 
 import Foundation
+import Mappable
 
-public struct {{ $ss.Name }}: Base {
-    {{ range $i, $f := .Fields }}
-    public var {{ $ss.Ass.FormatFiledName $f.Name }}: {{ $ss.Ass.TypeString $f.Type }}?{{ end }}
+public struct {{ $ss.Name }}: Mappable {
+    {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $type := $ss.contextwrapper.TypeString $f.Type }}
+    public var {{ $name }}: {{ $type }}{{ if $f.Optional }}?{{ else }} = {{ $ss.contextwrapper.DefaultValue $type }}{{ end }}{{ end }}
 
-    public init?(json: Any?) {
+    public init() {}
+
+    public init?(any: Any?) {
         
-        guard let dict = json as? [String: Any] else { return nil }
-        {{ range $i, $f := .Fields }}
-        {{ $ss.Ass.FormatFiledName $f.Name }} = dict <- "{{ $f.Name }}"{{ end }}
+        guard let wrapper = MapWrapper(any) else { return nil }
+        {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
+        {{ $name }} = wrapper[CodingKeys.{{ $name }}]{{ end }}
     }
     
     public var json: Any {
-        
-        var dict = [String: Any]()
-        {{ range $i, $f := .Fields }}
-        dict["{{ $f.Name }}"] = {{ $ss.Ass.FormatFiledName $f.Name }}?.json{{ end }}
+        return MapWrapper.exportAny { wrapper in {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
+            wrapper[CodingKeys.{{ $name }}] = {{ $name }}{{ end }}
+        }
+    }
 
-        return dict
+    private enum CodingKeys: String, CodingKey { {{ range $i, $f := .Fields }}
+        case {{ $ss.contextwrapper.FormatedFiledName $f.Name }} = "{{ $f.Name }}"{{ end }}
     }
 }
