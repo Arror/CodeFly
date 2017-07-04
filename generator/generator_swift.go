@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"errors"
 	"strings"
 	"sync"
 
@@ -21,23 +20,24 @@ const (
 	structTplPath  = "templates/swift/struct.tpl"
 	serviceTplPath = "templates/swift/service.tpl"
 
-	swiftInt    = "Int"
-	swiftInt64  = "Int64"
-	swiftDouble = "Double"
-	swiftBool   = "Bool"
-	swiftString = "String"
-	swiftVoid   = "Void"
+	sInt     = "Int"
+	sInt64   = "Int64"
+	sDouble  = "Double"
+	sBool    = "Bool"
+	sString  = "String"
+	sVoid    = "Void"
+	sUnknown = "Unknown"
 )
 
 var typeMapping = map[string]string{
-	types.ThriftI16:    swiftInt,
-	types.ThriftI32:    swiftInt,
-	types.ThriftI64:    swiftInt64,
-	types.ThriftBool:   swiftBool,
-	types.ThriftDouble: swiftDouble,
-	types.ThriftString: swiftString,
-	types.ThriftByte:   types.Unsupported,
-	types.ThriftBinary: types.Unsupported,
+	types.ThriftI16:    sInt,
+	types.ThriftI32:    sInt,
+	types.ThriftI64:    sInt64,
+	types.ThriftBool:   sBool,
+	types.ThriftDouble: sDouble,
+	types.ThriftString: sString,
+	types.ThriftByte:   sUnknown,
+	types.ThriftBinary: sUnknown,
 }
 
 func init() {
@@ -150,7 +150,7 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 }
 
 // FormatedFiledName format filed name
-func (ctxW contextwrapper) FormatedFiledName(n string) string {
+func (ctxW *contextwrapper) FormatedFiledName(n string) string {
 
 	if !strings.Contains(n, "_") {
 		return n
@@ -183,73 +183,139 @@ func (ctxW contextwrapper) FormatedFiledName(n string) string {
 	return name
 }
 
-func (ctxW *contextwrapper) DefaultValue(t string) string {
-
-	switch t {
-	case swiftInt, swiftInt64:
-		return "0"
-	case swiftDouble:
-		return "0.0"
-	case swiftBool:
-		return "false"
-	case swiftString:
-		return "\"\""
-	}
-
-	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
-		return "[]"
-	}
-	errMes := "type of " + t + " default value not implemented"
-	panic(errMes)
+// Result parse type result
+type Result struct {
+	Type    string
+	Default string
 }
 
-// TypeString parse type string
-func (ctxW *contextwrapper) TypeString(t *parser.Type) (string, error) {
+func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
 
 	if t == nil {
-		return swiftVoid, nil
+		return &Result{
+			Type:    sVoid,
+			Default: "",
+		}
 	}
 
 	switch t.Name {
 	case types.ThriftList:
 		switch t.ValueType.Name {
-		case types.ThriftList, types.ThriftSet, types.ThriftMap:
-			return "", errors.New("Array inner type [Array、Set、Map] not implemented")
+		case types.ThriftList:
+			panic("Array not implement for Array element")
+		case types.ThriftMap:
+			panic("Dictionary not implement for Array element")
+		case types.ThriftSet:
+			panic("Set not implement for Array element")
+		case types.ThriftByte:
+			panic("Byte not implement for Array element")
+		case types.ThriftBinary:
+			panic("Binary not implement for Array element")
 		}
-		innerType, err := ctxW.TypeString(t.ValueType)
-		if err != nil {
-			return "", err
+		result := ctxW.ParserType(t.ValueType)
+		return &Result{
+			Type:    "[" + result.Type + "]",
+			Default: "[]",
 		}
-		return "[" + innerType + "]", nil
-	case types.ThriftMap, types.ThriftSet:
-		return "", errors.New("Type [Set、Map] are not implemented")
+	case types.ThriftMap:
+		panic("Dictionary not implement")
+	case types.ThriftSet:
+		panic("Set not implement")
+	case types.ThriftByte:
+		panic("Byte not implement")
+	case types.ThriftBinary:
+		panic("Binary not implement")
+	case types.ThriftI16, types.ThriftI32:
+		return &Result{
+			Type:    sInt,
+			Default: "0",
+		}
+	case types.ThriftI64:
+		return &Result{
+			Type:    sInt64,
+			Default: "0",
+		}
+	case types.ThriftDouble:
+		return &Result{
+			Type:    sDouble,
+			Default: "0.0",
+		}
+	case types.ThriftBool:
+		return &Result{
+			Type:    sBool,
+			Default: "false",
+		}
+	case types.ThriftString:
+		return &Result{
+			Type:    sString,
+			Default: "\"\"",
+		}
 	}
 
-	if baseType := typeMapping[t.Name]; baseType != "" {
-		return baseType, nil
+	if _thrift, _type := func() (*parser.Thrift, string) {
+		components := strings.Split(t.Name, ".")
+		switch len(components) {
+		case 1:
+			return ctxW.ctx.Thrift, components[0]
+		case 2:
+			return ctxW.ctx.Thrifts[ctxW.ctx.Thrift.Includes[components[0]]], components[1]
+		}
+		return nil, ""
+	}(); _thrift != nil && _type != "" {
+
+		for _, e := range _thrift.Enums {
+			if e.Name == _type {
+				name := getDefaultEnum(e)
+				if name != "" {
+					return &Result{
+						Type:    _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type,
+						Default: "." + name,
+					}
+				}
+			}
+		}
+
+		for _, s := range _thrift.Structs {
+			if s.Name == _type {
+				structName := _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type
+				return &Result{
+					Type:    structName,
+					Default: structName + "()",
+				}
+			}
+		}
 	}
 
-	components := strings.Split(t.Name, ".")
+	panic("Undefine error, info: " + t.Name)
+}
 
-	count := len(components)
+func (ctxW *contextwrapper) EnumDefaultValue(e *parser.Enum) *Result {
 
-	var _thrift *parser.Thrift
-	var _type string
+	name := getDefaultEnum(e)
 
-	switch count {
-	case 1:
-		_thrift = ctxW.ctx.Thrift
-		_type = components[0]
-	case 2:
-		_thrift = ctxW.ctx.Thrifts[ctxW.ctx.Thrift.Includes[components[0]]]
-		_type = components[1]
+	if name != "" {
+		return &Result{
+			Type:    ctxW.ctx.Thrift.Namespaces[ctxW.ctx.Args.Lang] + e.Name,
+			Default: "." + name,
+		}
 	}
 
-	if _thrift == nil || _type == "" {
-		return "", errors.New("")
+	panic("Undefine error, info: " + e.Name)
+}
+
+func getDefaultEnum(e *parser.Enum) string {
+	var name string
+	var value int
+	for _, v := range e.Values {
+		if name == "" {
+			name = v.Name
+			value = v.Value
+		} else {
+			if v.Value < value {
+				name = v.Name
+				value = v.Value
+			}
+		}
 	}
-
-	typeStr := _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type
-
-	return typeStr, nil
+	return name
 }

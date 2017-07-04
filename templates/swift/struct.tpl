@@ -8,8 +8,8 @@ import Foundation
 import Mappable
 
 public struct {{ $ss.Name }}: Mappable {
-    {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $type := $ss.contextwrapper.TypeString $f.Type }}
-    public var {{ $name }}: {{ $type }}{{ if $f.Optional }}?{{ else }} = {{ $ss.contextwrapper.DefaultValue $type }}{{ end }}{{ end }}
+    {{ range $i, $f := .Fields }} {{ $n := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }}
+    public var {{ $n }}: {{ $result.Type }}{{ if $f.Optional }}?{{ else }} = {{ $result.Default }}{{ end }}{{ end }}
 
     public init() {}
 
