@@ -10,8 +10,8 @@ import (
 	"github.com/samuel/go-thrift/parser"
 	"github.com/urfave/cli"
 
-	"github.com/Arror/CodeFly/compiler"
 	"github.com/Arror/CodeFly/context"
+	"github.com/Arror/CodeFly/generator"
 )
 
 var (
@@ -49,7 +49,7 @@ var jsonCommand = cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 
-		if err := verifyAndCorrectCommondArgs(); err != nil {
+		if err := verifyCommondArgs(); err != nil {
 			log.Fatalln(err.Error())
 		}
 
@@ -64,9 +64,9 @@ var jsonCommand = cli.Command{
 			}
 		}
 
-		ctx := context.CreateContext(lang, input, output, ts)
+		ctx := context.Create(lang, input, output, ts)
 
-		if err = compiler.Compile(ctx); err != nil {
+		if err = generator.Generate(ctx); err != nil {
 			log.Fatalln(err.Error())
 		}
 
@@ -74,7 +74,7 @@ var jsonCommand = cli.Command{
 	},
 }
 
-func verifyAndCorrectCommondArgs() error {
+func verifyCommondArgs() error {
 
 	language := strings.ToLower(lang)
 

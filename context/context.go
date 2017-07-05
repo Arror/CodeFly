@@ -9,31 +9,34 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
-// Context Generate context
-type Context struct {
+// CommandArgs command args
+type CommandArgs struct {
 	Lang   string
 	Input  string
 	Output string
+}
+
+// Context Generate context
+type Context struct {
+	Args *CommandArgs
 
 	Thrift *parser.Thrift
 
 	Thrifts map[string]*parser.Thrift
 }
 
-// CreateContext create context
-func CreateContext(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
+// Create create context
+func Create(lang string, input string, output string, thrifts map[string]*parser.Thrift) *Context {
 
-	ctx := &Context{}
-
-	ctx.Lang = lang
-	ctx.Input = input
-	ctx.Output = output
-
-	ctx.Thrifts = thrifts
-
-	ctx.Thrift = thrifts[input]
-
-	return ctx
+	return &Context{
+		Args: &CommandArgs{
+			Lang:   lang,
+			Input:  input,
+			Output: output,
+		},
+		Thrifts: thrifts,
+		Thrift:  thrifts[input],
+	}
 }
 
 func initTemplate(name string, path string) (*template.Template, error) {
@@ -47,10 +50,10 @@ func initTemplate(name string, path string) (*template.Template, error) {
 	return template.New(name).Parse(string(buffer))
 }
 
-// ExportFile export file
-func (ctx *Context) ExportFile(fn string, tplName string, tplPath string, data interface{}) error {
+// GenerateFile generate file
+func (ctx *Context) GenerateFile(fn string, tplName string, tplPath string, data interface{}) error {
 
-	fp, err := filepath.Abs(filepath.Join(ctx.Output, fn))
+	fp, err := filepath.Abs(filepath.Join(ctx.Args.Output, fn))
 	if err != nil {
 		return err
 	}

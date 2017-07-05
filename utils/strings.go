@@ -1,7 +1,7 @@
-package funcs
+package utils
 
 // Filter high order function for string[]
-func Filter(strs []string, condition func(string) bool) []string {
+func Filter(strs []string, where func(string) bool) []string {
 
 	if strs == nil || len(strs) == 0 {
 		return strs
@@ -11,7 +11,7 @@ func Filter(strs []string, condition func(string) bool) []string {
 
 	for _, str := range strs {
 
-		if !condition(str) {
+		if !where(str) {
 			new = append(new, str)
 		}
 	}

@@ -5,10 +5,15 @@
 //
 
 import Foundation
+import Mappable
 
-public enum {{ .Name }}: Int, Enum {
+public enum {{ .Name }}: Int, EnumMappable {
 
     public typealias E = Int
     {{ range $i, $f := .Enum.Values }}
-    case {{ $ss.Ass.FormatFiledName $f.Name }} = {{ $f.Value }} {{ end }}
+    case {{ $ss.contextwrapper.FormatedFiledName $f.Name }} = {{ $f.Value }} {{ end }}
+
+    public static var `default`: {{ .Name }} { {{ $result := $ss.contextwrapper.EnumDefaultValue .Enum }}
+        return {{ $result.Default }}
+    }
 }
