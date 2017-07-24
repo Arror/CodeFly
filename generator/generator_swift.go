@@ -164,6 +164,16 @@ type Result struct {
 	Default string
 }
 
+func (ctxW *contextwrapper) IsBaseType(t string) bool {
+
+	switch t {
+	case sInt, sInt64, sDouble, sBool, sString:
+		return true
+	default:
+		return false
+	}
+}
+
 func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
 
 	if t == nil {

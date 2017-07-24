@@ -1,7 +1,7 @@
 namespace swift TR
 
 struct Base {
-    0: required string r_string_v
+     
 }
 
 struct Example {

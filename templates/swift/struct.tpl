@@ -9,24 +9,37 @@ import Mappable
 
 public struct {{ $ss.Name }}: Mappable {
     {{ range $i, $f := .Fields }} {{ $n := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }}
-    public var {{ $n }}: {{ $result.Type }}{{ if $f.Optional }}?{{ else }} = {{ $result.Default }}{{ end }}{{ end }}
+    public var {{ $n }}: {{ $result.Type }}{{ if $f.Optional }}?{{ end }}{{ end }}
 
-    public init() {}
+    public init() {
+        {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }} {{ if eq $f.Optional false }}
+        {{ $name }} = {{ $result.Default }}{{ end }}{{ end }}
+    }
 
-    public init?(any: Any?) {
-        
-        guard let wrapper = MapWrapper(any) else { return nil }
-        {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
-        {{ $name }} = wrapper[CodingKeys.{{ $name }}]{{ end }}
+    public init(any: Any?) { {{ $count := len .Fields }}
+        {{ if ne $count 0 }}
+        guard let map = any as? [String: Any] else { throw MappableError.dictionaryConvertFailed(any) } {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }} {{ $isBase := $ss.contextwrapper.IsBaseType $result.Type }}
+        {{ if $f.Optional }}
+        {{ $name }} = {{ if $isBase }}map["{{ $name }}"] as? {{ $result.Type }}{{ else }}try? {{ $result.Type }}(any: map["{{ $name }}"]){{ end }} {{ else }} {{ if $isBase }}
+        if let p = map["{{ $name }}"] as? {{ $result.Type }} {
+            {{ $name }} = p
+        } else {
+            throw MappableError.propertyConvertFailed(map["{{ $name }}"])
+        } {{ else }}
+        if let p = {{ $result.Type }}(any: map["{{ $name }}"]) {
+            {{ $name }} = p
+        } else {
+            throw MappableError.propertyConvertFailed(map["{{ $name }}"])
+        } {{ end }} {{ end }} {{ end }}{{ end }}
     }
     
-    public var json: Any {
-        return MapWrapper.exportAny { wrapper in {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
-            wrapper[CodingKeys.{{ $name }}] = {{ $name }}{{ end }}
-        }
-    }
+    public var any: Any { {{ $count := len .Fields }}
+        {{ if eq $count 0 }}
+        return [:] {{ else }}
+        var dict = [String: Any]() 
+        {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }} {{ $isBase := $ss.contextwrapper.IsBaseType $result.Type }}
+        dict["{{ $f.Name }}"] = {{ if $isBase }}{{ $name }}{{ else }}{{ $name }}{{ if $f.Optional }}?{{ end }}.any{{ end }} {{ end }}
 
-    private enum CodingKeys: String, CodingKey { {{ range $i, $f := .Fields }}
-        case {{ $ss.contextwrapper.FormatedFiledName $f.Name }} = "{{ $f.Name }}"{{ end }}
+        return dict {{end}}
     }
 }
