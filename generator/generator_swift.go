@@ -12,11 +12,9 @@ import (
 )
 
 const (
-	enumTplName    = "SwiftEnum"
 	structTplName  = "SwiftStruct"
 	serviceTplName = "SwiftService"
 
-	enumTplPath    = "templates/swift/enum.tpl"
 	structTplPath  = "templates/swift/struct.tpl"
 	serviceTplPath = "templates/swift/service.tpl"
 
@@ -56,11 +54,6 @@ type SwiftEnum struct {
 	*contextwrapper
 }
 
-// Name enum name
-func (se *SwiftEnum) Name() string {
-	return se.contextwrapper.ctx.Thrift.Namespaces[se.contextwrapper.ctx.Args.Lang] + se.Enum.Name
-}
-
 // SwiftStruct swift Struct
 type SwiftStruct struct {
 	*parser.Struct
@@ -91,24 +84,6 @@ func (ss *SwiftService) MethodName(m *parser.Method) string {
 func (sc *swiftgenerator) generate(ctx *context.Context) {
 
 	wg := sync.WaitGroup{}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		for _, e := range ctx.Thrift.Enums {
-			se := &SwiftEnum{
-				Enum: e,
-				contextwrapper: &contextwrapper{
-					ctx: ctx,
-				},
-			}
-			fn := se.Name() + ".swift"
-			err := ctx.GenerateFile(fn, enumTplName, enumTplPath, se)
-			if err != nil {
-				panic(err.Error())
-			}
-		}
-	}()
 
 	wg.Add(1)
 	go func() {
@@ -263,18 +238,6 @@ func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
 		return nil, ""
 	}(); _thrift != nil && _type != "" {
 
-		for _, e := range _thrift.Enums {
-			if e.Name == _type {
-				name := getDefaultEnum(e)
-				if name != "" {
-					return &Result{
-						Type:    _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type,
-						Default: "." + name,
-					}
-				}
-			}
-		}
-
 		for _, s := range _thrift.Structs {
 			if s.Name == _type {
 				structName := _thrift.Namespaces[ctxW.ctx.Args.Lang] + _type
@@ -287,35 +250,4 @@ func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
 	}
 
 	panic("Undefine error, info: " + t.Name)
-}
-
-func (ctxW *contextwrapper) EnumDefaultValue(e *parser.Enum) *Result {
-
-	name := getDefaultEnum(e)
-
-	if name != "" {
-		return &Result{
-			Type:    ctxW.ctx.Thrift.Namespaces[ctxW.ctx.Args.Lang] + e.Name,
-			Default: "." + name,
-		}
-	}
-
-	panic("Undefine error, info: " + e.Name)
-}
-
-func getDefaultEnum(e *parser.Enum) string {
-	var name string
-	var value int
-	for _, v := range e.Values {
-		if name == "" {
-			name = v.Name
-			value = v.Value
-		} else {
-			if v.Value < value {
-				name = v.Name
-				value = v.Value
-			}
-		}
-	}
-	return name
 }
