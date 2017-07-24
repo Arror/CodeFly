@@ -34,3 +34,16 @@ struct Example {
     29: optional list<string> o_string_v_list
     30: optional list<Base> o_base_v_list
 }
+
+struct ExampleReq {
+
+}
+
+struct ExampleResp {
+
+}
+
+service Example {
+
+    ExampleResp ping(1: required ExampleReq req) (PATH = "test/ping");
+}

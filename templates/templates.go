@@ -69,7 +69,7 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _templatesSwiftServiceTpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
+var _templatesSwiftServiceTpl = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd7\x57\xa8\xae\x56\x50\x29\x2e\x56\xb0\xb2\x55\xd0\x53\xa8\xad\xe5\x82\x8b\xe8\xf9\x25\xe6\xa6\x2a\xd4\xd6\xea\x15\x97\x67\xa6\x95\x70\xe9\xeb\x83\xa4\x9e\xad\x5d\xf2\x6c\x5a\xfb\x93\xdd\xdb\x9e\x4f\xd9\xa8\xe0\x9c\x9f\x92\xea\x96\x53\xa9\xf0\x7c\xca\xfc\x67\x1d\x13\xde\xef\xe9\x79\xb1\x7e\xfb\x93\x1d\xbd\x2f\x96\x35\x3e\xeb\xec\x7e\xda\xb5\xe2\xc9\xfe\x75\xcf\xa6\xec\xe4\xd2\xd7\x07\x04\x00\x00\xff\xff\xaf\xde\xd9\xea\x66\x00\x00\x00")
 
 func templatesSwiftServiceTplBytes() ([]byte, error) {
 	return bindataRead(
@@ -84,7 +84,7 @@ func templatesSwiftServiceTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/swift/service.tpl", size: 0, mode: os.FileMode(420), modTime: time.Unix(1499221380, 0)}
+	info := bindataFileInfo{name: "templates/swift/service.tpl", size: 102, mode: os.FileMode(420), modTime: time.Unix(1500890445, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -104,7 +104,7 @@ func templatesSwiftStructTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/swift/struct.tpl", size: 2749, mode: os.FileMode(420), modTime: time.Unix(1500890258, 0)}
+	info := bindataFileInfo{name: "templates/swift/struct.tpl", size: 2749, mode: os.FileMode(420), modTime: time.Unix(1500890277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
