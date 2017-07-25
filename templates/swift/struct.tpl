@@ -36,19 +36,19 @@ public struct {{ $ss.Name }}: Mappable {
                 {{- $result := $ss.contextwrapper.ParserType $f.Type }}
                 {{- $isBase := $ss.contextwrapper.IsBaseType $result.Type }}
                 {{- if $f.Optional }}
-        {{ $name }} = {{ if $isBase }}map["{{ $name }}"] as? {{ $result.Type }}{{ else }}try? {{ $result.Type }}(any: map["{{ $name }}"]){{ end }}
+        {{ $name }} = {{ if $isBase }}map["{{ $f.Name }}"] as? {{ $result.Type }}{{ else }}try? {{ $result.Type }}(any: map["{{ $f.Name }}"]){{ end }}
                 {{- else }}
                     {{- if $isBase }}
-        if let p = map["{{ $name }}"] as? {{ $result.Type }} {
+        if let p = map["{{ $f.Name }}"] as? {{ $result.Type }} {
             {{ $name }} = p
         } else {
-            throw MappableError.propertyConvertFailed(map["{{ $name }}"])
+            throw MappableError.propertyConvertFailed(map["{{ $f.Name }}"])
         }
                     {{- else }}
-        if let p = {{ $result.Type }}(any: map["{{ $name }}"]) {
+        if let p = {{ $result.Type }}(any: map["{{ $f.Name }}"]) {
             {{ $name }} = p
         } else {
-            throw MappableError.propertyConvertFailed(map["{{ $name }}"])
+            throw MappableError.propertyConvertFailed(map["{{ $f.Name }}"])
         }
                     {{- end }}
                 {{- end }}
