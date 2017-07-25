@@ -29,7 +29,7 @@ public struct {{ $ss.Name }} {
         let param = [:]
         {{- end }}
         {{ "" }}
-        SporeSession.default.invoke(path: path, param: param, completion: { responeObject in
+        #<SessionInstance>#.#<invoke>#(path: path, param: param, completion: { responeObject in
 
             if let r = try? $response.Type(any: responeObject) {
 
