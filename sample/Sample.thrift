@@ -46,4 +46,6 @@ struct ExampleResp {
 service Example {
 
     ExampleResp ping(1: required ExampleReq req) (PATH = "test/ping");
+
+    ExampleResp pint() (PATH = "test/pint")
 }

@@ -164,6 +164,23 @@ type Result struct {
 	Default string
 }
 
+// GetPath get method path
+func (ctxW *contextwrapper) GetPath(m *parser.Method) string {
+
+	if m == nil {
+		panic("Mehtod nil...")
+	}
+
+	for _, a := range m.Annotations {
+
+		if strings.ToLower(a.Name) == "path" {
+			return a.Value
+		}
+	}
+
+	panic("Mehtod path not define")
+}
+
 func (ctxW *contextwrapper) IsBaseType(t string) bool {
 
 	switch t {
