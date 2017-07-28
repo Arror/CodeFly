@@ -22,22 +22,28 @@ public struct {{ $ss.Name }} {
         let path = "{{ $ss.contextwrapper.GetPath $m }}"
         {{ "" }}
         {{- if ne $count 0 }}
+        var param: [String: Any] = [:]
         {{- range $i, $f := $m.Arguments }}
-        let param = {{ $f.Name }}.any as? [String: Any] ?? [:]
+        {{- $result := $ss.contextwrapper.ParserType $f.Type }}
+        {{- $isBase := $ss.contextwrapper.IsBaseType $result.Type }}
+        {{- $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
+        param["{{ $f.Name }}"] = {{ $name }}{{- if ne $isBase true }}{{- if $f.Optional }}?{{- end }}.any{{- end }}
         {{- end }}
         {{- else }}
-        let param = [:]
+        let param: [String: Any] = [:]
         {{- end }}
         {{ "" }}
-        #<SessionInstance>#.#<invoke>#(path: path, param: param, completion: { responeObject in
+        <#session#>.<#invoke#>(path: path, param: param, completion: { responeObject in
 
-            if let r = try? $response.Type(any: responeObject) {
+            do {
 
-                completion(Result.succeed(r))
+                let result = try {{ $response.Type }}(any: responeObject)
 
-            } else {
+                completion(Result.succeed(result))
 
-                completion(Result.failure(#<Error>#))
+            } catch let error {
+
+                completion(Result.failure(error))
             }
 
         }, failure: { error in
