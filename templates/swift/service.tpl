@@ -15,7 +15,7 @@ public struct {{ $ss.Name }} {
     static func {{ $m.Name }}(
             {{- if ne 0 $count }}
                 {{- range $i, $f := $m.Arguments }}
-                    {{- $request := $ss.contextwrapper.ParserType $f.Type }}{{ $f.Name }}: {{ $request.Type }},{{ " " }} 
+                    {{- $request := $ss.contextwrapper.ParserType $f.Type }}{{ $f.Name }}: {{ $request.Type }}{{- if $f.Optional }}?{{- end }},{{ " " }} 
                 {{- end }}
             {{- end }}completion: @escaping (Result<{{ $response.Type }}>) -> Void) {
         {{ "" }}
