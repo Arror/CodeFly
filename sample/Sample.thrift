@@ -45,7 +45,7 @@ struct ExampleResp {
 
 service Example {
 
-    ExampleResp ping(1: optional ExampleReq req, 2: required string name) (PATH = "test/ping");
+    ExampleResp ping(1: optional ExampleReq ping_req, 2: required string user_name) (PATH = "test/ping");
 
     ExampleResp pint() (PATH = "test/pint")
 }
