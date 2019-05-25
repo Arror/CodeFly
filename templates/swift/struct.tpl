@@ -8,7 +8,7 @@ import Foundation
 import Mappable
 
 public struct {{ $ss.Name }}: Mappable {
-    {{ range $i, $f := .Fields }} {{ $n := $ss.contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.contextwrapper.ParserType $f.Type }}
+    {{ range $i, $f := .Fields }} {{ $n := $ss.Contextwrapper.FormatedFiledName $f.Name }} {{ $result := $ss.Contextwrapper.ParserType $f.Type }}
     public var {{ $n }}: {{ $result.Type }}{{ if $f.Optional }}?{{ else }} = {{ $result.Default }}{{ end }}{{ end }}
 
     public init() {}
@@ -16,17 +16,17 @@ public struct {{ $ss.Name }}: Mappable {
     public init?(any: Any?) {
         
         guard let wrapper = MapWrapper(any) else { return nil }
-        {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
+        {{ range $i, $f := .Fields }} {{ $name := $ss.Contextwrapper.FormatedFiledName $f.Name }}
         {{ $name }} = wrapper[CodingKeys.{{ $name }}]{{ end }}
     }
     
     public var json: Any {
-        return MapWrapper.exportAny { wrapper in {{ range $i, $f := .Fields }} {{ $name := $ss.contextwrapper.FormatedFiledName $f.Name }}
+        return MapWrapper.exportAny { wrapper in {{ range $i, $f := .Fields }} {{ $name := $ss.Contextwrapper.FormatedFiledName $f.Name }}
             wrapper[CodingKeys.{{ $name }}] = {{ $name }}{{ end }}
         }
     }
 
     private enum CodingKeys: String, CodingKey { {{ range $i, $f := .Fields }}
-        case {{ $ss.contextwrapper.FormatedFiledName $f.Name }} = "{{ $f.Name }}"{{ end }}
+        case {{ $ss.Contextwrapper.FormatedFiledName $f.Name }} = "{{ $f.Name }}"{{ end }}
     }
 }

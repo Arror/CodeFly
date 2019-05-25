@@ -1,8 +1,9 @@
 all:
 
 init:
-	go get -u github.com/samuel/go-thrift/parser
+	go get -u github.com/SerenityHellp/thrift_parser_lib/parser
 	go get -u github.com/urfave/cli
+	go get -u github.com/jteeuwen/go-bindata/...
 
 gen_swift_test:
 	./CodeFly json -l swift -i ./sample/sample.thrift -o ./sample/swift

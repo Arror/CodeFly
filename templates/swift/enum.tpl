@@ -11,9 +11,9 @@ public enum {{ .Name }}: Int, EnumMappable {
 
     public typealias E = Int
     {{ range $i, $f := .Enum.Values }}
-    case {{ $ss.contextwrapper.FormatedFiledName $f.Name }} = {{ $f.Value }} {{ end }}
+    case {{ $ss.Contextwrapper.FormatedFiledName $f.Name }} = {{ $f.Value }} {{ end }}
 
-    public static var `default`: {{ .Name }} { {{ $result := $ss.contextwrapper.EnumDefaultValue .Enum }}
+    public static var `default`: {{ .Name }} { {{ $result := $ss.Contextwrapper.EnumDefaultValue .Enum }}
         return {{ $result.Default }}
     }
 }

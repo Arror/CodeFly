@@ -46,36 +46,36 @@ func init() {
 
 type swiftgenerator struct{}
 
-type contextwrapper struct {
+type Contextwrapper struct {
 	ctx *context.Context
 }
 
 // SwiftEnum swift Enum
 type SwiftEnum struct {
 	*parser.Enum
-	*contextwrapper
+	*Contextwrapper
 }
 
 // Name enum name
 func (se *SwiftEnum) Name() string {
-	return se.contextwrapper.ctx.Thrift.Namespaces[se.contextwrapper.ctx.Args.Lang] + se.Enum.Name
+	return se.Contextwrapper.ctx.Thrift.Namespaces[se.Contextwrapper.ctx.Args.Lang] + se.Enum.Name
 }
 
 // SwiftStruct swift Struct
 type SwiftStruct struct {
 	*parser.Struct
-	*contextwrapper
+	*Contextwrapper
 }
 
 // Name struct name
 func (ss *SwiftStruct) Name() string {
-	return ss.contextwrapper.ctx.Thrift.Namespaces[ss.contextwrapper.ctx.Args.Lang] + ss.Struct.Name
+	return ss.Contextwrapper.ctx.Thrift.Namespaces[ss.Contextwrapper.ctx.Args.Lang] + ss.Struct.Name
 }
 
 // SwiftService swift Service
 type SwiftService struct {
 	*parser.Service
-	*contextwrapper
+	*Contextwrapper
 }
 
 // Name service name
@@ -98,7 +98,7 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, e := range ctx.Thrift.Enums {
 			se := &SwiftEnum{
 				Enum: e,
-				contextwrapper: &contextwrapper{
+				Contextwrapper: &Contextwrapper{
 					ctx: ctx,
 				},
 			}
@@ -116,7 +116,7 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Structs {
 			ss := &SwiftStruct{
 				Struct: s,
-				contextwrapper: &contextwrapper{
+				Contextwrapper: &Contextwrapper{
 					ctx: ctx,
 				},
 			}
@@ -134,7 +134,7 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 		for _, s := range ctx.Thrift.Services {
 			ss := &SwiftService{
 				Service: s,
-				contextwrapper: &contextwrapper{
+				Contextwrapper: &Contextwrapper{
 					ctx: ctx,
 				},
 			}
@@ -150,7 +150,7 @@ func (sc *swiftgenerator) generate(ctx *context.Context) {
 }
 
 // FormatedFiledName format filed name
-func (ctxW *contextwrapper) FormatedFiledName(n string) string {
+func (ctxW *Contextwrapper) FormatedFiledName(n string) string {
 
 	if !strings.Contains(n, "_") {
 		return n
@@ -189,7 +189,7 @@ type Result struct {
 	Default string
 }
 
-func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
+func (ctxW *Contextwrapper) ParserType(t *parser.Type) *Result {
 
 	if t == nil {
 		return &Result{
@@ -289,7 +289,7 @@ func (ctxW *contextwrapper) ParserType(t *parser.Type) *Result {
 	panic("Undefine error, info: " + t.Name)
 }
 
-func (ctxW *contextwrapper) EnumDefaultValue(e *parser.Enum) *Result {
+func (ctxW *Contextwrapper) EnumDefaultValue(e *parser.Enum) *Result {
 
 	name := getDefaultEnum(e)
 
